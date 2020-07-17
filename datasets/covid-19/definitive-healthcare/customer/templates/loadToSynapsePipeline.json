@@ -4,7 +4,7 @@
     "parameters": {
         "dataFactoryName": {
             "type": "String",
-            "defaultValue": "zahidtestcustomerADF1"
+            "defaultValue": "demoCustomerADF"
         },
         "dataFactoryLocation": {
             "defaultValue": "East US",
@@ -14,7 +14,14 @@
             }
         },
         "storageAccountName": {
-            "defaultValue": "zahidcustomerenvtestsaa",
+            "defaultValue": "democustomerenvsa",
+            "type": "String"
+        },
+        "publicStorageAccountName": {
+            "type": "String",
+            "defaultValue": "covidtrackingdefinitive"
+        },
+        "publicStorageAccountKey": {
             "type": "String"
         },
         "containerName1": {
@@ -27,7 +34,7 @@
         },
         "DBserverName": {
             "type": "string",
-            "defaultValue": "covidtrackingzahid1",
+            "defaultValue": "democustomerdbserver",
             "metadata": {
                 "description": "The name of the SQL logical server."
             }
@@ -48,7 +55,7 @@
         },
         "DBadministratorLoginPassword": {
             "type": "securestring",
-            "defaultValue": "Zahid2020!@#$",
+            "defaultValue": "DemoCustomer2020!@#$",
             "metadata": {
                 "description": "The administrator password of the SQL logical server."
             }
@@ -74,14 +81,14 @@
         },
         "sqlDBName": {
             "type": "string",
-            "defaultValue": "covidtrackingsqlzahid1",
+            "defaultValue": "democustomersqldb",
             "metadata": {
               "description": "The name of the SQL Database."
             }
           },
           "dataWarehouseName": {
             "type": "string",
-            "defaultValue": "covid-tracking1",
+            "defaultValue": "democustomerdw",
             "metadata": {
               "description": "The name of the Data Warehouse."
             }
@@ -303,7 +310,14 @@
                         "annotations": [],
                         "type": "AzureBlobStorage",
                         "typeProperties": {
-                            "connectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('storageAccountName'),';AccountKey=',concat(listKeys(variables('storageAccountId'),'2015-05-01-preview').key1))]"
+                            "connectionString": "[
+                                concat(
+                                    'DefaultEndpointsProtocol=https;AccountName=',
+                                    parameters('publicStorageAccountName'),
+                                    ';AccountKey=',
+                                    parameters('publicStorageAccountKey'),
+                                    ';EndpointSuffix=core.windows.net'
+                                        )]"
                         }
                     }
                 },
@@ -315,7 +329,17 @@
                         "annotations": [],
                         "type": "AzureSqlDW",
                         "typeProperties": {
-                            "connectionString": "['integrated security=False;encrypt=True;connection timeout=30;data source=covidtrackingzahid1.database.windows.net;initial catalog=covid-tracking1;user id=emumba;;Password=Zahid2020!@#$']"
+                            "connectionString": "[
+                                concat(
+                                    'integrated security=False;encrypt=True;connection timeout=30;data source=',
+                                    parameters('DBserverName'),
+                                        '.database.windows.net;initial catalog=',
+                                            parameters('dataWarehouseName'),
+                                            ';user id=',
+                                            parameters('DBadministratorLogin'),
+                                            ';Password=',
+                                            parameters('DBadministratorLoginPassword')
+                                )]"
                         }
                     },
                     "dependsOn": [
@@ -330,7 +354,17 @@
                         "annotations": [],
                         "type": "AzureSqlDW",
                         "typeProperties": {
-                            "connectionString": "['integrated security=False;encrypt=True;connection timeout=30;data source=covidtrackingzahid1.database.windows.net;initial catalog=covid-tracking1;user id=emumba;;Password=Zahid2020!@#$']"
+                            "connectionString": "[
+                                concat(
+                                    'integrated security=False;encrypt=True;connection timeout=30;data source=',
+                                    parameters('DBserverName'),
+                                    '.database.windows.net;initial catalog=',
+                                    parameters('dataWarehouseName'),
+                                    ';user id=',
+                                    parameters('DBadministratorLogin'),
+                                    ';Password=',
+                                    parameters('DBadministratorLoginPassword')
+                                        )]"
                         }
                     },
                     "dependsOn": [
@@ -345,7 +379,18 @@
                         "annotations": [],
                         "type": "AzureSqlDatabase",
                         "typeProperties": {
-                            "connectionString": "[concat('Server=tcp:',parameters('DBserverName'),'.database.windows.net,1433;Initial Catalog=',parameters('sqlDBName'),';Persist Security Info=False;User ID=',parameters('DBadministratorLogin'),';Password=',parameters('DBadministratorLoginPassword'),';MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;')]"
+                            "connectionString": "[
+                                concat('data source=',parameters('DBserverName'),
+                                     '.database.windows.net;integrated security=False;Server=tcp:',
+                                    parameters('DBserverName'),
+                                    '.database.windows.net,1433;Initial Catalog=',
+                                    parameters('sqlDBName'),
+                                    ';Persist Security Info=False;User ID=',
+                                    parameters('DBadministratorLogin'),
+                                    ';Password=',
+                                    parameters('DBadministratorLoginPassword'),
+                                    ';MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
+                                        )]"
                         }
                     },
                     "dependsOn": [
@@ -371,7 +416,7 @@
                             "location": {
                                 "type": "AzureBlobStorageLocation",
                                 "fileName": "covid_tracking.csv",
-                                "folderPath": "/",
+                                "folderPath": "curated/covid-19/covid_tracking/latest",
                                 "container": "public"
                             },
                             "columnDelimiter": ",",

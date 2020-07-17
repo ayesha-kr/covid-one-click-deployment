@@ -26,7 +26,7 @@
             "No"
           ],
           "metadata": {
-              "description": "Specify if you want to write curated data into SQL database."
+              "description": "Please specify if you want to write curated data into SQL database."
           }
         },
         "serverName": {

@@ -22,4 +22,4 @@ Click the following button to deploy all the resources.
 #### Configure Firewall Rule
 After deployment, to access the newly created SQL server from your client IP, configure the firewall rule as described in the following GIF:
 
-![Firewall Rule](https://github.com/osamaemumba/arm-template-button-with-condition/blob/master/firewallRule.gif)
+![Firewall Rule](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/public/images/firewallRule.gif)

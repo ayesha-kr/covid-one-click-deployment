@@ -107,7 +107,8 @@
     },
     "variables": {
         "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]",
-        "storageAccountId": "[concat(resourceGroup().id,'/providers/Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))]"
+        "storageAccountId": "[concat(resourceGroup().id,'/providers/Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))]",
+        "databaseCollation": "SQL_Latin1_General_CP1_CI_AS"
     },
     "resources": [
         {
@@ -221,10 +222,14 @@
                     "apiVersion": "2019-06-01-preview",
                     "name": "[parameters('sqlDBName')]",
                     "sku": {
-                        "name": "Standard",
-                        "tier": "Standard"
+                        "name": "Basic",
+                        "tier": "Basic",
+                        "capacity": 5
                     },
                     "location": "[parameters('location')]",
+                    "properties": {
+                        "collation": "[variables('databaseCollation')]"
+                    },
                     "dependsOn": [
                         "[resourceId('Microsoft.Sql/servers', concat(parameters('DBserverName')))]"
                     ]
@@ -241,17 +246,6 @@
                     "properties": {
                         "endIpAddress": "0.0.0.0",
                         "startIpAddress": "0.0.0.0"
-                    }
-                },
-                {
-                    "type": "connectionPolicies",
-                    "apiVersion": "2014-04-01",
-                    "name": "Default",
-                    "dependsOn": [
-                        "[resourceId('Microsoft.Sql/servers', parameters('DBserverName'))]"
-                    ],
-                    "properties": {
-                        "connectionType": "[parameters('DBconnectionType')]"
                     }
                 },
                 {
@@ -321,7 +315,7 @@
                         "annotations": [],
                         "type": "AzureSqlDW",
                         "typeProperties": {
-                            "connectionString": "['integrated security=False;encrypt=True;connection timeout=30;data source=covidtrackingzahid1.database.windows.net;initial catalog=covid-tracking;user id=emumba;;Password=Zahid2020!@#$']"
+                            "connectionString": "['integrated security=False;encrypt=True;connection timeout=30;data source=covidtrackingzahid1.database.windows.net;initial catalog=covid-tracking1;user id=emumba;;Password=Zahid2020!@#$']"
                         }
                     },
                     "dependsOn": [
@@ -336,7 +330,7 @@
                         "annotations": [],
                         "type": "AzureSqlDW",
                         "typeProperties": {
-                            "connectionString": "['integrated security=False;encrypt=True;connection timeout=30;data source=covidtrackingzahid1.database.windows.net;initial catalog=covid-tracking;user id=emumba;;Password=Zahid2020!@#$']"
+                            "connectionString": "['integrated security=False;encrypt=True;connection timeout=30;data source=covidtrackingzahid1.database.windows.net;initial catalog=covid-tracking1;user id=emumba;;Password=Zahid2020!@#$']"
                         }
                     },
                     "dependsOn": [
@@ -351,7 +345,7 @@
                         "annotations": [],
                         "type": "AzureSqlDatabase",
                         "typeProperties": {
-                            "connectionString": "['integrated security=False;encrypt=True;connection timeout=30;data source=covidtrackingzahid1.database.windows.net;initial catalog=covid-tracking;user id=emumba;;Password=Zahid2020!@#$']"
+                            "connectionString": "[concat('Server=tcp:',parameters('DBserverName'),'.database.windows.net,1433;Initial Catalog=',parameters('sqlDBName'),';Persist Security Info=False;User ID=',parameters('DBadministratorLogin'),';Password=',parameters('DBadministratorLoginPassword'),';MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;')]"
                         }
                     },
                     "dependsOn": [

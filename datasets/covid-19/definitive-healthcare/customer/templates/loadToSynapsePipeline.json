@@ -321,7 +321,7 @@
                         "annotations": [],
                         "type": "AzureSqlDW",
                         "typeProperties": {
-                            "connectionString": "[concat('Server=tcp:',parameters('DBserverName'),'.database.windows.net,1433;Initial Catalog=',parameters('sqlDBName'),';Persist Security Info=False;User ID=',parameters('DBadministratorLogin'),';Password=',parameters('DBadministratorLoginPassword'),';MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;')]"
+                            "connectionString": "['integrated security=False;encrypt=True;connection timeout=30;data source=covidtrackingzahid1.database.windows.net;initial catalog=covid-tracking;user id=emumba;;Password=Zahid2020!@#$']"
                         }
                     },
                     "dependsOn": [
@@ -336,7 +336,7 @@
                         "annotations": [],
                         "type": "AzureSqlDW",
                         "typeProperties": {
-                            "connectionString": "[concat('Server=tcp:',parameters('DBserverName'),'.database.windows.net,1433;Initial Catalog=',parameters('sqlDBName'),';Persist Security Info=False;User ID=',parameters('DBadministratorLogin'),';Password=',parameters('DBadministratorLoginPassword'),';MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;')]"
+                            "connectionString": "['integrated security=False;encrypt=True;connection timeout=30;data source=covidtrackingzahid1.database.windows.net;initial catalog=covid-tracking;user id=emumba;;Password=Zahid2020!@#$']"
                         }
                     },
                     "dependsOn": [
@@ -351,7 +351,7 @@
                         "annotations": [],
                         "type": "AzureSqlDatabase",
                         "typeProperties": {
-                            "connectionString": "[concat('Server=tcp:',parameters('DBserverName'),'.database.windows.net,1433;Initial Catalog=',parameters('sqlDBName'),';Persist Security Info=False;User ID=',parameters('DBadministratorLogin'),';Password=',parameters('DBadministratorLoginPassword'),';MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;')]"
+                            "connectionString": "['integrated security=False;encrypt=True;connection timeout=30;data source=covidtrackingzahid1.database.windows.net;initial catalog=covid-tracking;user id=emumba;;Password=Zahid2020!@#$']"
                         }
                     },
                     "dependsOn": [

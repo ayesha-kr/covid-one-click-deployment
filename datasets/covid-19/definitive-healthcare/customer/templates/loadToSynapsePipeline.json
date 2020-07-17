@@ -310,7 +310,14 @@
                         "annotations": [],
                         "type": "AzureBlobStorage",
                         "typeProperties": {
-                            "connectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('publicStorageAccountName'), ';AccountKey=', parameters('publicStorageAccountKey'),';EndpointSuffix=core.windows.net')]"
+                            "connectionString": "[
+                                concat(
+                                    'DefaultEndpointsProtocol=https;AccountName=',
+                                    parameters('publicStorageAccountName'),
+                                    ';AccountKey=',
+                                    parameters('publicStorageAccountKey'),
+                                    ';EndpointSuffix=core.windows.net'
+                                        )]"
                         }
                     }
                 },
@@ -322,7 +329,17 @@
                         "annotations": [],
                         "type": "AzureSqlDW",
                         "typeProperties": {
-                            "connectionString": "[concat('integrated security=False;encrypt=True;connection timeout=30;data source=',parameters('DBserverName'), '.database.windows.net;initial catalog=',parameters('dataWarehouseName'), ';user id=',parameters('DBadministratorLogin'),';Password=', parameters('DBadministratorLoginPassword'))]"
+                            "connectionString": "[
+                                concat(
+                                    'integrated security=False;encrypt=True;connection timeout=30;data source=',
+                                    parameters('DBserverName'),
+                                        '.database.windows.net;initial catalog=',
+                                            parameters('dataWarehouseName'),
+                                            ';user id=',
+                                            parameters('DBadministratorLogin'),
+                                            ';Password=',
+                                            parameters('DBadministratorLoginPassword')
+                                )]"
                         }
                     },
                     "dependsOn": [
@@ -337,7 +354,17 @@
                         "annotations": [],
                         "type": "AzureSqlDW",
                         "typeProperties": {
-                            "connectionString": "[concat('integrated security=False;encrypt=True;connection timeout=30;data source=',parameters('DBserverName'),'.database.windows.net;initial catalog=',parameters('dataWarehouseName'),';user id=',parameters('DBadministratorLogin'),';Password=',parameters('DBadministratorLoginPassword'))]"
+                            "connectionString": "[
+                                concat(
+                                    'integrated security=False;encrypt=True;connection timeout=30;data source=',
+                                    parameters('DBserverName'),
+                                    '.database.windows.net;initial catalog=',
+                                    parameters('dataWarehouseName'),
+                                    ';user id=',
+                                    parameters('DBadministratorLogin'),
+                                    ';Password=',
+                                    parameters('DBadministratorLoginPassword')
+                                        )]"
                         }
                     },
                     "dependsOn": [
@@ -352,7 +379,18 @@
                         "annotations": [],
                         "type": "AzureSqlDatabase",
                         "typeProperties": {
-                            "connectionString": "[concat('data source=',parameters('DBserverName')'.database.windows.net;integrated security=False;Server=tcp:',parameters('DBserverName'),'.database.windows.net,1433;Initial Catalog=', parameters('sqlDBName'),';Persist Security Info=False;User ID=',parameters('DBadministratorLogin'),';Password=',parameters('DBadministratorLoginPassword'), ';MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;')]"
+                            "connectionString": "[
+                                concat('data source=',parameters('DBserverName'),
+                                     '.database.windows.net;integrated security=False;Server=tcp:',
+                                    parameters('DBserverName'),
+                                    '.database.windows.net,1433;Initial Catalog=',
+                                    parameters('sqlDBName'),
+                                    ';Persist Security Info=False;User ID=',
+                                    parameters('DBadministratorLogin'),
+                                    ';Password=',
+                                    parameters('DBadministratorLoginPassword'),
+                                    ';MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
+                                        )]"
                         }
                     },
                     "dependsOn": [

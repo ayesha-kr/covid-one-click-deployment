@@ -23,6 +23,7 @@ Click the following button to deploy all the resources.
 #### Manually Trigger Pipeline
 
 After the deployment you can go in side your resource group open the ADF auther and monitor section and trigger the pipeline as given below.
+
 ![Manual Pipeline Trigger](https://github.com/osamaemumba/arm-template-button-with-condition/blob/master/firewallRule.gif)
 
 

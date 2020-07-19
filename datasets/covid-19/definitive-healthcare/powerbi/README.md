@@ -1,7 +1,7 @@
 # Prerequisites
 
   1. Customer Azure Data Factory Pipeline is deployed and data has been successfully written to Synapse.
-
+---------------------------------------------
 # Load data from a Synapse table in Power BI
 
 1. Open Power BI Destop

@@ -1,10 +1,10 @@
   
 {
-    "$schema": "https://aka.ms/azure-quickstart-templates-metadata-schema#",
-    "itemDisplayName": "Create resources for customer environment",
-    "description": "This template creates a Azure Data factory SQL server, Azure Synapse and SQL DB (optional)",
-    "summary": "Create a Customer environment for Azure Data pipelines",
-    "githubUsername": "ayesha-kr",
-    "dateUpdated": "2020-07-17",
-    "type": "QuickStart"
-  }
+"$schema": "https://aka.ms/azure-quickstart-templates-metadata-schema#",
+"itemDisplayName": "Create resources for customer environment",
+"description": "This template creates a Azure Data factory SQL server, Azure Synapse and SQL DB (optional)",
+"summary": "Create a Customer environment for Azure Data pipelines",
+"githubUsername": "ayesha-kr",
+"dateUpdated": "2020-07-17",
+"type": "QuickStart"
+}

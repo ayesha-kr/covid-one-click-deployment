@@ -6,11 +6,5 @@
     "summary": "Create a Customer environment for Azure Data pipelines",
     "githubUsername": "ayesha-kr",
     "dateUpdated": "2020-07-17",
-    "type": "Application",
-    "tags": {
-      
-       "resource": "Azure Data factory, Synapse, SQL server and SQL DB",
-       "level": "Beginner",
-       "cost": "$"
-    }
+    "type": "QuickStart"
   }

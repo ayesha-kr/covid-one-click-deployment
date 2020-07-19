@@ -15,7 +15,7 @@ Dataset | Descriptions | Link | Status
 
 
 ## 3. Data Flow Architecture Diagram
- ![Azul_Data_Pipeline](https://github.com/ayesha-kr/msft-covid/blob/master/images/Azul%20data%20pipeline%20diagram.png)
+ ![Azul_Data_Pipeline](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/images/arch.png)
 
 ## 4. Data Flow deployment steps
   You can see that the repo has three sections public, customer and power BI. Go inside each of the directory to deploy that relavent section.  

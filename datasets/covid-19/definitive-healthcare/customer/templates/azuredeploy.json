@@ -1,36 +1,36 @@
 {
-    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
         "dataFactoryName": {
-            "type": "String",
+            "type": "string",
             "defaultValue": "demoCustomerADF"
         },
         "dataFactoryLocation": {
             "defaultValue": "East US",
-            "type": "String",
+            "type": "string",
             "metadata": {
                 "description": "Location of the data factory. Currently, only East US, East US 2, and West Europe are supported. "
             }
         },
         "storageAccountName": {
             "defaultValue": "democustomerenvsa",
-            "type": "String"
+            "type": "string"
         },
         "publicStorageAccountName": {
-            "type": "String",
+            "type": "string",
             "defaultValue": "covidtrackingdefinitive"
         },
         "publicStorageAccountKey": {
-            "type": "String"
+            "type": "string"
         },
         "containerName1": {
             "defaultValue": "public",
-            "type": "String"
+            "type": "string"
         },
         "containerName2": {
             "defaultValue": "staging",
-            "type": "String"
+            "type": "string"
         },
         "DBserverName": {
             "type": "string",
@@ -1061,5 +1061,7 @@
 
             ]
         }
-    ]
+    ],
+    "outputs": {
+    }
 }

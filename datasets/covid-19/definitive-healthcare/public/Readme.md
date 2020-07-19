@@ -24,7 +24,7 @@ Click the following button to deploy all the resources.
 
 After the deployment you can go in side your resource group open the ADF auther and monitor section and trigger the pipeline as given below.
 
-![Manual Pipeline Trigger](https://github.com/osamaemumba/arm-template-button-with-condition/blob/master/firewallRule.gif)
+![Manual Pipeline Trigger](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/public/images/manual-ADF-public-env-trigger.png)
 
 #### Configure Firewall Rule
 After deployment, to access the newly created SQL server from your client IP, configure the firewall rule as described in the following GIF:

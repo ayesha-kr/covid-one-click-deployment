@@ -4,17 +4,19 @@
     "parameters": {
         "factoryName": {
             "type": "string",
-            "metadata": "Data Factory name"
+            "metadata": {
+                "description": "The name you provide will be appended with a unique sting to make it globally available. The name can contain only letters, numbers and hyphens. The first and last characters must be a letter or number. Spaces are not allowed."
+            }
         },
         "storageAccountName": {
-            "type": "String",
+            "type": "string",
             "metadata": {
-                "description": "Name of the Azure storage account that contains the input/output data."
+                "description": "The name you provide will be appended with a unique sting to make it globally available. The field can contain only lowercase letters and numbers. Name must be between 3 and 24 characters."
             }
         },
         "location": {
             "defaultValue": "East US",
-            "type": "String",
+            "type": "string",
             "metadata": {
                 "description": "Location of the data factory. Currently, only East US, East US 2, and West Europe are supported. "
             }
@@ -32,28 +34,28 @@
         "serverName": {
             "type": "string",
             "metadata": {
-              "description": "The name of the SQL logical server."
+                "description": "The name you provide will be appended with a unique sting to make it globally available. Your server name can contain only lowercase letters, numbers, and '-', but can't start or end with '-' or have more than 63 characters."
             },
             "defaultValue": "Specify SQL server name if selected 'Yes'"
         },
         "databaseName": {
             "type": "string",
             "metadata": {
-              "description": "The name of the SQL database."
+                "description": "Value should not match special patterns. It should contain a length of maximum of 128."
             },
             "defaultValue": "Specify SQL database name if selected 'Yes'"
         },
         "sqlAdministratorLogin": {
             "type": "string",
             "metadata": {
-              "description": "The administrator username of the SQL Server."
+                "description": "Your login name must not contain a SQL Identifier or a typical system name (like admin, administrator, sa, root, dbmanager, loginmanager, etc.) or a built-in database user or role (like dbo, guest, public, etc.)"
             },
             "defaultValue": "Specify administrator username of SQL server if selected 'Yes'"
           },
         "sqlAdministratorLoginPassword": {
             "type": "securestring",
             "metadata": {
-              "description": "The administrator password of the SQL Server."
+                "description": "Your password must be at least 8 characters in length. Your password must contain characters from three of the following categories – English uppercase letters, English lowercase letters, numbers (0-9), and non-alphanumeric characters (!, $, #, %, etc.) Your password cannot contain all or part of the login name. Part of a login name is defined as three or more consecutive alphanumeric characters."
             },
             "defaultValue": "*********"
           },
@@ -63,8 +65,11 @@
           }
     },
     "variables": {
-        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]",
-        "storageAccountId": "[concat(resourceGroup().id,'/providers/Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))]",
+        "factoryName": "[concat(parameters('factoryName'), uniquestring(resourceGroup().id))]",
+        "storageAccountName": "[concat(parameters('storageAccountName'), uniquestring(resourceGroup().id))]",
+        "serverName": "[concat(parameters('serverName'), uniquestring(resourceGroup().id))]",
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', variables('factoryName'))]",
+        "storageAccountId": "[concat(resourceGroup().id,'/providers/Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
         "dataflowWithSqlName": "Transformations_with_SQL_sink",
         "dataflowWithoutSqlName": "Transformations_without_SQL_sink",
         "databaseCollation": "SQL_Latin1_General_CP1_CI_AS"
@@ -75,7 +80,7 @@
         {
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2019-06-01",
-            "name": "[parameters('storageAccountName')]",
+            "name": "[variables('storageAccountName')]",
             "location": "[parameters('location')]",
             "sku": {
                 "name": "Standard_LRS",
@@ -109,9 +114,9 @@
         {
             "type": "Microsoft.Storage/storageAccounts/blobServices",
             "apiVersion": "2019-06-01",
-            "name": "[concat(parameters('storageAccountName'), '/default')]",
+            "name": "[concat(variables('storageAccountName'), '/default')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
             ],
             "sku": {
                 "name": "Standard_LRS",
@@ -129,9 +134,9 @@
         {
             "type": "Microsoft.Storage/storageAccounts/fileServices",
             "apiVersion": "2019-06-01",
-            "name": "[concat(parameters('storageAccountName'), '/default')]",
+            "name": "[concat(variables('storageAccountName'), '/default')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
             ],
             "sku": {
                 "name": "Standard_LRS",
@@ -146,7 +151,7 @@
         },
         {
             "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'Yes')]",
-            "name": "[parameters('serverName')]",
+            "name": "[variables('serverName')]",
             "type": "Microsoft.Sql/servers",
             "apiVersion": "2019-06-01-preview",
             "location": "[parameters('location')]",
@@ -171,7 +176,7 @@
                         "collation": "[variables('databaseCollation')]"
                     },
                     "dependsOn": [
-                    "[parameters('serverName')]"
+                    "[variables('serverName')]"
                     ]
                 },
                 {
@@ -185,7 +190,7 @@
                         "startIpAddress": "0.0.0.0"
                     },
                     "dependsOn": [
-                        "[parameters('serverName')]"
+                        "[variables('serverName')]"
                     ]
                 }
             ]
@@ -194,18 +199,18 @@
         {
             "type": "Microsoft.DataFactory/factories",
             "apiVersion": "2018-06-01",
-            "name": "[parameters('factoryName')]",
+            "name": "[variables('factoryName')]",
             "location": "[parameters('location')]",
             "identity": {
                 "type": "SystemAssigned"
             },
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
             ],
             
             "resources": [
                 {
-                    "name": "[concat(parameters('factoryName'), '/parquet_sink_dataset')]",
+                    "name": "[concat(variables('factoryName'), '/parquet_sink_dataset')]",
                     "type": "Microsoft.DataFactory/factories/datasets",
                     "apiVersion": "2018-06-01",
                     "properties": {
@@ -225,7 +230,7 @@
                             }
                         },
                         "folder": {
-                            "name": "Sinks"
+                            "name": "CovidDefinitiveHC/Sinks"
                         },
                         "annotations": [],
                         "type": "Parquet",
@@ -246,12 +251,12 @@
                         "schema": []
                     },
                     "dependsOn": [
-                        "[parameters('factoryName')]",
+                        "[variables('factoryName')]",
                         "[concat(variables('factoryId'), '/linkedServices/covid_tracking_definitivehc_blobstorage_linkedservice')]"
                     ]
                 },
                 {
-                    "name": "[concat(parameters('factoryName'), '/csv_sink_dataset')]",
+                    "name": "[concat(variables('factoryName'), '/csv_sink_dataset')]",
                     "type": "Microsoft.DataFactory/factories/datasets",
                     "apiVersion": "2018-06-01",
                     "properties": {
@@ -271,7 +276,7 @@
                             }
                         },
                         "folder": {
-                            "name": "Sinks"
+                            "name": "CovidDefinitiveHC/Sinks"
                         },
                         "annotations": [],
                         "type": "DelimitedText",
@@ -295,12 +300,12 @@
                         "schema": []
                     },
                     "dependsOn": [
-                        "[parameters('factoryName')]",
+                        "[variables('factoryName')]",
                         "[concat(variables('factoryId'), '/linkedServices/covid_tracking_definitivehc_blobstorage_linkedservice')]"
                     ]
                 },
                 {
-                    "name": "[concat(parameters('factoryName'), '/csv_source_dataset')]",
+                    "name": "[concat(variables('factoryName'), '/csv_source_dataset')]",
                     "type": "Microsoft.DataFactory/factories/datasets",
                     "apiVersion": "2018-06-01",
                     "properties": {
@@ -320,7 +325,7 @@
                             }
                         },
                         "folder": {
-                            "name": "Sources"
+                            "name": "CovidDefinitiveHC/Sources"
                         },
                         "annotations": [],
                         "type": "DelimitedText",
@@ -441,12 +446,12 @@
                         ]
                     },
                     "dependsOn": [
-                        "[parameters('factoryName')]",
+                        "[variables('factoryName')]",
                         "[concat(variables('factoryId'), '/linkedServices/covid_tracking_definitivehc_blobstorage_linkedservice')]"
                     ]
                 },
                 {
-                    "name": "[concat(parameters('factoryName'), '/json_sink_dataset')]",
+                    "name": "[concat(variables('factoryName'), '/json_sink_dataset')]",
                     "type": "Microsoft.DataFactory/factories/datasets",
                     "apiVersion": "2018-06-01",
                     "properties": {
@@ -466,7 +471,7 @@
                             }
                         },
                         "folder": {
-                            "name": "Sinks"
+                            "name": "CovidDefinitiveHC/Sinks"
                         },
                         "annotations": [],
                         "type": "Json",
@@ -490,12 +495,12 @@
                         "schema": {}
                     },
                     "dependsOn": [
-                        "[parameters('factoryName')]",
+                        "[variables('factoryName')]",
                         "[concat(variables('factoryId'), '/linkedServices/covid_tracking_definitivehc_blobstorage_linkedservice')]"
                     ]
                 },
                 {
-                    "name": "[concat(parameters('factoryName'), '/rest_source_dataset')]",
+                    "name": "[concat(variables('factoryName'), '/rest_source_dataset')]",
                     "type": "Microsoft.DataFactory/factories/datasets",
                     "apiVersion": "2018-06-01",
                     "properties": {
@@ -509,7 +514,7 @@
                             }
                         },
                         "folder": {
-                            "name": "Sources"
+                            "name": "CovidDefinitiveHC/Sources"
                         },
                         "annotations": [],
                         "type": "RestResource",
@@ -522,13 +527,13 @@
                         "schema": []
                     },
                     "dependsOn": [
-                        "[parameters('factoryName')]",
+                        "[variables('factoryName')]",
                         "[concat(variables('factoryId'), '/linkedServices/covid_tracking_rest_linkedservice')]"
                     ]
                 },
                 {
                     "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'Yes')]",
-                    "name": "[concat(parameters('factoryName'), '/sql_sink_dataset')]",
+                    "name": "[concat(variables('factoryName'), '/sql_sink_dataset')]",
                     "type": "Microsoft.DataFactory/factories/datasets",
                     "apiVersion": "2018-06-01",
                     "properties": {
@@ -537,7 +542,7 @@
                             "type": "LinkedServiceReference"
                         },
                         "folder": {
-                            "name": "Sinks"
+                            "name": "CovidDefinitiveHC/Sinks"
                         },
                         "annotations": [],
                         "type": "AzureSqlTable",
@@ -548,17 +553,20 @@
                         }
                     },
                     "dependsOn": [
-                        "[parameters('factoryName')]",
+                        "[variables('factoryName')]",
                         "[concat(variables('factoryId'), '/linkedServices/covid_tracking_definitivehc_sql_linkedservice')]"
                     ]
                 },
                 {
                     "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'Yes')]",
-                    "name": "[concat(parameters('factoryName'), '/',variables('dataflowWithSqlName'))]",
+                    "name": "[concat(variables('factoryName'), '/',variables('dataflowWithSqlName'))]",
                     "type": "Microsoft.DataFactory/factories/dataflows",
                     "apiVersion": "2018-06-01",
                     "properties": {
                         "description": "Update ISO 3166-2 code",
+                        "folder": {
+                            "name": "CovidDefinitiveHC"
+                        },
                         "type": "MappingDataFlow",
                         "typeProperties": {
                             "sources": [
@@ -642,7 +650,7 @@
                         }
                     },
                     "dependsOn": [
-                        "[parameters('factoryName')]",
+                        "[variables('factoryName')]",
                         "[concat(variables('factoryId'), '/datasets/csv_source_dataset')]",
                         "[concat(variables('factoryId'), '/datasets/csv_sink_dataset')]",
                         "[concat(variables('factoryId'), '/datasets/json_sink_dataset')]",
@@ -652,11 +660,14 @@
                 },
                 {
                     "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'No')]",
-                    "name": "[concat(parameters('factoryName'), '/',variables('dataflowWithoutSqlName'))]",
+                    "name": "[concat(variables('factoryName'), '/',variables('dataflowWithoutSqlName'))]",
                     "type": "Microsoft.DataFactory/factories/dataflows",
                     "apiVersion": "2018-06-01",
                     "properties": {
                         "description": "Update ISO 3166-2 code",
+                        "folder": {
+                            "name": "CovidDefinitiveHC"
+                        },
                         "type": "MappingDataFlow",
                         "typeProperties": {
                             "sources": [
@@ -733,7 +744,7 @@
                         }
                     },
                     "dependsOn": [
-                        "[parameters('factoryName')]",
+                        "[variables('factoryName')]",
                         "[concat(variables('factoryId'), '/datasets/csv_source_dataset')]",
                         "[concat(variables('factoryId'), '/datasets/csv_sink_dataset')]",
                         "[concat(variables('factoryId'), '/datasets/json_sink_dataset')]",
@@ -741,22 +752,22 @@
                     ]
                 },
                 {
-                    "name": "[concat(parameters('factoryName'), '/covid_tracking_definitivehc_blobstorage_linkedservice')]",
+                    "name": "[concat(variables('factoryName'), '/covid_tracking_definitivehc_blobstorage_linkedservice')]",
                     "type": "Microsoft.DataFactory/factories/linkedServices",
                     "apiVersion": "2018-06-01",
                     "properties": {
                         "annotations": [],
                         "type": "AzureBlobStorage",
                         "typeProperties": {
-                            "connectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('storageAccountName'),';AccountKey=',concat(listKeys(variables('storageAccountId'),'2015-05-01-preview').key1))]"
+                            "connectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',concat(listKeys(variables('storageAccountId'),'2015-05-01-preview').key1))]"
                         }
                     },
                     "dependsOn": [
-                        "[parameters('factoryName')]"
+                        "[variables('factoryName')]"
                     ]
                 },
                 {
-                    "name": "[concat(parameters('factoryName'), '/covid_tracking_rest_linkedservice')]",
+                    "name": "[concat(variables('factoryName'), '/covid_tracking_rest_linkedservice')]",
                     "type": "Microsoft.DataFactory/factories/linkedServices",
                     "apiVersion": "2018-06-01",
                     "properties": {
@@ -769,28 +780,28 @@
                         }
                     },
                     "dependsOn": [
-                        "[parameters('factoryName')]"
+                        "[variables('factoryName')]"
                     ]
                 },
                 {
                     "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'Yes')]",
-                    "name": "[concat(parameters('factoryName'), '/covid_tracking_definitivehc_sql_linkedservice')]",
+                    "name": "[concat(variables('factoryName'), '/covid_tracking_definitivehc_sql_linkedservice')]",
                     "type": "Microsoft.DataFactory/factories/linkedServices",
                     "apiVersion": "2018-06-01",
                     "properties": {
                         "annotations": [],
                         "type": "AzureSqlDatabase",
                         "typeProperties": {
-                            "connectionString": "[concat('Server=tcp:',parameters('serverName'),'.database.windows.net,1433;Initial Catalog=',parameters('databaseName'),';Persist Security Info=False;User ID=',parameters('sqlAdministratorLogin'),';Password=',parameters('sqlAdministratorLoginPassword'),';MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;')]"
+                            "connectionString": "[concat('Server=tcp:',variables('serverName'),'.database.windows.net,1433;Initial Catalog=',parameters('databaseName'),';Persist Security Info=False;User ID=',parameters('sqlAdministratorLogin'),';Password=',parameters('sqlAdministratorLoginPassword'),';MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;')]"
                         }
                     },
                     "dependsOn": [
-                        "[parameters('factoryName')]"
+                        "[variables('factoryName')]"
                     ]
                 },
                 {
                     "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'Yes')]",
-                    "name": "[concat(parameters('factoryName'), '/Covid_Tracking_DefinitiveHC_With_Sql_Sink')]",
+                    "name": "[concat(variables('factoryName'), '/Covid_Tracking_DefinitiveHC_With_Sql_Sink')]",
                     "type": "Microsoft.DataFactory/factories/pipelines",
                     "apiVersion": "2018-06-01",
                     "properties": {
@@ -1683,14 +1694,14 @@
                             }
                         },
                         "folder": {
-                            "name": "Case Data"
+                            "name": "CovidDefinitiveHC/BlobStorageAndSqlDataExtraction"
                         },
                         "annotations": [
                             "covidtracking"
                         ]
                     },
                     "dependsOn": [
-                        "[parameters('factoryName')]",
+                        "[variables('factoryName')]",
                         "[concat(variables('factoryId'), '/datasets/rest_source_dataset')]",
                         "[concat(variables('factoryId'), '/datasets/csv_source_dataset')]",
                         "[concat(variables('factoryId'), '/dataflows/',variables('dataflowWithSqlName'))]",
@@ -1699,7 +1710,7 @@
                 },
                 {
                     "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'No')]",
-                    "name": "[concat(parameters('factoryName'), '/Covid_Tracking_DefinitiveHC_Without_Sql_Sink')]",
+                    "name": "[concat(variables('factoryName'), '/Covid_Tracking_DefinitiveHC_Without_Sql_Sink')]",
                     "type": "Microsoft.DataFactory/factories/pipelines",
                     "apiVersion": "2018-06-01",
                     "properties": {
@@ -2591,14 +2602,14 @@
                             }
                         },
                         "folder": {
-                            "name": "Case Data"
+                            "name": "CovidDefinitiveHC/BlobStorageDataExtraction"
                         },
                         "annotations": [
                             "covidtracking"
                         ]
                     },
                     "dependsOn": [
-                        "[parameters('factoryName')]",
+                        "[variables('factoryName')]",
                         "[concat(variables('factoryId'), '/datasets/rest_source_dataset')]",
                         "[concat(variables('factoryId'), '/datasets/csv_source_dataset')]",
                         "[concat(variables('factoryId'), '/dataflows/',variables('dataflowWithoutSqlName'))]",

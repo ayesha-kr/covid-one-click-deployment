@@ -59,9 +59,9 @@
             },
             "defaultValue": "*********"
           },
-          "covid_tracking_rest_linkedservice_properties_typeProperties_url": {
-              "type": "string",
-              "defaultValue": "https://services7.arcgis.com/"
+        "currentTime": {
+            "type": "string",
+            "defaultValue": "[utcNow('u')]"
           }
     },
     "variables": {
@@ -774,7 +774,7 @@
                         "annotations": [],
                         "type": "RestService",
                         "typeProperties": {
-                            "url": "[parameters('covid_tracking_rest_linkedservice_properties_typeProperties_url')]",
+                            "url": "https://services7.arcgis.com/",
                             "enableServerCertificateValidation": true,
                             "authenticationType": "Anonymous"
                         }
@@ -2615,7 +2615,70 @@
                         "[concat(variables('factoryId'), '/dataflows/',variables('dataflowWithoutSqlName'))]",
                         "[concat(variables('factoryId'), '/datasets/json_sink_dataset')]"
                     ]
-                }         
+                },
+                {
+                    "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'Yes')]",
+                    "name": "[concat(variables('factoryName'), '/CovidDefinitiveHC-Trigger_With_Sql_Sink')]",
+                    "type": "Microsoft.DataFactory/factories/triggers",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "annotations": [],
+                        "runtimeState": "Started",
+                        "pipelines": [
+                            {
+                                "pipelineReference": {
+                                    "referenceName": "Covid_Tracking_DefinitiveHC_With_Sql_Sink",
+                                    "type": "PipelineReference"
+                                }
+                            }
+                        ],
+                        "type": "ScheduleTrigger",
+                        "typeProperties": {
+                            "recurrence": {
+                                "frequency": "Minute",
+                                "interval": 20,
+                                "startTime": "[parameters('currentTime')]",
+                                "timeZone": "UTC"
+                            }
+                        }
+                    },
+                    "dependsOn": [
+                        "[variables('factoryName')]",
+                        "[concat(variables('factoryId'), '/pipelines/Covid_Tracking_DefinitiveHC_With_Sql_Sink')]"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'No')]",
+                    "name": "[concat(variables('factoryName'), '/CovidDefinitiveHC-Trigger_Without_Sql_Sink')]",
+                    "type": "Microsoft.DataFactory/factories/triggers",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "annotations": [],
+                        "runtimeState": "Started",
+                        "pipelines": [
+                            {
+                                "pipelineReference": {
+                                    "referenceName": "Covid_Tracking_DefinitiveHC_Without_Sql_Sink",
+                                    "type": "PipelineReference"
+                               }
+
+                            }
+                        ],
+                        "type": "ScheduleTrigger",
+                        "typeProperties": {
+                            "recurrence": {
+                                "frequency": "Minute",
+                                "interval": 20,
+                                "startTime": "[parameters('currentTime')]",
+                                "timeZone": "UTC"
+                            }
+                        }
+                    },
+                    "dependsOn": [
+                        "[variables('factoryName')]",
+                        "[concat(variables('factoryId'), '/pipelines/Covid_Tracking_DefinitiveHC_Without_Sql_Sink')]"
+                    ]
+                }                 
             ]
         }
     ]        

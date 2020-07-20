@@ -116,7 +116,17 @@
             "metadata": {
                 "description": "Data warehouse tier."
             }
-        }
+        },
+        "createSqlDb": {
+            "type": "string",
+            "allowedValues": [
+              "Yes",
+              "No"
+            ],
+            "metadata": {
+                "description": "Specify if you want to write data into SQL database."
+            }
+          }
     },
     "variables": {
         "databaseCollation": "SQL_Latin1_General_CP1_CI_AS",
@@ -231,7 +241,7 @@
                 "version": "12.0"
             },
             "resources": [
-                {
+                {   "condition": "[equals(parameters('createSqlDb'),'Yes')]",
                     "type": "databases",
                     "apiVersion": "2019-06-01-preview",
                     "name": "[parameters('sqlDBName')]",
@@ -370,6 +380,7 @@
                     ]
                 },
                 {
+                    "condition": "[equals(parameters('createSqlDb'),'Yes')]",
                     "name": "[concat(variables('dataFactoryUniqueName'), '/AzureSqlDatabase')]",
                     "type": "Microsoft.DataFactory/factories/linkedServices",
                     "apiVersion": "2018-06-01",
@@ -501,6 +512,7 @@
                     ]
                 },
                 {
+                    "condition": "[equals(parameters('createSqlDb'),'Yes')]",
                     "name": "[concat(variables('dataFactoryUniqueName'), '/SqlDbStaging')]",
                     "type": "Microsoft.DataFactory/factories/datasets",
                     "apiVersion": "2018-06-01",
@@ -526,6 +538,7 @@
                     ]
                 },
                 {
+                    "condition": "[equals(parameters('createSqlDb'),'Yes')]",
                     "name": "[concat(variables('dataFactoryUniqueName'), '/SqlOperationalSink')]",
                     "type": "Microsoft.DataFactory/factories/datasets",
                     "apiVersion": "2018-06-01",
@@ -627,6 +640,7 @@
                     ]
                 },
                 {
+                    "condition": "[equals(parameters('createSqlDb'),'Yes')]",
                     "name": "[concat(variables('dataFactoryUniqueName'), '/LoadIntoStagingTable_withSQL')]",
                     "type": "Microsoft.DataFactory/factories/dataflows",
                     "apiVersion": "2018-06-01",
@@ -673,6 +687,7 @@
                     ]
                 },
                 {
+                    "condition": "[equals(parameters('createSqlDb'),'Yes')]",
                     "name": "[concat(variables('dataFactoryUniqueName'), '/LoadIntoOperationalTable_withSQL')]",
                     "type": "Microsoft.DataFactory/factories/dataflows",
                     "apiVersion": "2018-06-01",
@@ -922,6 +937,7 @@
                     ]
                 },
                 {
+                    "condition": "[equals(parameters('createSqlDb'),'Yes')]",
                     "name": "[concat(variables('dataFactoryUniqueName'), '/definitiveHCLoadToSynapseAndSQL')]",
                     "type": "Microsoft.DataFactory/factories/pipelines",
                     "apiVersion": "2018-06-01",

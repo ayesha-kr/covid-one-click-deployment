@@ -52,6 +52,9 @@
         },
         "serviceLevelObjective": {
             "value": "DW100c"
+        },
+        "triggerStartTime": {
+            "value": "[utcNow('u')]"
         }
     }
 }

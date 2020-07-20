@@ -11,7 +11,7 @@
         "storageAccountName": {
             "type": "string",
             "metadata": {
-                "description": "The name you provide will be appended with a unique sting to make it globally available. The field can contain only lowercase letters and numbers. Name must be between 3 and 24 characters."
+                "description": "The name you provide will be appended with a unique sting to make it globally available. The field can contain only lowercase letters and numbers. Name must be between 3 and 11 characters."
             }
         },
         "location": {

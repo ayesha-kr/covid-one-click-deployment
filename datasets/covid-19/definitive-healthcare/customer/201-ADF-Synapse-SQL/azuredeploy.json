@@ -1,0 +1,1067 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "dataFactoryName": {
+            "type": "string",
+            "defaultValue": "demoCustomerADF"
+        },
+        "dataFactoryLocation": {
+            "defaultValue": "East US",
+            "type": "string",
+            "metadata": {
+                "description": "Location of the data factory. Currently, only East US, East US 2, and West Europe are supported. "
+            }
+        },
+        "storageAccountName": {
+            "defaultValue": "democustomerenvsa",
+            "type": "string"
+        },
+        "publicStorageAccountName": {
+            "type": "string",
+            "defaultValue": "covidtrackingdefinitive"
+        },
+        "publicStorageAccountKey": {
+            "type": "string"
+        },
+        "containerName1": {
+            "defaultValue": "public",
+            "type": "string"
+        },
+        "containerName2": {
+            "defaultValue": "staging",
+            "type": "string"
+        },
+        "DBserverName": {
+            "type": "string",
+            "defaultValue": "democustomerdbserver",
+            "metadata": {
+                "description": "The name of the SQL logical server."
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "Location for all resources."
+            }
+        },
+        "DBadministratorLogin": {
+            "type": "string",
+            "defaultValue": "emumba",
+            "metadata": {
+                "description": "The administrator username of the SQL logical server."
+            }
+        },
+        "DBadministratorLoginPassword": {
+            "type": "securestring",
+            "defaultValue": "DemoCustomer2020!@#$",
+            "metadata": {
+                "description": "The administrator password of the SQL logical server."
+            }
+        },
+        "allowAzureIPs": {
+            "defaultValue": true,
+            "type": "bool",
+            "metadata": {
+                "description": "Allow Azure services to access server."
+            }
+        },
+        "DBconnectionType": {
+            "defaultValue": "Default",
+            "allowedValues": [
+                "Default",
+                "Redirect",
+                "Proxy"
+            ],
+            "type": "string",
+            "metadata": {
+                "description": "SQL logical server connection type."
+            }
+        },
+        "sqlDBName": {
+            "type": "string",
+            "defaultValue": "democustomersqldb",
+            "metadata": {
+              "description": "The name of the SQL Database."
+            }
+          },
+          "dataWarehouseName": {
+            "type": "string",
+            "defaultValue": "democustomerdw",
+            "metadata": {
+              "description": "The name of the Data Warehouse."
+            }
+          },
+          "transparentDataEncryption": {
+            "defaultValue": "Enabled",
+            "type": "string",
+            "allowedValues": [
+              "Enabled",
+              "Disabled"
+            ],
+            "metadata": {
+              "description": "Enable/Disable Transparent Data Encryption"
+            }
+          },
+          "serviceLevelObjective": {
+            "defaultValue": "DW100c",
+            "type": "string",
+            "metadata": {
+              "description": "Performance Level"
+            }
+          }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]",
+        "storageAccountId": "[concat(resourceGroup().id,'/providers/Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))]",
+        "databaseCollation": "SQL_Latin1_General_CP1_CI_AS"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2019-06-01",
+            "name": "[parameters('storageAccountName')]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "kind": "StorageV2",
+            "properties": {
+                "networkAcls": {
+                    "bypass": "AzureServices",
+                    "virtualNetworkRules": [],
+                    "ipRules": [],
+                    "defaultAction": "Allow"
+                },
+                "supportsHttpsTrafficOnly": true,
+                "encryption": {
+                    "services": {
+                        "file": {
+                            "keyType": "Account",
+                            "enabled": true
+                        },
+                        "blob": {
+                            "keyType": "Account",
+                            "enabled": true
+                        }
+                    },
+                    "keySource": "Microsoft.Storage"
+                },
+                "accessTier": "Hot"
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices",
+            "apiVersion": "2019-06-01",
+            "name": "[concat(parameters('storageAccountName'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+            ],
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "properties": {
+                "cors": {
+                    "corsRules": []
+                },
+                "deleteRetentionPolicy": {
+                    "enabled": false
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/fileServices",
+            "apiVersion": "2019-06-01",
+            "name": "[concat(parameters('storageAccountName'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+            ],
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "properties": {
+                "cors": {
+                    "corsRules": []
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+            "apiVersion": "2019-06-01",
+            "name": "[concat(parameters('storageAccountName'), '/default/',parameters('containerName1'))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccountName'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+            ],
+            "properties": {
+                "publicAccess": "None"
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+            "apiVersion": "2019-06-01",
+            "name": "[concat(parameters('storageAccountName'), '/default/',parameters('containerName2'))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccountName'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+            ],
+            "properties": {
+                "publicAccess": "None"
+            }
+        },
+        {
+            "type": "Microsoft.Sql/servers",
+            "apiVersion": "2015-05-01-preview",
+            "name": "[parameters('DBserverName')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "administratorLogin": "[parameters('DBadministratorLogin')]",
+                "administratorLoginPassword": "[parameters('DBadministratorLoginPassword')]",
+                "version": "12.0"
+            },
+            "resources": [
+                {
+                    "type": "databases",
+                    "apiVersion": "2019-06-01-preview",
+                    "name": "[parameters('sqlDBName')]",
+                    "sku": {
+                        "name": "Basic",
+                        "tier": "Basic",
+                        "capacity": 5
+                    },
+                    "location": "[parameters('location')]",
+                    "properties": {
+                        "collation": "[variables('databaseCollation')]"
+                    },
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Sql/servers', concat(parameters('DBserverName')))]"
+                    ]
+                },
+                {
+                    "condition": "[parameters('allowAzureIPs')]",
+                    "type": "firewallRules",
+                    "apiVersion": "2018-06-01-preview",
+                    "name": "AllowAllWindowsAzureIps",
+                    "location": "[parameters('location')]",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Sql/servers', parameters('DBserverName'))]"
+                    ],
+                    "properties": {
+                        "endIpAddress": "0.0.0.0",
+                        "startIpAddress": "0.0.0.0"
+                    }
+                },
+                {
+                    "type": "databases",
+                    "kind": "v12.0,user,datawarehouse",
+                    "name": "[parameters('dataWarehouseName')]",
+                    "apiVersion": "2015-05-01-preview",
+                    "location": "[parameters('location')]",
+                    "properties": {
+                      "edition": "DataWarehouse",
+                      "status": "Online",
+                      "requestedServiceObjectiveName": "[parameters('serviceLevelObjective')]",
+                      "collation": "SQL_Latin1_General_CP1_CI_AS",
+                      "readScale": "Disabled",
+                      "zoneRedundant": false,
+                      "isUpgradeRequested": false
+                    },
+                    "dependsOn": [
+                      "[parameters('DBserverName')]"
+                    ],
+                    "resources": [
+                      {
+                        "comments": "Transparent Data Encryption",
+                        "name": "current",
+                        "type": "transparentDataEncryption",
+                        "apiVersion": "2017-03-01-preview",
+                        "properties": {
+                          "status": "[parameters('transparentDataEncryption')]"
+                        },
+                        "dependsOn": [
+                          "[parameters('dataWarehouseName')]"
+                        ]
+                      }
+                    ]
+                  }
+            ]
+        },
+        {
+            "type": "Microsoft.DataFactory/factories",
+            "apiVersion": "2018-06-01",
+            "name": "[parameters('dataFactoryName')]",
+            "location": "[parameters('dataFactoryLocation')]",
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "resources": [
+                {
+                    "type": "Microsoft.DataFactory/factories/linkedServices",
+                    "apiVersion": "2018-06-01",
+                    "name": "[concat(parameters('dataFactoryName'), '/ArmtemplateStorageLinkedService')]",
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]"
+                    ],
+                    "properties": {
+                        "annotations": [],
+                        "type": "AzureBlobStorage",
+                        "typeProperties": {
+                            "connectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('publicStorageAccountName'),';AccountKey=',parameters('publicStorageAccountKey'),';EndpointSuffix=core.windows.net')]"
+                        }
+                    }
+                },
+                {
+                    "name": "[concat(parameters('dataFactoryName'), '/AzureSynapseAnalyticsStaging')]",
+                    "type": "Microsoft.DataFactory/factories/linkedServices",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "annotations": [],
+                        "type": "AzureSqlDW",
+                        "typeProperties": {
+                            "connectionString": "[concat('integrated security=False;encrypt=True;connection timeout=30;data source=',parameters('DBserverName'),'.database.windows.net;initial catalog=',parameters('dataWarehouseName'),';user id=',parameters('DBadministratorLogin'),';Password=',parameters('DBadministratorLoginPassword'))]"
+                        }
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]"
+                    ]
+                },
+                {
+                    "name": "[concat(parameters('dataFactoryName'), '/AzureSynapseOperational')]",
+                    "type": "Microsoft.DataFactory/factories/linkedServices",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "annotations": [],
+                        "type": "AzureSqlDW",
+                        "typeProperties": {
+                            "connectionString": "[concat('integrated security=False;encrypt=True;connection timeout=30;data source=',parameters('DBserverName'),'.database.windows.net;initial catalog=',parameters('dataWarehouseName'),';user id=',parameters('DBadministratorLogin'), ';Password=', parameters('DBadministratorLoginPassword'))]"
+                        }
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]"
+                    ]
+                },
+                {
+                    "name": "[concat(parameters('dataFactoryName'), '/AzureSqlDatabase')]",
+                    "type": "Microsoft.DataFactory/factories/linkedServices",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "annotations": [],
+                        "type": "AzureSqlDatabase",
+                        "typeProperties": {
+                            "connectionString": "[concat('data source=',parameters('DBserverName'),'.database.windows.net;integrated security=False;Server=tcp:',parameters('DBserverName'),'.database.windows.net,1433;Initial Catalog=',parameters('sqlDBName'),';Persist Security Info=False;User ID=',parameters('DBadministratorLogin'),';Password=',parameters('DBadministratorLoginPassword'),';MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;')]"
+                        }
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]"
+                    ]
+                },
+                {
+                    "type": "Microsoft.DataFactory/factories/datasets",
+                    "apiVersion": "2018-06-01",
+                    "name": "[concat(parameters('dataFactoryName'), '/ArmtemplateTestDatasetIn')]",
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "[concat(variables('factoryId'), '/linkedServices/ArmtemplateStorageLinkedService')]"
+                    ],
+                    "properties": {
+                        "linkedServiceName": {
+                            "referenceName": "ArmtemplateStorageLinkedService",
+                            "type": "LinkedServiceReference"
+                        },
+                        "annotations": [],
+                        "type": "DelimitedText",
+                        "typeProperties": {
+                            "location": {
+                                "type": "AzureBlobStorageLocation",
+                                "fileName": "covid_tracking.csv",
+                                "folderPath": "curated/covid-19/covid_tracking/latest",
+                                "container": "public"
+                            },
+                            "columnDelimiter": ",",
+                            "escapeChar": "\\",
+                            "firstRowAsHeader": true,
+                            "quoteChar": "\""
+                        },
+                        "schema": []
+                    }
+                },
+                {
+                    "type": "Microsoft.DataFactory/factories/datasets",
+                    "apiVersion": "2018-06-01",
+                    "name": "[concat(parameters('dataFactoryName'), '/ArmtemplateTestDatasetOut')]",
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "[concat(variables('factoryId'), '/linkedServices/ArmtemplateStorageLinkedService')]"
+                    ],
+                    "properties": {
+                        "linkedServiceName": {
+                            "referenceName": "ArmtemplateStorageLinkedService",
+                            "type": "LinkedServiceReference"
+                        },
+                        "annotations": [],
+                        "type": "DelimitedText",
+                        "typeProperties": {
+                            "location": {
+                                "type": "AzureBlobStorageLocation",
+                                "folderPath": "output",
+                                "container": "staging"
+                            },
+                            "columnDelimiter": ",",
+                            "escapeChar": "\\",
+                            "firstRowAsHeader": true,
+                            "quoteChar": "\""
+                        },
+                        "schema": []
+                    }
+                },  
+                {
+                    "name": "[concat(parameters('dataFactoryName'), '/AzureSynapseAnalyticsStagingTable')]",
+                    "type": "Microsoft.DataFactory/factories/datasets",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "linkedServiceName": {
+                            "referenceName": "AzureSynapseAnalyticsStaging",
+                            "type": "LinkedServiceReference"
+                        },
+                        "annotations": [],
+                        "type": "AzureSqlDWTable",
+                        "schema": [],
+                        "typeProperties": {
+                            "schema": "",
+                            "table": "stagingdhc"
+                        }
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "[concat(variables('factoryId'), '/linkedServices/AzureSynapseAnalyticsStaging')]"
+                    ]
+                },
+                {
+                    "name": "[concat(parameters('dataFactoryName'), '/SynapseOperationalTable_sink')]",
+                    "type": "Microsoft.DataFactory/factories/datasets",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "linkedServiceName": {
+                            "referenceName": "AzureSynapseOperational",
+                            "type": "LinkedServiceReference"
+                        },
+                        "annotations": [],
+                        "type": "AzureSqlDWTable",
+                        "schema": [],
+                        "typeProperties": {
+                            "schema": "",
+                            "table": "operationaldhc"
+                        }
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "[concat(variables('factoryId'), '/linkedServices/AzureSynapseOperational')]"
+                    ]
+                },
+                {
+                    "name": "[concat(parameters('dataFactoryName'), '/SqlDbStaging')]",
+                    "type": "Microsoft.DataFactory/factories/datasets",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "linkedServiceName": {
+                            "referenceName": "AzureSqlDatabase",
+                            "type": "LinkedServiceReference"
+                        },
+                        "annotations": [],
+                        "type": "AzureSqlTable",
+                        "schema": [],
+                        "typeProperties": {
+                            "schema": "",
+                            "table": "stagingdhc"
+                        }
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase')]"
+                    ]
+                },
+                {
+                    "name": "[concat(parameters('dataFactoryName'), '/SqlOperationalSink')]",
+                    "type": "Microsoft.DataFactory/factories/datasets",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "linkedServiceName": {
+                            "referenceName": "AzureSqlDatabase",
+                            "type": "LinkedServiceReference"
+                        },
+                        "annotations": [],
+                        "type": "AzureSqlTable",
+                        "schema": [],
+                        "typeProperties": {
+                            "schema": "",
+                            "table": "operationaldhc"
+                        }
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase')]"
+                    ]
+                },
+                {
+                    "name": "[concat(parameters('dataFactoryName'), '/LoadIntoStagingTable')]",
+                    "type": "Microsoft.DataFactory/factories/dataflows",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "type": "MappingDataFlow",
+                        "typeProperties": {
+                            "sources": [
+                                {
+                                    "dataset": {
+                                        "referenceName": "ArmtemplateTestDatasetOut",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "SourceCSV"
+                                }
+                            ],
+                            "sinks": [
+                                {
+                                    "dataset": {
+                                        "referenceName": "AzureSynapseAnalyticsStagingTable",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "SynapseStagingSink"
+                                }
+                            ],
+                            "transformations": [],
+                            "script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\trowUrlColumn: 'filename',\n\tinferDriftedColumnTypes: true) ~> SourceCSV\nSourceCSV sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tstaged: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SynapseStagingSink"
+                        }
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "[concat(variables('factoryId'), '/datasets/ArmtemplateTestDatasetOut')]",
+                        "[concat(variables('factoryId'), '/datasets/AzureSynapseAnalyticsStagingTable')]"
+                    ]
+                },
+                {
+                    "name": "[concat(parameters('dataFactoryName'), '/LoadIntoOperationalTable')]",
+                    "type": "Microsoft.DataFactory/factories/dataflows",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "type": "MappingDataFlow",
+                        "typeProperties": {
+                            "sources": [
+                                {
+                                    "dataset": {
+                                        "referenceName": "AzureSynapseAnalyticsStagingTable",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "sourceSynapseStagingTable"
+                                }
+                            ],
+                            "sinks": [
+                                {
+                                    "dataset": {
+                                        "referenceName": "SynapseOperationalTable_sink",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "SynapseOperationalTable"
+                                }
+                            ],
+                            "transformations": [],
+                            "script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table',\n\tstaged: false) ~> sourceSynapseStagingTable\nsourceSynapseStagingTable sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tstaged: true,\n\tpostSQLs:['\\n'],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SynapseOperationalTable"
+                        }
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "[concat(variables('factoryId'), '/datasets/AzureSynapseAnalyticsStagingTable')]",
+                        "[concat(variables('factoryId'), '/datasets/SynapseOperationalTable_sink')]"
+                    ]
+                },
+                {
+                    "name": "[concat(parameters('dataFactoryName'), '/LoadIntoStagingTable_withSQL')]",
+                    "type": "Microsoft.DataFactory/factories/dataflows",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "type": "MappingDataFlow",
+                        "typeProperties": {
+                            "sources": [
+                                {
+                                    "dataset": {
+                                        "referenceName": "ArmtemplateTestDatasetOut",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "SourceCSV"
+                                }
+                            ],
+                            "sinks": [
+                                {
+                                    "dataset": {
+                                        "referenceName": "AzureSynapseAnalyticsStagingTable",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "SynapseStagingSink"
+                                },
+                                {
+                                    "dataset": {
+                                        "referenceName": "SqlDbStaging",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "SQLStagingSink"
+                                }
+                            ],
+                            "transformations": [],
+                            "script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\trowUrlColumn: 'filename',\n\tinferDriftedColumnTypes: true) ~> SourceCSV\nSourceCSV sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tstaged: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SynapseStagingSink\nSourceCSV sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SQLStagingSink"
+                        }
+                    },
+                    "dependsOn": [
+                        "[concat(variables('factoryId'), '/datasets/ArmtemplateTestDatasetOut')]",
+                        "[concat(variables('factoryId'), '/datasets/AzureSynapseAnalyticsStagingTable')]",
+                        "[concat(variables('factoryId'), '/datasets/SqlDbStaging')]",
+                        "[parameters('dataFactoryName')]"
+                    ]
+                },
+                {
+                    "name": "[concat(parameters('dataFactoryName'), '/LoadIntoOperationalTable_withSQL')]",
+                    "type": "Microsoft.DataFactory/factories/dataflows",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "type": "MappingDataFlow",
+                        "typeProperties": {
+                            "sources": [
+                                {
+                                    "dataset": {
+                                        "referenceName": "AzureSynapseAnalyticsStagingTable",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "sourceSynapseStagingTable"
+                                },
+                                {
+                                    "dataset": {
+                                        "referenceName": "SqlDbStaging",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "sourceSqlDbStaging"
+                                }
+                            ],
+                            "sinks": [
+                                {
+                                    "dataset": {
+                                        "referenceName": "SynapseOperationalTable_sink",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "SynapseOperationalTable"
+                                },
+                                {
+                                    "dataset": {
+                                        "referenceName": "SqlOperationalSink",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "SqlOperationalSink"
+                                }
+                            ],
+                            "transformations": [],
+                            "script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table',\n\tstaged: false) ~> sourceSynapseStagingTable\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> sourceSqlDbStaging\nsourceSynapseStagingTable sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tstaged: true,\n\tpostSQLs:['\\n'],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SynapseOperationalTable\nsourceSqlDbStaging sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SqlOperationalSink"
+                        }
+                    },
+                    "dependsOn": [
+                        "[concat(variables('factoryId'), '/datasets/ArmtemplateTestDatasetOut')]",
+                        "[concat(variables('factoryId'), '/datasets/AzureSynapseAnalyticsStagingTable')]",
+                        "[concat(variables('factoryId'), '/datasets/SqlDbStaging')]",
+                        "[parameters('dataFactoryName')]"
+                    ]
+                
+                },
+                {
+                    "type": "Microsoft.DataFactory/factories/pipelines",
+                    "apiVersion": "2018-06-01",
+                    "name": "[concat(parameters('dataFactoryName'), '/LoadToSynapse')]",
+                    "properties": {
+                        "activities": [
+                            {
+                                "name": "Copy latest data",
+                                "type": "Copy",
+                                "dependsOn": [],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 0,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "DelimitedTextSource",
+                                        "storeSettings": {
+                                            "type": "AzureBlobStorageReadSettings",
+                                            "recursive": true
+                                        },
+                                        "formatSettings": {
+                                            "type": "DelimitedTextReadSettings"
+                                        }
+                                    },
+                                    "sink": {
+                                        "type": "DelimitedTextSink",
+                                        "storeSettings": {
+                                            "type": "AzureBlobStorageWriteSettings"
+                                        },
+                                        "formatSettings": {
+                                            "type": "DelimitedTextWriteSettings",
+                                            "quoteAllText": true,
+                                            "fileExtension": ".txt"
+                                        }
+                                    },
+                                    "enableStaging": false,
+                                    "translator": {
+                                        "type": "TabularTranslator",
+                                        "typeConversion": true,
+                                        "typeConversionSettings": {
+                                            "allowDataTruncation": true,
+                                            "treatBooleanAsNumber": false
+                                        }
+                                    }
+                                },
+                                "inputs": [
+                                    {
+                                        "referenceName": "ArmtemplateTestDatasetIn",
+                                        "type": "DatasetReference"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "referenceName": "ArmtemplateTestDatasetOut",
+                                        "type": "DatasetReference"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "Verify Master Key",
+                                "type": "Lookup",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Copy latest data",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 0,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "SqlDWSource",
+                                        "sqlReaderQuery": "IF (select Count(*) from sys.symmetric_keys where name like '%DatabaseMasterKey%') = 0\n\nBEGIN\n\nCREATE master key ;\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND\nBEGIN\n\nCREATE master key ;\nselect Count(*) from sys.symmetric_keys;\nEND\n",
+                                        "queryTimeout": "02:00:00"
+                                    },
+                                    "dataset": {
+                                        "referenceName": "AzureSynapseAnalyticsStagingTable",
+                                        "type": "DatasetReference"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "LoadIntoStagingTable",
+                                "type": "ExecuteDataFlow",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Verify Master Key",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 0,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "dataflow": {
+                                        "referenceName": "LoadIntoStagingTable",
+                                        "type": "DataFlowReference",
+                                        "parameters": {},
+                                        "datasetParameters": {
+                                            "SourceCSV": {},
+                                            "SynapseStagingSink": {}
+                                        }
+                                    },
+                                    "staging": {
+                                        "linkedService": {
+                                            "referenceName": "ArmtemplateStorageLinkedService",
+                                            "type": "LinkedServiceReference"
+                                        },
+                                        "folderPath": "staging"
+                                    },
+                                    "compute": {
+                                        "coreCount": 8,
+                                        "computeType": "General"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "LoadIntoOperationalTable",
+                                "type": "ExecuteDataFlow",
+                                "dependsOn": [
+                                    {
+                                        "activity": "LoadIntoStagingTable",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 0,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "dataflow": {
+                                        "referenceName": "LoadIntoOperationalTable",
+                                        "type": "DataFlowReference",
+                                        "parameters": {},
+                                        "datasetParameters": {
+                                            "sourceSynapseStagingTable": {},
+                                            "SynapseOperationalTable": {}
+                                        }
+                                    },
+                                    "staging": {
+                                        "linkedService": {
+                                            "referenceName": "ArmtemplateStorageLinkedService",
+                                            "type": "LinkedServiceReference"
+                                        },
+                                        "folderPath": "staging"
+                                    },
+                                    "compute": {
+                                        "coreCount": 8,
+                                        "computeType": "General"
+                                    }
+                                }
+                            }
+                        ],
+                        "annotations": []
+                    },
+                    "dependsOn": [
+                        "[concat(variables('factoryId'), '/dataflows/LoadIntoStagingTable')]",
+                        "[concat(variables('factoryId'), '/dataflows/LoadIntoOperationalTable')]",
+                        "[parameters('dataFactoryName')]",
+                        "[concat(variables('factoryId'), '/datasets/ArmtemplateTestDatasetIn')]",
+                        "[concat(variables('factoryId'), '/datasets/ArmtemplateTestDatasetOut')]",
+                        "[concat(variables('factoryId'), '/datasets/AzureSynapseAnalyticsStagingTable')]",
+                        "[concat(variables('factoryId'), '/datasets/SynapseOperationalTable_sink')]"
+                        
+                    ]
+                
+                },
+                {
+                    "name": "[concat(parameters('dataFactoryName'), '/LoadToSynapseAndSQL')]",
+                    "type": "Microsoft.DataFactory/factories/pipelines",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "activities": [
+                            {
+                                "name": "Copy latest data",
+                                "type": "Copy",
+                                "dependsOn": [],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 0,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "DelimitedTextSource",
+                                        "storeSettings": {
+                                            "type": "AzureBlobStorageReadSettings",
+                                            "recursive": true
+                                        },
+                                        "formatSettings": {
+                                            "type": "DelimitedTextReadSettings"
+                                        }
+                                    },
+                                    "sink": {
+                                        "type": "DelimitedTextSink",
+                                        "storeSettings": {
+                                            "type": "AzureBlobStorageWriteSettings"
+                                        },
+                                        "formatSettings": {
+                                            "type": "DelimitedTextWriteSettings",
+                                            "quoteAllText": true,
+                                            "fileExtension": ".txt"
+                                        }
+                                    },
+                                    "enableStaging": false,
+                                    "translator": {
+                                        "type": "TabularTranslator",
+                                        "typeConversion": true,
+                                        "typeConversionSettings": {
+                                            "allowDataTruncation": true,
+                                            "treatBooleanAsNumber": false
+                                        }
+                                    }
+                                },
+                                "inputs": [
+                                    {
+                                        "referenceName": "ArmtemplateTestDatasetIn",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "referenceName": "ArmtemplateTestDatasetOut",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "Verify Master Key",
+                                "type": "Lookup",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Copy latest data",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 0,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "SqlDWSource",
+                                        "sqlReaderQuery": "IF (select Count(*) from sys.symmetric_keys where name like '%DatabaseMasterKey%') = 0\n\nBEGIN\n\nCREATE master key ;\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND\nBEGIN\n\nCREATE master key ;\nselect Count(*) from sys.symmetric_keys;\nEND\n",
+                                        "queryTimeout": "02:00:00"
+                                    },
+                                    "dataset": {
+                                        "referenceName": "AzureSynapseAnalyticsStagingTable",
+                                        "type": "DatasetReference"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "LoadIntoStagingTable_withSQL",
+                                "type": "ExecuteDataFlow",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Verify Master Key",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 0,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "dataflow": {
+                                        "referenceName": "LoadIntoStagingTable_withSQL",
+                                        "type": "DataFlowReference",
+                                        "parameters": {},
+                                        "datasetParameters": {
+                                            "SourceCSV": {},
+                                            "SynapseStagingSink": {},
+                                            "SQLStagingSink": {}
+                                        }
+                                    },
+                                    "staging": {
+                                        "linkedService": {
+                                            "referenceName": "ArmtemplateStorageLinkedService",
+                                            "type": "LinkedServiceReference"
+                                        },
+                                        "folderPath": "staging"
+                                    },
+                                    "compute": {
+                                        "coreCount": 8,
+                                        "computeType": "General"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "LoadIntoOperationalTable_withSQL",
+                                "type": "ExecuteDataFlow",
+                                "dependsOn": [
+                                    {
+                                        "activity": "LoadIntoStagingTable_withSQL",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 0,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "dataflow": {
+                                        "referenceName": "LoadIntoOperationalTable_withSQL",
+                                        "type": "DataFlowReference",
+                                        "parameters": {},
+                                        "datasetParameters": {
+                                            "sourceSynapseStagingTable": {},
+                                            "sourceSqlDbStaging": {},
+                                            "SynapseOperationalTable": {},
+                                            "SqlOperationalSink": {}
+                                        }
+                                    },
+                                    "staging": {
+                                        "linkedService": {
+                                            "referenceName": "ArmtemplateStorageLinkedService",
+                                            "type": "LinkedServiceReference"
+                                        },
+                                        "folderPath": "staging"
+                                    },
+                                    "compute": {
+                                        "coreCount": 8,
+                                        "computeType": "General"
+                                    }
+                                }
+                            }
+                        ],
+                        "annotations": []
+                    },
+                    "dependsOn": [
+                        "[concat(variables('factoryId'), '/datasets/ArmtemplateTestDatasetIn')]",
+                        "[concat(variables('factoryId'), '/datasets/ArmtemplateTestDatasetOut')]",
+                        "[parameters('dataFactoryName')]",
+                        "[concat(variables('factoryId'), '/dataflows/LoadIntoStagingTable_withSQL')]",
+                        "[concat(variables('factoryId'), '/linkedServices/ArmtemplateStorageLinkedService')]",
+                        "[concat(variables('factoryId'), '/dataflows/LoadIntoOperationalTable_withSQL')]"
+                    ]
+                }
+
+            ]
+        }
+    ],
+    "outputs": {
+    }
+}

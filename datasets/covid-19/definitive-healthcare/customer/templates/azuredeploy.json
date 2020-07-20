@@ -26,7 +26,7 @@
             "type": "string",
             "defaultValue": "covidtrackingdefinitive"
         },
-        "publicStorageAccountKey": {
+        "sasURI": {
             "type": "string"
         },
         "containerName1": {
@@ -37,7 +37,7 @@
             "defaultValue": "staging",
             "type": "string"
         },
-        "DBserverName": {
+        "sqlServerName": {
             "type": "string",
             "defaultValue": "democustomerdbserver",
             "metadata": {
@@ -51,14 +51,14 @@
                 "description": "Location for all resources."
             }
         },
-        "DBadministratorLogin": {
+        "sqlAdministratorLogin": {
             "type": "string",
             "defaultValue": "emumba",
             "metadata": {
                 "description": "Your login name must not contain a SQL Identifier or a typical system name (like admin, administrator, sa, root, dbmanager, loginmanager, etc.) or a built-in database user or role (like dbo, guest, public, etc.)"
             }
         },
-        "DBadministratorLoginPassword": {
+        "sqlAdministratorLoginPassword": {
             "type": "securestring",
             "defaultValue": "DemoCustomer2020!@#$",
             "metadata": {
@@ -73,7 +73,7 @@
                 "description": "Allow Azure services to access server."
             }
         },
-        "DBconnectionType": {
+        "sqlConnectionType": {
             "defaultValue": "Default",
             "allowedValues": [
                 "Default",
@@ -116,19 +116,12 @@
             "metadata": {
                 "description": "Data warehouse tier."
             }
-        },
-        "triggerStartTime": {
-            "type": "string",
-            "defaultValue": "[utcNow('u')]",
-            "metadata": {
-                "description": "Start time for the trigger."
-            }
         }
     },
     "variables": {
         "databaseCollation": "SQL_Latin1_General_CP1_CI_AS",
         "storageAccountUniqueName": "[toLower(concat(parameters('storageAccountName'), uniqueString(resourceGroup().id)))]",
-        "sqlServerUniqueName": "[concat(parameters('DBserverName'), uniqueString(resourceGroup().id))]",
+        "sqlServerUniqueName": "[concat(parameters('sqlServerName'), uniqueString(resourceGroup().id))]",
         "dataFactoryUniqueName": "[concat(parameters('dataFactoryName'), uniqueString(resourceGroup().id))]"
     },
     "resources": [
@@ -233,8 +226,8 @@
             "name": "[variables('sqlServerUniqueName')]",
             "location": "[parameters('location')]",
             "properties": {
-                "administratorLogin": "[parameters('DBadministratorLogin')]",
-                "administratorLoginPassword": "[parameters('DBadministratorLoginPassword')]",
+                "administratorLogin": "[parameters('sqlAdministratorLogin')]",
+                "administratorLoginPassword": "[parameters('sqlAdministratorLoginPassword')]",
                 "version": "12.0"
             },
             "resources": [
@@ -326,7 +319,7 @@
                         "typeProperties": {
                             "sasUri": {
                                 "type": "SecureString",
-                                "value": "https://covidtrackingdefinitive.blob.core.windows.net/?sv=2019-10-10&ss=bfqt&srt=sco&sp=rwdlacupx&se=2025-07-20T19:39:31Z&st=2020-07-20T11:39:31Z&spr=https&sig=ETbJ2zHLvxjXw4%2BShan5SUeP6g81oFh7nKGBDSpagbc%3D"
+                                "value": "[parameters('sasURI')]"
                             }
                         }
                     }
@@ -354,7 +347,7 @@
                         "annotations": [],
                         "type": "AzureSqlDW",
                         "typeProperties": {
-                            "connectionString": "[concat('integrated security=False;encrypt=True;connection timeout=30;data source=',variables('sqlServerUniqueName'),'.database.windows.net;initial catalog=',parameters('dataWarehouseName'),';user id=',parameters('DBadministratorLogin'),';Password=',parameters('DBadministratorLoginPassword'))]"
+                            "connectionString": "[concat('integrated security=False;encrypt=True;connection timeout=30;data source=',variables('sqlServerUniqueName'),'.database.windows.net;initial catalog=',parameters('dataWarehouseName'),';user id=',parameters('sqlAdministratorLogin'),';Password=',parameters('sqlAdministratorLoginPassword'))]"
                         }
                     },
                     "dependsOn": [
@@ -369,7 +362,7 @@
                         "annotations": [],
                         "type": "AzureSqlDW",
                         "typeProperties": {
-                            "connectionString": "[concat('integrated security=False;encrypt=True;connection timeout=30;data source=',variables('sqlServerUniqueName'),'.database.windows.net;initial catalog=',parameters('dataWarehouseName'),';user id=',parameters('DBadministratorLogin'), ';Password=', parameters('DBadministratorLoginPassword'))]"
+                            "connectionString": "[concat('integrated security=False;encrypt=True;connection timeout=30;data source=',variables('sqlServerUniqueName'),'.database.windows.net;initial catalog=',parameters('dataWarehouseName'),';user id=',parameters('sqlAdministratorLogin'), ';Password=', parameters('sqlAdministratorLoginPassword'))]"
                         }
                     },
                     "dependsOn": [
@@ -384,7 +377,7 @@
                         "annotations": [],
                         "type": "AzureSqlDatabase",
                         "typeProperties": {
-                            "connectionString": "[concat('data source=',variables('sqlServerUniqueName'),'.database.windows.net;integrated security=False;Server=tcp:',variables('sqlServerUniqueName'),'.database.windows.net,1433;Initial Catalog=',parameters('sqlDBName'),';Persist Security Info=False;User ID=',parameters('DBadministratorLogin'),';Password=',parameters('DBadministratorLoginPassword'),';MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;')]"
+                            "connectionString": "[concat('data source=',variables('sqlServerUniqueName'),'.database.windows.net;integrated security=False;Server=tcp:',variables('sqlServerUniqueName'),'.database.windows.net,1433;Initial Catalog=',parameters('sqlDBName'),';Persist Security Info=False;User ID=',parameters('sqlAdministratorLogin'),';Password=',parameters('sqlAdministratorLoginPassword'),';MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;')]"
                         }
                     },
                     "dependsOn": [
@@ -395,11 +388,15 @@
                     "type": "Microsoft.DataFactory/factories/datasets",
                     "apiVersion": "2018-06-01",
                     "name": "[concat(variables('dataFactoryUniqueName'), '/ArmtemplateTestDatasetIn')]",
+                   
                     "dependsOn": [
                         "[variables('dataFactoryUniqueName')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName')), '/linkedServices/publicStorageLinkedService')]"
                     ],
                     "properties": {
+                        "folder": {
+                            "name": "CovidDefinitiveHC/Sources"
+                        },
                         "linkedServiceName": {
                             "referenceName": "publicStorageLinkedService",
                             "type": "LinkedServiceReference"
@@ -430,6 +427,9 @@
                         "[concat(concat('Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName')), '/linkedServices/customerStorageLinkedService')]"
                     ],
                     "properties": {
+                        "folder": {
+                            "name": "CovidDefinitiveHC/Common"
+                        },
                         "linkedServiceName": {
                             "referenceName": "customerStorageLinkedService",
                             "type": "LinkedServiceReference"
@@ -455,6 +455,9 @@
                     "type": "Microsoft.DataFactory/factories/datasets",
                     "apiVersion": "2018-06-01",
                     "properties": {
+                        "folder": {
+                            "name": "CovidDefinitiveHC/Common"
+                        },
                         "linkedServiceName": {
                             "referenceName": "AzureSynapseAnalyticsStaging",
                             "type": "LinkedServiceReference"
@@ -477,6 +480,9 @@
                     "type": "Microsoft.DataFactory/factories/datasets",
                     "apiVersion": "2018-06-01",
                     "properties": {
+                        "folder": {
+                            "name": "CovidDefinitiveHC/Sinks"
+                        },
                         "linkedServiceName": {
                             "referenceName": "AzureSynapseOperational",
                             "type": "LinkedServiceReference"
@@ -499,6 +505,9 @@
                     "type": "Microsoft.DataFactory/factories/datasets",
                     "apiVersion": "2018-06-01",
                     "properties": {
+                        "folder": {
+                            "name": "CovidDefinitiveHC/Common"
+                        },
                         "linkedServiceName": {
                             "referenceName": "AzureSqlDatabase",
                             "type": "LinkedServiceReference"
@@ -521,6 +530,9 @@
                     "type": "Microsoft.DataFactory/factories/datasets",
                     "apiVersion": "2018-06-01",
                     "properties": {
+                        "folder": {
+                            "name": "CovidDefinitiveHC/Sinks"
+                        },
                         "linkedServiceName": {
                             "referenceName": "AzureSqlDatabase",
                             "type": "LinkedServiceReference"
@@ -543,6 +555,9 @@
                     "type": "Microsoft.DataFactory/factories/dataflows",
                     "apiVersion": "2018-06-01",
                     "properties": {
+                        "folder": {
+                            "name": "CovidDefinitiveHC"
+                        },
                         "type": "MappingDataFlow",
                         "typeProperties": {
                             "sources": [
@@ -578,6 +593,9 @@
                     "type": "Microsoft.DataFactory/factories/dataflows",
                     "apiVersion": "2018-06-01",
                     "properties": {
+                        "folder": {
+                            "name": "CovidDefinitiveHC"
+                        },
                         "type": "MappingDataFlow",
                         "typeProperties": {
                             "sources": [
@@ -613,6 +631,9 @@
                     "type": "Microsoft.DataFactory/factories/dataflows",
                     "apiVersion": "2018-06-01",
                     "properties": {
+                        "folder": {
+                            "name": "CovidDefinitiveHC"
+                        },
                         "type": "MappingDataFlow",
                         "typeProperties": {
                             "sources": [
@@ -656,6 +677,9 @@
                     "type": "Microsoft.DataFactory/factories/dataflows",
                     "apiVersion": "2018-06-01",
                     "properties": {
+                        "folder": {
+                            "name": "CovidDefinitiveHC"
+                        },
                         "type": "MappingDataFlow",
                         "typeProperties": {
                             "sources": [
@@ -706,6 +730,9 @@
                     "apiVersion": "2018-06-01",
                     "name": "[concat(variables('dataFactoryUniqueName'), '/definitiveHCLoadToSynapse')]",
                     "properties": {
+                        "folder": {
+                            "name": "CovidDefinitiveHC"
+                        },
                         "activities": [
                             {
                                 "name": "Copy latest data",
@@ -899,6 +926,9 @@
                     "type": "Microsoft.DataFactory/factories/pipelines",
                     "apiVersion": "2018-06-01",
                     "properties": {
+                        "folder": {
+                            "name": "CovidDefinitiveHC"
+                        },
                         "activities": [
                             {
                                 "name": "Copy latest data",
@@ -1089,76 +1119,6 @@
                         "[concat(concat('Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName')), '/dataflows/LoadIntoStagingTable_withSQL')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName')), '/linkedServices/customerStorageLinkedService')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName')), '/dataflows/LoadIntoOperationalTable_withSQL')]"
-                    ]
-                },
-                {  
-                    "name":"[concat(variables('dataFactoryUniqueName'), '/definitiveHCPipelineLoadToSynapseTrigger')]",
-                    "type":"Microsoft.DataFactory/factories/triggers",
-                    "apiVersion":"2018-06-01",
-                    "properties": {
-                        "annotations": [],
-                        "runtimeState": "Started",
-                        "pipeline": {
-                            "pipelineReference": {
-                                "referenceName": "definitiveHCLoadToSynapse",
-                                "type": "PipelineReference"
-                            }
-                        },
-                        "type": "TumblingWindowTrigger",
-                        "typeProperties": {
-                            "frequency": "Minute",
-                            "interval": 15,
-                            "startTime": "[parameters('triggerStartTime')]",
-                            "delay": "00:00:00",
-                            "maxConcurrency": 1,
-                            "retryPolicy": {
-                                "count": 3,
-                                "intervalInSeconds": 30
-                            },
-                            "dependsOn": [
-                                "[variables('dataFactoryUniqueName')]",
-                                "[concat(concat('Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName')), '/pipelines/definitiveHCLoadToSynapse')]"
-                            ]
-                        }
-                    },
-                    "dependsOn":[  
-                        "[variables('dataFactoryUniqueName')]",
-                        "[concat(concat('Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName')), '/pipelines/definitiveHCLoadToSynapse')]"
-                    ]
-                },
-                {  
-                    "name":"[concat(variables('dataFactoryUniqueName'), '/definitiveHCPipelineLoadToSynapseWithSQLTrigger')]",
-                    "type":"Microsoft.DataFactory/factories/triggers",
-                    "apiVersion":"2018-06-01",
-                    "properties": {
-                        "annotations": [],
-                        "runtimeState": "Started",
-                        "pipeline": {
-                            "pipelineReference": {
-                                "referenceName": "definitiveHCLoadToSynapseAndSQL",
-                                "type": "PipelineReference"
-                            }
-                        },
-                        "type": "TumblingWindowTrigger",
-                        "typeProperties": {
-                            "frequency": "Minute",
-                            "interval": 15,
-                            "startTime": "[parameters('triggerStartTime')]",
-                            "delay": "00:00:00",
-                            "maxConcurrency": 1,
-                            "retryPolicy": {
-                                "count": 3,
-                                "intervalInSeconds": 30
-                            },
-                            "dependsOn": [
-                                "[variables('dataFactoryUniqueName')]",
-                                "[concat(concat('Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName')), '/pipelines/definitiveHCLoadToSynapseAndSQL')]"
-                            ]
-                        }
-                    },
-                    "dependsOn":[  
-                        "[variables('dataFactoryUniqueName')]",
-                        "[concat(concat('Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName')), '/pipelines/definitiveHCLoadToSynapseAndSQL')]"
                     ]
                 }
             ]

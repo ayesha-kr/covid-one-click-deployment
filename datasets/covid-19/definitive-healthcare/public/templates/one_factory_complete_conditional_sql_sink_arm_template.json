@@ -11,7 +11,7 @@
         "storageAccountName": {
             "type": "string",
             "metadata": {
-                "description": "The name you provide will be appended with a unique sting to make it globally available. The field can contain only lowercase letters and numbers. Name must be between 3 and 11 characters."
+                "description": "The name you provide will be appended with a unique sting to make it globally available. The field can contain only lowercase letters and numbers. Name must be between 1 and 11 characters."
             }
         },
         "location": {
@@ -34,7 +34,7 @@
         "serverName": {
             "type": "string",
             "metadata": {
-                "description": "The name you provide will be appended with a unique sting to make it globally available. Your server name can contain only lowercase letters, numbers, and '-', but can't start or end with '-' or have more than 63 characters."
+                "description": "The name you provide will be appended with a unique sting to make it globally available. Your server name can contain only lowercase letters, numbers, and '-', but can't start or end with '-' or have more than 50 characters."
             },
             "defaultValue": "Specify SQL server name if selected 'Yes'"
         },

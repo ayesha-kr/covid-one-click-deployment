@@ -4,18 +4,23 @@
     "parameters": {
         "dataFactoryName": {
             "type": "string",
-            "defaultValue": "demoCustomerADF"
+            "defaultValue": "demoCustomerADF",
+            "metadata": {
+                "description": "The name you provide will be appended with a unique sting to make it globally available. The name can contain only letters, numbers and hyphens. The first and last characters must be a letter or number. Spaces are not allowed."
+            }
         },
         "dataFactoryLocation": {
             "defaultValue": "East US",
             "type": "string",
             "metadata": {
-                "description": "Location of the data factory. Currently, only East US, East US 2, and West Europe are supported. "
             }
         },
         "storageAccountName": {
-            "defaultValue": "democustomerenvsa",
-            "type": "string"
+            "defaultValue": "demoenvsa",
+            "type": "string",
+            "metadata": {
+                "description": "The name you provide will be appended with a unique sting to make it globally available. The field can contain only lowercase letters and numbers. Name must be between 1 and 11 characters."
+            }
         },
         "publicStorageAccountName": {
             "type": "string",
@@ -36,7 +41,7 @@
             "type": "string",
             "defaultValue": "democustomerdbserver",
             "metadata": {
-                "description": "The name of the SQL logical server."
+                "description": "The name you provide will be appended with a unique sting to make it globally available. Your server name can contain only lowercase letters, numbers, and '-', but can't start or end with '-' or have more than 49 characters."
             }
         },
         "location": {
@@ -50,14 +55,15 @@
             "type": "string",
             "defaultValue": "emumba",
             "metadata": {
-                "description": "The administrator username of the SQL logical server."
+                "description": "Your login name must not contain a SQL Identifier or a typical system name (like admin, administrator, sa, root, dbmanager, loginmanager, etc.) or a built-in database user or role (like dbo, guest, public, etc.)"
             }
         },
         "DBadministratorLoginPassword": {
             "type": "securestring",
             "defaultValue": "DemoCustomer2020!@#$",
             "metadata": {
-                "description": "The administrator password of the SQL logical server."
+                "description": "Your password must be at least 8 characters in length. Your password must contain characters from three of the following categories – English uppercase letters, English lowercase letters, numbers (0-9), and non-alphanumeric characters (!, $, #, %, etc.) Your password cannot contain all or part of the login name. Part of a login name is defined as three or more consecutive alphanumeric characters."
+                
             }
         },
         "allowAzureIPs": {
@@ -83,45 +89,53 @@
             "type": "string",
             "defaultValue": "democustomersqldb",
             "metadata": {
-              "description": "The name of the SQL Database."
+                "description": "Value should not match special patterns. It should contain a length of maximum of 128."
             }
-          },
-          "dataWarehouseName": {
+        },
+        "dataWarehouseName": {
             "type": "string",
             "defaultValue": "democustomerdw",
             "metadata": {
-              "description": "The name of the Data Warehouse."
+                "description": "Value should not match special patterns. It should contain a length of maximum of 128."
             }
-          },
-          "transparentDataEncryption": {
+        },
+        "transparentDataEncryption": {
             "defaultValue": "Enabled",
             "type": "string",
             "allowedValues": [
-              "Enabled",
-              "Disabled"
+                "Enabled",
+                "Disabled"
             ],
             "metadata": {
-              "description": "Enable/Disable Transparent Data Encryption"
+                "description": "Enable/Disable Transparent Data Encryption"
             }
-          },
-          "serviceLevelObjective": {
+        },
+        "serviceLevelObjective": {
             "defaultValue": "DW100c",
             "type": "string",
             "metadata": {
-              "description": "Performance Level"
+                "description": "Data warehouse tier."
             }
-          }
+        },
+        "triggerStartTime": {
+            "type": "string",
+            "defaultValue": "[utcNow('u')]",
+            "metadata": {
+                "description": "Start time for the trigger."
+            }
+        }
     },
     "variables": {
-        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]",
-        "storageAccountId": "[concat(resourceGroup().id,'/providers/Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))]",
-        "databaseCollation": "SQL_Latin1_General_CP1_CI_AS"
+        "databaseCollation": "SQL_Latin1_General_CP1_CI_AS",
+        "storageAccountUniqueName": "[toLower(concat(parameters('storageAccountName'), uniqueString(resourceGroup().id)))]",
+        "sqlServerUniqueName": "[concat(parameters('DBserverName'), uniqueString(resourceGroup().id))]",
+        "dataFactoryUniqueName": "[concat(parameters('dataFactoryName'), uniqueString(resourceGroup().id))]"
     },
     "resources": [
         {
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2019-06-01",
-            "name": "[parameters('storageAccountName')]",
+            "name": "[variables('storageAccountUniqueName')]",
             "location": "[parameters('location')]",
             "sku": {
                 "name": "Standard_LRS",
@@ -155,9 +169,9 @@
         {
             "type": "Microsoft.Storage/storageAccounts/blobServices",
             "apiVersion": "2019-06-01",
-            "name": "[concat(parameters('storageAccountName'), '/default')]",
+            "name": "[concat(variables('storageAccountUniqueName'), '/default')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountUniqueName'))]"
             ],
             "sku": {
                 "name": "Standard_LRS",
@@ -175,9 +189,9 @@
         {
             "type": "Microsoft.Storage/storageAccounts/fileServices",
             "apiVersion": "2019-06-01",
-            "name": "[concat(parameters('storageAccountName'), '/default')]",
+            "name": "[concat(variables('storageAccountUniqueName'), '/default')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountUniqueName'))]"
             ],
             "sku": {
                 "name": "Standard_LRS",
@@ -192,10 +206,10 @@
         {
             "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
             "apiVersion": "2019-06-01",
-            "name": "[concat(parameters('storageAccountName'), '/default/',parameters('containerName1'))]",
+            "name": "[concat(variables('storageAccountUniqueName'), '/default/',parameters('containerName1'))]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccountName'), 'default')]",
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', variables('storageAccountUniqueName'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountUniqueName'))]"
             ],
             "properties": {
                 "publicAccess": "None"
@@ -204,10 +218,10 @@
         {
             "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
             "apiVersion": "2019-06-01",
-            "name": "[concat(parameters('storageAccountName'), '/default/',parameters('containerName2'))]",
+            "name": "[concat(variables('storageAccountUniqueName'), '/default/',parameters('containerName2'))]",
             "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccountName'), 'default')]",
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', variables('storageAccountUniqueName'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountUniqueName'))]"
             ],
             "properties": {
                 "publicAccess": "None"
@@ -216,7 +230,7 @@
         {
             "type": "Microsoft.Sql/servers",
             "apiVersion": "2015-05-01-preview",
-            "name": "[parameters('DBserverName')]",
+            "name": "[variables('sqlServerUniqueName')]",
             "location": "[parameters('location')]",
             "properties": {
                 "administratorLogin": "[parameters('DBadministratorLogin')]",
@@ -238,7 +252,7 @@
                         "collation": "[variables('databaseCollation')]"
                     },
                     "dependsOn": [
-                        "[resourceId('Microsoft.Sql/servers', concat(parameters('DBserverName')))]"
+                        "[resourceId('Microsoft.Sql/servers', concat(variables('sqlServerUniqueName')))]"
                     ]
                 },
                 {
@@ -248,7 +262,7 @@
                     "name": "AllowAllWindowsAzureIps",
                     "location": "[parameters('location')]",
                     "dependsOn": [
-                        "[resourceId('Microsoft.Sql/servers', parameters('DBserverName'))]"
+                        "[resourceId('Microsoft.Sql/servers', variables('sqlServerUniqueName'))]"
                     ],
                     "properties": {
                         "endIpAddress": "0.0.0.0",
@@ -262,38 +276,38 @@
                     "apiVersion": "2015-05-01-preview",
                     "location": "[parameters('location')]",
                     "properties": {
-                      "edition": "DataWarehouse",
-                      "status": "Online",
-                      "requestedServiceObjectiveName": "[parameters('serviceLevelObjective')]",
-                      "collation": "SQL_Latin1_General_CP1_CI_AS",
-                      "readScale": "Disabled",
-                      "zoneRedundant": false,
-                      "isUpgradeRequested": false
+                        "edition": "DataWarehouse",
+                        "status": "Online",
+                        "requestedServiceObjectiveName": "[parameters('serviceLevelObjective')]",
+                        "collation": "SQL_Latin1_General_CP1_CI_AS",
+                        "readScale": "Disabled",
+                        "zoneRedundant": false,
+                        "isUpgradeRequested": false
                     },
                     "dependsOn": [
-                      "[parameters('DBserverName')]"
+                        "[variables('sqlServerUniqueName')]"
                     ],
                     "resources": [
-                      {
-                        "comments": "Transparent Data Encryption",
-                        "name": "current",
-                        "type": "transparentDataEncryption",
-                        "apiVersion": "2017-03-01-preview",
-                        "properties": {
-                          "status": "[parameters('transparentDataEncryption')]"
-                        },
-                        "dependsOn": [
-                          "[parameters('dataWarehouseName')]"
-                        ]
-                      }
+                        {
+                            "comments": "Transparent Data Encryption",
+                            "name": "current",
+                            "type": "transparentDataEncryption",
+                            "apiVersion": "2017-03-01-preview",
+                            "properties": {
+                                "status": "[parameters('transparentDataEncryption')]"
+                            },
+                            "dependsOn": [
+                                "[parameters('dataWarehouseName')]"
+                            ]
+                        }
                     ]
-                  }
+                }
             ]
         },
         {
             "type": "Microsoft.DataFactory/factories",
             "apiVersion": "2018-06-01",
-            "name": "[parameters('dataFactoryName')]",
+            "name": "[variables('dataFactoryUniqueName')]",
             "location": "[parameters('dataFactoryLocation')]",
             "identity": {
                 "type": "SystemAssigned"
@@ -302,74 +316,92 @@
                 {
                     "type": "Microsoft.DataFactory/factories/linkedServices",
                     "apiVersion": "2018-06-01",
-                    "name": "[concat(parameters('dataFactoryName'), '/ArmtemplateStorageLinkedService')]",
+                    "name": "[concat(variables('dataFactoryUniqueName'), '/publicStorageLinkedService')]",
                     "dependsOn": [
-                        "[parameters('dataFactoryName')]"
+                        "[variables('dataFactoryUniqueName')]"
                     ],
                     "properties": {
                         "annotations": [],
                         "type": "AzureBlobStorage",
                         "typeProperties": {
-                            "connectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('publicStorageAccountName'),';AccountKey=',parameters('publicStorageAccountKey'),';EndpointSuffix=core.windows.net')]"
+                            "sasUri": {
+                                "type": "SecureString",
+                                "value": "https://covidtrackingdefinitive.blob.core.windows.net/?sv=2019-10-10&ss=bfqt&srt=sco&sp=rwdlacupx&se=2025-07-20T19:39:31Z&st=2020-07-20T11:39:31Z&spr=https&sig=ETbJ2zHLvxjXw4%2BShan5SUeP6g81oFh7nKGBDSpagbc%3D"
+                            }
                         }
                     }
                 },
                 {
-                    "name": "[concat(parameters('dataFactoryName'), '/AzureSynapseAnalyticsStaging')]",
+                    "type": "Microsoft.DataFactory/factories/linkedServices",
+                    "apiVersion": "2018-06-01",
+                    "name": "[concat(variables('dataFactoryUniqueName'), '/customerStorageLinkedService')]",
+                    "dependsOn": [
+						"[variables('dataFactoryUniqueName')]",
+						"[variables('storageAccountUniqueName')]"
+					],
+					"properties": {
+						"type": "AzureBlobStorage",
+						"typeProperties": {
+							"connectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountUniqueName'),';AccountKey=',listKeys(concat(resourceGroup().id,'/providers/Microsoft.Storage/storageAccounts/', variables('storageAccountUniqueName')), '2019-06-01').keys[0].value)]"
+						}
+					}
+				},
+                {
+                    "name": "[concat(variables('dataFactoryUniqueName'), '/AzureSynapseAnalyticsStaging')]",
                     "type": "Microsoft.DataFactory/factories/linkedServices",
                     "apiVersion": "2018-06-01",
                     "properties": {
                         "annotations": [],
                         "type": "AzureSqlDW",
                         "typeProperties": {
-                            "connectionString": "[concat('integrated security=False;encrypt=True;connection timeout=30;data source=',parameters('DBserverName'),'.database.windows.net;initial catalog=',parameters('dataWarehouseName'),';user id=',parameters('DBadministratorLogin'),';Password=',parameters('DBadministratorLoginPassword'))]"
+                            "connectionString": "[concat('integrated security=False;encrypt=True;connection timeout=30;data source=',variables('sqlServerUniqueName'),'.database.windows.net;initial catalog=',parameters('dataWarehouseName'),';user id=',parameters('DBadministratorLogin'),';Password=',parameters('DBadministratorLoginPassword'))]"
                         }
                     },
                     "dependsOn": [
-                        "[parameters('dataFactoryName')]"
+                        "[variables('dataFactoryUniqueName')]"
                     ]
                 },
                 {
-                    "name": "[concat(parameters('dataFactoryName'), '/AzureSynapseOperational')]",
+                    "name": "[concat(variables('dataFactoryUniqueName'), '/AzureSynapseOperational')]",
                     "type": "Microsoft.DataFactory/factories/linkedServices",
                     "apiVersion": "2018-06-01",
                     "properties": {
                         "annotations": [],
                         "type": "AzureSqlDW",
                         "typeProperties": {
-                            "connectionString": "[concat('integrated security=False;encrypt=True;connection timeout=30;data source=',parameters('DBserverName'),'.database.windows.net;initial catalog=',parameters('dataWarehouseName'),';user id=',parameters('DBadministratorLogin'), ';Password=', parameters('DBadministratorLoginPassword'))]"
+                            "connectionString": "[concat('integrated security=False;encrypt=True;connection timeout=30;data source=',variables('sqlServerUniqueName'),'.database.windows.net;initial catalog=',parameters('dataWarehouseName'),';user id=',parameters('DBadministratorLogin'), ';Password=', parameters('DBadministratorLoginPassword'))]"
                         }
                     },
                     "dependsOn": [
-                        "[parameters('dataFactoryName')]"
+                        "[variables('dataFactoryUniqueName')]"
                     ]
                 },
                 {
-                    "name": "[concat(parameters('dataFactoryName'), '/AzureSqlDatabase')]",
+                    "name": "[concat(variables('dataFactoryUniqueName'), '/AzureSqlDatabase')]",
                     "type": "Microsoft.DataFactory/factories/linkedServices",
                     "apiVersion": "2018-06-01",
                     "properties": {
                         "annotations": [],
                         "type": "AzureSqlDatabase",
                         "typeProperties": {
-                            "connectionString": "[concat('data source=',parameters('DBserverName'),'.database.windows.net;integrated security=False;Server=tcp:',parameters('DBserverName'),'.database.windows.net,1433;Initial Catalog=',parameters('sqlDBName'),';Persist Security Info=False;User ID=',parameters('DBadministratorLogin'),';Password=',parameters('DBadministratorLoginPassword'),';MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;')]"
+                            "connectionString": "[concat('data source=',variables('sqlServerUniqueName'),'.database.windows.net;integrated security=False;Server=tcp:',variables('sqlServerUniqueName'),'.database.windows.net,1433;Initial Catalog=',parameters('sqlDBName'),';Persist Security Info=False;User ID=',parameters('DBadministratorLogin'),';Password=',parameters('DBadministratorLoginPassword'),';MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;')]"
                         }
                     },
                     "dependsOn": [
-                        "[parameters('dataFactoryName')]"
+                        "[variables('dataFactoryUniqueName')]"
                     ]
                 },
                 {
                     "type": "Microsoft.DataFactory/factories/datasets",
                     "apiVersion": "2018-06-01",
-                    "name": "[concat(parameters('dataFactoryName'), '/ArmtemplateTestDatasetIn')]",
+                    "name": "[concat(variables('dataFactoryUniqueName'), '/ArmtemplateTestDatasetIn')]",
                     "dependsOn": [
-                        "[parameters('dataFactoryName')]",
-                        "[concat(variables('factoryId'), '/linkedServices/ArmtemplateStorageLinkedService')]"
+                        "[variables('dataFactoryUniqueName')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName')), '/linkedServices/publicStorageLinkedService')]"
                     ],
                     "properties": {
                         "linkedServiceName": {
-                            "referenceName": "ArmtemplateStorageLinkedService",
+                            "referenceName": "publicStorageLinkedService",
                             "type": "LinkedServiceReference"
                         },
                         "annotations": [],
@@ -392,14 +424,14 @@
                 {
                     "type": "Microsoft.DataFactory/factories/datasets",
                     "apiVersion": "2018-06-01",
-                    "name": "[concat(parameters('dataFactoryName'), '/ArmtemplateTestDatasetOut')]",
+                    "name": "[concat(variables('dataFactoryUniqueName'), '/ArmtemplateTestDatasetOut')]",
                     "dependsOn": [
-                        "[parameters('dataFactoryName')]",
-                        "[concat(variables('factoryId'), '/linkedServices/ArmtemplateStorageLinkedService')]"
+                        "[variables('dataFactoryUniqueName')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName')), '/linkedServices/customerStorageLinkedService')]"
                     ],
                     "properties": {
                         "linkedServiceName": {
-                            "referenceName": "ArmtemplateStorageLinkedService",
+                            "referenceName": "customerStorageLinkedService",
                             "type": "LinkedServiceReference"
                         },
                         "annotations": [],
@@ -417,9 +449,9 @@
                         },
                         "schema": []
                     }
-                },  
+                },
                 {
-                    "name": "[concat(parameters('dataFactoryName'), '/AzureSynapseAnalyticsStagingTable')]",
+                    "name": "[concat(variables('dataFactoryUniqueName'), '/AzureSynapseAnalyticsStagingTable')]",
                     "type": "Microsoft.DataFactory/factories/datasets",
                     "apiVersion": "2018-06-01",
                     "properties": {
@@ -436,12 +468,12 @@
                         }
                     },
                     "dependsOn": [
-                        "[parameters('dataFactoryName')]",
-                        "[concat(variables('factoryId'), '/linkedServices/AzureSynapseAnalyticsStaging')]"
+                        "[variables('dataFactoryUniqueName')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName')), '/linkedServices/AzureSynapseAnalyticsStaging')]"
                     ]
                 },
                 {
-                    "name": "[concat(parameters('dataFactoryName'), '/SynapseOperationalTable_sink')]",
+                    "name": "[concat(variables('dataFactoryUniqueName'), '/SynapseOperationalTable_sink')]",
                     "type": "Microsoft.DataFactory/factories/datasets",
                     "apiVersion": "2018-06-01",
                     "properties": {
@@ -458,12 +490,12 @@
                         }
                     },
                     "dependsOn": [
-                        "[parameters('dataFactoryName')]",
-                        "[concat(variables('factoryId'), '/linkedServices/AzureSynapseOperational')]"
+                        "[variables('dataFactoryUniqueName')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName')), '/linkedServices/AzureSynapseOperational')]"
                     ]
                 },
                 {
-                    "name": "[concat(parameters('dataFactoryName'), '/SqlDbStaging')]",
+                    "name": "[concat(variables('dataFactoryUniqueName'), '/SqlDbStaging')]",
                     "type": "Microsoft.DataFactory/factories/datasets",
                     "apiVersion": "2018-06-01",
                     "properties": {
@@ -480,12 +512,12 @@
                         }
                     },
                     "dependsOn": [
-                        "[parameters('dataFactoryName')]",
-                        "[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase')]"
+                        "[variables('dataFactoryUniqueName')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName')), '/linkedServices/AzureSqlDatabase')]"
                     ]
                 },
                 {
-                    "name": "[concat(parameters('dataFactoryName'), '/SqlOperationalSink')]",
+                    "name": "[concat(variables('dataFactoryUniqueName'), '/SqlOperationalSink')]",
                     "type": "Microsoft.DataFactory/factories/datasets",
                     "apiVersion": "2018-06-01",
                     "properties": {
@@ -502,12 +534,12 @@
                         }
                     },
                     "dependsOn": [
-                        "[parameters('dataFactoryName')]",
-                        "[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase')]"
+                        "[variables('dataFactoryUniqueName')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName')), '/linkedServices/AzureSqlDatabase')]"
                     ]
                 },
                 {
-                    "name": "[concat(parameters('dataFactoryName'), '/LoadIntoStagingTable')]",
+                    "name": "[concat(variables('dataFactoryUniqueName'), '/LoadIntoStagingTable')]",
                     "type": "Microsoft.DataFactory/factories/dataflows",
                     "apiVersion": "2018-06-01",
                     "properties": {
@@ -536,13 +568,13 @@
                         }
                     },
                     "dependsOn": [
-                        "[parameters('dataFactoryName')]",
-                        "[concat(variables('factoryId'), '/datasets/ArmtemplateTestDatasetOut')]",
-                        "[concat(variables('factoryId'), '/datasets/AzureSynapseAnalyticsStagingTable')]"
+                        "[variables('dataFactoryUniqueName')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName')), '/datasets/ArmtemplateTestDatasetOut')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName')), '/datasets/AzureSynapseAnalyticsStagingTable')]"
                     ]
                 },
                 {
-                    "name": "[concat(parameters('dataFactoryName'), '/LoadIntoOperationalTable')]",
+                    "name": "[concat(variables('dataFactoryUniqueName'), '/LoadIntoOperationalTable')]",
                     "type": "Microsoft.DataFactory/factories/dataflows",
                     "apiVersion": "2018-06-01",
                     "properties": {
@@ -571,13 +603,13 @@
                         }
                     },
                     "dependsOn": [
-                        "[parameters('dataFactoryName')]",
-                        "[concat(variables('factoryId'), '/datasets/AzureSynapseAnalyticsStagingTable')]",
-                        "[concat(variables('factoryId'), '/datasets/SynapseOperationalTable_sink')]"
+                        "[variables('dataFactoryUniqueName')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName')), '/datasets/AzureSynapseAnalyticsStagingTable')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName')), '/datasets/SynapseOperationalTable_sink')]"
                     ]
                 },
                 {
-                    "name": "[concat(parameters('dataFactoryName'), '/LoadIntoStagingTable_withSQL')]",
+                    "name": "[concat(variables('dataFactoryUniqueName'), '/LoadIntoStagingTable_withSQL')]",
                     "type": "Microsoft.DataFactory/factories/dataflows",
                     "apiVersion": "2018-06-01",
                     "properties": {
@@ -613,14 +645,14 @@
                         }
                     },
                     "dependsOn": [
-                        "[concat(variables('factoryId'), '/datasets/ArmtemplateTestDatasetOut')]",
-                        "[concat(variables('factoryId'), '/datasets/AzureSynapseAnalyticsStagingTable')]",
-                        "[concat(variables('factoryId'), '/datasets/SqlDbStaging')]",
-                        "[parameters('dataFactoryName')]"
+                        "[concat(concat('Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName')), '/datasets/ArmtemplateTestDatasetOut')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName')), '/datasets/AzureSynapseAnalyticsStagingTable')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName')), '/datasets/SqlDbStaging')]",
+                        "[variables('dataFactoryUniqueName')]"
                     ]
                 },
                 {
-                    "name": "[concat(parameters('dataFactoryName'), '/LoadIntoOperationalTable_withSQL')]",
+                    "name": "[concat(variables('dataFactoryUniqueName'), '/LoadIntoOperationalTable_withSQL')]",
                     "type": "Microsoft.DataFactory/factories/dataflows",
                     "apiVersion": "2018-06-01",
                     "properties": {
@@ -663,17 +695,16 @@
                         }
                     },
                     "dependsOn": [
-                        "[concat(variables('factoryId'), '/datasets/ArmtemplateTestDatasetOut')]",
-                        "[concat(variables('factoryId'), '/datasets/AzureSynapseAnalyticsStagingTable')]",
-                        "[concat(variables('factoryId'), '/datasets/SqlDbStaging')]",
-                        "[parameters('dataFactoryName')]"
+                        "[concat(concat('Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName')), '/datasets/ArmtemplateTestDatasetOut')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName')), '/datasets/AzureSynapseAnalyticsStagingTable')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName')), '/datasets/SqlDbStaging')]",
+                        "[variables('dataFactoryUniqueName')]"
                     ]
-                
                 },
                 {
                     "type": "Microsoft.DataFactory/factories/pipelines",
                     "apiVersion": "2018-06-01",
-                    "name": "[concat(parameters('dataFactoryName'), '/LoadToSynapse')]",
+                    "name": "[concat(variables('dataFactoryUniqueName'), '/definitiveHCLoadToSynapse')]",
                     "properties": {
                         "activities": [
                             {
@@ -682,7 +713,7 @@
                                 "dependsOn": [],
                                 "policy": {
                                     "timeout": "7.00:00:00",
-                                    "retry": 0,
+                                    "retry": 3,
                                     "retryIntervalInSeconds": 30,
                                     "secureOutput": false,
                                     "secureInput": false
@@ -746,7 +777,7 @@
                                 ],
                                 "policy": {
                                     "timeout": "7.00:00:00",
-                                    "retry": 0,
+                                    "retry": 3,
                                     "retryIntervalInSeconds": 30,
                                     "secureOutput": false,
                                     "secureInput": false
@@ -773,11 +804,12 @@
                                         "dependencyConditions": [
                                             "Succeeded"
                                         ]
-                                    }
+                                    },
+                                    "[concat(concat('Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName')), '/linkedServices/customerStorageLinkedService')]"
                                 ],
                                 "policy": {
                                     "timeout": "7.00:00:00",
-                                    "retry": 0,
+                                    "retry": 3,
                                     "retryIntervalInSeconds": 30,
                                     "secureOutput": false,
                                     "secureInput": false
@@ -795,7 +827,7 @@
                                     },
                                     "staging": {
                                         "linkedService": {
-                                            "referenceName": "ArmtemplateStorageLinkedService",
+                                            "referenceName": "customerStorageLinkedService",
                                             "type": "LinkedServiceReference"
                                         },
                                         "folderPath": "staging"
@@ -815,11 +847,12 @@
                                         "dependencyConditions": [
                                             "Succeeded"
                                         ]
-                                    }
+                                    }, 
+                                    "[concat(concat('Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName')), '/linkedServices/customerStorageLinkedService')]"
                                 ],
                                 "policy": {
                                     "timeout": "7.00:00:00",
-                                    "retry": 0,
+                                    "retry": 3,
                                     "retryIntervalInSeconds": 30,
                                     "secureOutput": false,
                                     "secureInput": false
@@ -837,7 +870,7 @@
                                     },
                                     "staging": {
                                         "linkedService": {
-                                            "referenceName": "ArmtemplateStorageLinkedService",
+                                            "referenceName": "customerStorageLinkedService",
                                             "type": "LinkedServiceReference"
                                         },
                                         "folderPath": "staging"
@@ -852,19 +885,17 @@
                         "annotations": []
                     },
                     "dependsOn": [
-                        "[concat(variables('factoryId'), '/dataflows/LoadIntoStagingTable')]",
-                        "[concat(variables('factoryId'), '/dataflows/LoadIntoOperationalTable')]",
-                        "[parameters('dataFactoryName')]",
-                        "[concat(variables('factoryId'), '/datasets/ArmtemplateTestDatasetIn')]",
-                        "[concat(variables('factoryId'), '/datasets/ArmtemplateTestDatasetOut')]",
-                        "[concat(variables('factoryId'), '/datasets/AzureSynapseAnalyticsStagingTable')]",
-                        "[concat(variables('factoryId'), '/datasets/SynapseOperationalTable_sink')]"
-                        
+                        "[concat(concat('Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName')), '/dataflows/LoadIntoStagingTable')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName')), '/dataflows/LoadIntoOperationalTable')]",
+                        "[variables('dataFactoryUniqueName')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName')), '/datasets/ArmtemplateTestDatasetIn')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName')), '/datasets/ArmtemplateTestDatasetOut')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName')), '/datasets/AzureSynapseAnalyticsStagingTable')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName')), '/datasets/SynapseOperationalTable_sink')]"
                     ]
-                
                 },
                 {
-                    "name": "[concat(parameters('dataFactoryName'), '/LoadToSynapseAndSQL')]",
+                    "name": "[concat(variables('dataFactoryUniqueName'), '/definitiveHCLoadToSynapseAndSQL')]",
                     "type": "Microsoft.DataFactory/factories/pipelines",
                     "apiVersion": "2018-06-01",
                     "properties": {
@@ -875,7 +906,7 @@
                                 "dependsOn": [],
                                 "policy": {
                                     "timeout": "7.00:00:00",
-                                    "retry": 0,
+                                    "retry": 3,
                                     "retryIntervalInSeconds": 30,
                                     "secureOutput": false,
                                     "secureInput": false
@@ -941,7 +972,7 @@
                                 ],
                                 "policy": {
                                     "timeout": "7.00:00:00",
-                                    "retry": 0,
+                                    "retry": 3,
                                     "retryIntervalInSeconds": 30,
                                     "secureOutput": false,
                                     "secureInput": false
@@ -968,11 +999,12 @@
                                         "dependencyConditions": [
                                             "Succeeded"
                                         ]
-                                    }
+                                    },
+                                    "[concat(concat('Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName')), '/linkedServices/customerStorageLinkedService')]"
                                 ],
                                 "policy": {
                                     "timeout": "7.00:00:00",
-                                    "retry": 0,
+                                    "retry": 3,
                                     "retryIntervalInSeconds": 30,
                                     "secureOutput": false,
                                     "secureInput": false
@@ -991,7 +1023,7 @@
                                     },
                                     "staging": {
                                         "linkedService": {
-                                            "referenceName": "ArmtemplateStorageLinkedService",
+                                            "referenceName": "customerStorageLinkedService",
                                             "type": "LinkedServiceReference"
                                         },
                                         "folderPath": "staging"
@@ -1011,11 +1043,12 @@
                                         "dependencyConditions": [
                                             "Succeeded"
                                         ]
-                                    }
+                                    },
+                                    "[concat(concat('Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName')), '/linkedServices/customerStorageLinkedService')]"
                                 ],
                                 "policy": {
                                     "timeout": "7.00:00:00",
-                                    "retry": 0,
+                                    "retry": 3,
                                     "retryIntervalInSeconds": 30,
                                     "secureOutput": false,
                                     "secureInput": false
@@ -1035,7 +1068,7 @@
                                     },
                                     "staging": {
                                         "linkedService": {
-                                            "referenceName": "ArmtemplateStorageLinkedService",
+                                            "referenceName": "customerStorageLinkedService",
                                             "type": "LinkedServiceReference"
                                         },
                                         "folderPath": "staging"
@@ -1050,18 +1083,86 @@
                         "annotations": []
                     },
                     "dependsOn": [
-                        "[concat(variables('factoryId'), '/datasets/ArmtemplateTestDatasetIn')]",
-                        "[concat(variables('factoryId'), '/datasets/ArmtemplateTestDatasetOut')]",
-                        "[parameters('dataFactoryName')]",
-                        "[concat(variables('factoryId'), '/dataflows/LoadIntoStagingTable_withSQL')]",
-                        "[concat(variables('factoryId'), '/linkedServices/ArmtemplateStorageLinkedService')]",
-                        "[concat(variables('factoryId'), '/dataflows/LoadIntoOperationalTable_withSQL')]"
+                        "[concat(concat('Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName')), '/datasets/ArmtemplateTestDatasetIn')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName')), '/datasets/ArmtemplateTestDatasetOut')]",
+                        "[variables('dataFactoryUniqueName')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName')), '/dataflows/LoadIntoStagingTable_withSQL')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName')), '/linkedServices/customerStorageLinkedService')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName')), '/dataflows/LoadIntoOperationalTable_withSQL')]"
+                    ]
+                },
+                {  
+                    "name":"[concat(variables('dataFactoryUniqueName'), '/definitiveHCPipelineLoadToSynapseTrigger')]",
+                    "type":"Microsoft.DataFactory/factories/triggers",
+                    "apiVersion":"2018-06-01",
+                    "properties": {
+                        "annotations": [],
+                        "runtimeState": "Started",
+                        "pipeline": {
+                            "pipelineReference": {
+                                "referenceName": "definitiveHCLoadToSynapse",
+                                "type": "PipelineReference"
+                            }
+                        },
+                        "type": "TumblingWindowTrigger",
+                        "typeProperties": {
+                            "frequency": "Minute",
+                            "interval": 15,
+                            "startTime": "[parameters('triggerStartTime')]",
+                            "delay": "00:00:00",
+                            "maxConcurrency": 1,
+                            "retryPolicy": {
+                                "count": 3,
+                                "intervalInSeconds": 30
+                            },
+                            "dependsOn": [
+                                "[variables('dataFactoryUniqueName')]",
+                                "[concat(concat('Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName')), '/pipelines/definitiveHCLoadToSynapse')]"
+                            ]
+                        }
+                    },
+                    "dependsOn":[  
+                        "[variables('dataFactoryUniqueName')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName')), '/pipelines/definitiveHCLoadToSynapse')]"
+                    ]
+                },
+                {  
+                    "name":"[concat(variables('dataFactoryUniqueName'), '/definitiveHCPipelineLoadToSynapseWithSQLTrigger')]",
+                    "type":"Microsoft.DataFactory/factories/triggers",
+                    "apiVersion":"2018-06-01",
+                    "properties": {
+                        "annotations": [],
+                        "runtimeState": "Started",
+                        "pipeline": {
+                            "pipelineReference": {
+                                "referenceName": "definitiveHCLoadToSynapseAndSQL",
+                                "type": "PipelineReference"
+                            }
+                        },
+                        "type": "TumblingWindowTrigger",
+                        "typeProperties": {
+                            "frequency": "Minute",
+                            "interval": 15,
+                            "startTime": "[parameters('triggerStartTime')]",
+                            "delay": "00:00:00",
+                            "maxConcurrency": 1,
+                            "retryPolicy": {
+                                "count": 3,
+                                "intervalInSeconds": 30
+                            },
+                            "dependsOn": [
+                                "[variables('dataFactoryUniqueName')]",
+                                "[concat(concat('Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName')), '/pipelines/definitiveHCLoadToSynapseAndSQL')]"
+                            ]
+                        }
+                    },
+                    "dependsOn":[  
+                        "[variables('dataFactoryUniqueName')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName')), '/pipelines/definitiveHCLoadToSynapseAndSQL')]"
                     ]
                 }
-
             ]
         }
     ],
-    "outputs": {
-    }
+    "outputs": {}
 }

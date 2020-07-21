@@ -564,6 +564,7 @@
                     ]
                 },
                 {
+                    "condition": "[equals(parameters('createSqlDb'),'No')]",
                     "name": "[concat(variables('dataFactoryUniqueName'), '/LoadIntoStagingTable')]",
                     "type": "Microsoft.DataFactory/factories/dataflows",
                     "apiVersion": "2018-06-01",
@@ -602,6 +603,7 @@
                     ]
                 },
                 {
+                    "condition": "[equals(parameters('createSqlDb'),'No')]",
                     "name": "[concat(variables('dataFactoryUniqueName'), '/LoadIntoOperationalTable')]",
                     "type": "Microsoft.DataFactory/factories/dataflows",
                     "apiVersion": "2018-06-01",
@@ -741,6 +743,7 @@
                     ]
                 },
                 {
+                    "condition": "[equals(parameters('createSqlDb'),'No')]",
                     "type": "Microsoft.DataFactory/factories/pipelines",
                     "apiVersion": "2018-06-01",
                     "name": "[concat(variables('dataFactoryUniqueName'), '/definitiveHCLoadToSynapse')]",

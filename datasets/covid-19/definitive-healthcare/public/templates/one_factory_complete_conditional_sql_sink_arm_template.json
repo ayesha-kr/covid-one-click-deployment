@@ -3,12 +3,14 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "factoryName": {
+            "defaultValue": "demoPublicADF",
             "type": "string",
             "metadata": {
                 "description": "The name you provide will be appended with a unique sting to make it globally available. The name can contain only letters, numbers and hyphens. The first and last characters must be a letter or number. Spaces are not allowed."
             }
         },
         "storageAccountName": {
+            "defaultValue": "demopubsa",
             "type": "string",
             "metadata": {
                 "description": "The name you provide will be appended with a unique sting to make it globally available. The field can contain only lowercase letters and numbers. Name must be between 1 and 11 characters."

@@ -746,7 +746,7 @@
                     "condition": "[equals(parameters('createSqlDb'),'No')]",
                     "type": "Microsoft.DataFactory/factories/pipelines",
                     "apiVersion": "2018-06-01",
-                    "name": "[concat(variables('dataFactoryUniqueName'), '/definitiveHCLoadToSynapse')]",
+                    "name": "[concat(variables('dataFactoryUniqueName'), '/SynapseDataLoader')]",
                     "properties": {
                         "folder": {
                             "name": "CovidDefinitiveHC"
@@ -941,7 +941,7 @@
                 },
                 {
                     "condition": "[equals(parameters('createSqlDb'),'Yes')]",
-                    "name": "[concat(variables('dataFactoryUniqueName'), '/definitiveHCLoadToSynapseAndSQL')]",
+                    "name": "[concat(variables('dataFactoryUniqueName'), '/SynapseAndSqlDataLoader')]",
                     "type": "Microsoft.DataFactory/factories/pipelines",
                     "apiVersion": "2018-06-01",
                     "properties": {

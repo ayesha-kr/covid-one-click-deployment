@@ -1,9 +1,0 @@
-{
-    "$schema": "https://aka.ms/azure-quickstart-templates-metadata-schema#",
-    "type": "QuickStart",
-    "itemDisplayName": "Create customer environment",
-    "description": "Customer env",
-    "summary": "Customer environment for Azure Data pipelines",
-    "githubUsername": "ayesha-kr",
-    "dateUpdated": "2019-07-17"    
-}

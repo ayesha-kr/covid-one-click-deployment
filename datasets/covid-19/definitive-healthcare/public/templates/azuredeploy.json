@@ -23,15 +23,6 @@
                 "description": "Location of the data factory. Currently, only East US, East US 2, and West Europe are supported. "
             }
         },
-        "storageTemplateUri": {
-            "type": "string"
-        },
-        "sqlServerTemplateUri": {
-            "type": "string"
-        },
-        "dataFactoryTemplateUri": {
-            "type": "string"
-        },
         "doYouWantToWriteCuratedDataToSQLDatabase": {
             "type": "string",
             "allowedValues": [
@@ -88,7 +79,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[parameters('storageTemplateUri')]"
+                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/public/templates/storageAccount/azuredeploy.json"
                 },
                 "parameters": {
                     "storageAccountName": {
@@ -110,7 +101,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[parameters('sqlServerTemplateUri')]"
+                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/public/templates/sqlServer/azuredeploy.json"
                 },
                 "parameters": {
                     "doYouWantToWriteCuratedDataToSQLDatabase": {
@@ -144,7 +135,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[parameters('dataFactoryTemplateUri')]"
+                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/public/templates/dataFactory/azuredeploy.json"
                 },
                 "parameters": {
                     "factoryName": {

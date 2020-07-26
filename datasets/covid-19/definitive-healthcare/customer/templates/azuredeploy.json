@@ -166,12 +166,12 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2018-05-01",
             "dependsOn": [
-                "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/customer/templates/sqlServer/azuredeploy.json"
+                "[resourceId('Microsoft.Resources/deployments','storageTemplate')]"
             ],
             "properties": {
               "mode": "Incremental",
               "templateLink": {
-                "uri": "[parameters('sqlServerTemplateUri')]"
+                "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/customer/templates/sqlServer/azuredeploy.json"
               },
               "parameters": {
                 "sqlServerName": {
@@ -215,12 +215,12 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2018-05-01",
             "dependsOn": [
-                "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/customer/templates/dataFactory/azuredeploy.json"
+                "[resourceId('Microsoft.Resources/deployments','sqlServerTemplate')]"
             ],
             "properties": {
               "mode": "Incremental",
               "templateLink": {
-                "uri": "[parameters('azureDataFactoryTemplateUri')]"
+                "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/customer/templates/dataFactory/azuredeploy.json"
               },
               "parameters": {
                 "dataFactoryName": {

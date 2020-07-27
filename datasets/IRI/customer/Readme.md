@@ -16,7 +16,7 @@
 
 Click the following button to deploy all the resources.
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https%3A%2F%2Fraw.githubusercontent.com%2Fayesha-kr%2Fcovid-one-click-deployment%2Fmaster%2Fdatasets%2FIRI%2Fcustomer%2Ftemplates%2FIRI_one_click_arm_template.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fayesha-kr%2Fcovid-one-click-deployment%2Fmaster%2Fdatasets%2FIRI%2Fcustomer%2Ftemplates%2FIRI_one_click_arm_template.json)
 
 #### Configure Firewall Rule
 After deployment, to access the newly created SQL server from your client IP, configure the firewall rule as described in the following GIF:

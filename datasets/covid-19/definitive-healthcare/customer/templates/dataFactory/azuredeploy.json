@@ -1108,7 +1108,7 @@
                                 "type": "Lookup",
                                 "dependsOn": [
                                     {
-                                        "activity": "LoadIntoOperationalTable_withSQL",
+                                        "activity": "LoadIntoOperationalTable_SynapseWithSQL",
                                         "dependencyConditions": [
                                             "Succeeded"
                                         ]
@@ -1139,7 +1139,7 @@
                                 "type": "Lookup",
                                 "dependsOn": [
                                     {
-                                        "activity": "LoadIntoOperationalTable_withSQL",
+                                        "activity": "LoadIntoOperationalTable_SynapseWithSQL",
                                         "dependencyConditions": [
                                             "Succeeded"
                                         ]

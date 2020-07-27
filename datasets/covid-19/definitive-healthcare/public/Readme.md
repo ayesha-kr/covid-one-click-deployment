@@ -36,6 +36,6 @@ After the deployment you can go in side your resource group open the ADF auther 
 
 #### Activate Trigger for the Pipeline
 
-If your trigger is deployed along with pipeline, you have to explicitly activate that trigger as shown below.
+If the trigger is deployed along with pipeline, you have to explicitly activate that trigger as shown below.
 
 ![Activate Trigger](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/public/images/activateTrigger.gif)

@@ -978,7 +978,7 @@
                                         "queryTimeout": "00:05:00"
                                     },
                                     "dataset": {
-                                        "referenceName": "AzureSynapseAnalyticsStagingTable",
+                                        "referenceName": "AzureSynapseAnalyticsStagingTableSource",
                                         "type": "DatasetReference"
                                     }
                                 }
@@ -1009,7 +1009,7 @@
                                         "queryTimeout": "00:05:00"
                                     },
                                     "dataset": {
-                                        "referenceName": "SqlDbStaging",
+                                        "referenceName": "SqlDbStagingSource",
                                         "type": "DatasetReference"
                                     }
                                 }
@@ -1129,7 +1129,7 @@
                                         "queryTimeout": "00:10:00"
                                     },
                                     "dataset": {
-                                        "referenceName": "AzureSynapseAnalyticsStagingTable",
+                                        "referenceName": "AzureSynapseAnalyticsStagingTableSource",
                                         "type": "DatasetReference"
                                     }
                                 }
@@ -1160,7 +1160,7 @@
                                         "queryTimeout": "00:05:00"
                                     },
                                     "dataset": {
-                                        "referenceName": "SqlDbStaging",
+                                        "referenceName": "SqlDbStagingSource",
                                         "type": "DatasetReference"
                                     }
                                 }
@@ -1171,6 +1171,9 @@
                     "dependsOn": [
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/ArmtemplateTestDatasetIn')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/ArmtemplateTestDatasetOutSink')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/SqlDbStagingSource')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/AzureSynapseAnalyticsStagingTableSource')]",
+                        
                         "[parameters('dataFactoryName')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/dataflows/LoadIntoStagingTable_SynapseWithSQL')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/customerStorageLinkedService')]",

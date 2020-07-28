@@ -71,6 +71,10 @@
             "apiVersion": "2018-06-01",
             "name": "[parameters('factoryName')]",
             "location": "[parameters('location')]",
+            "tags": {
+                "Environment": "Public",
+                "AssociatedDataSet": "CovidDefinitiveHC"
+            },
             "identity": {
                 "type": "SystemAssigned"
             },

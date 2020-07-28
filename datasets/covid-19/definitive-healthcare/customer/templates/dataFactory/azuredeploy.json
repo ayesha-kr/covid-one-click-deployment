@@ -44,7 +44,7 @@
             "type": "securestring",
             "metadata": {
                 "description": "Your password must be at least 8 characters in length. Your password must contain characters from three of the following categories – English uppercase letters, English lowercase letters, numbers (0-9), and non-alphanumeric characters (!, $, #, %, etc.) Your password cannot contain all or part of the login name. Part of a login name is defined as three or more consecutive alphanumeric characters."
-                
+
             }
         },
         "sqlDBName": {
@@ -62,14 +62,14 @@
         "selectDataLoader": {
             "type": "string",
             "allowedValues": [
-              "SQL Database",
-              "Synapse Database Warehouse",
-              "Both"
+                "SQL Database",
+                "Synapse Database Warehouse",
+                "Both"
             ],
             "metadata": {
                 "description": "Specify if you want to write data into SQL database."
             }
-          },
+        },
         "triggerStartTime": {
             "type": "string",
             "defaultValue": "[utcNow('u')]"
@@ -114,15 +114,15 @@
                     "apiVersion": "2018-06-01",
                     "name": "[concat(parameters('dataFactoryName'), '/customerStorageLinkedService')]",
                     "dependsOn": [
-						"[parameters('dataFactoryName')]"
-					],
-					"properties": {
-						"type": "AzureBlobStorage",
-						"typeProperties": {
-							"connectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('storageAccountName'),';AccountKey=',listKeys(concat(resourceGroup().id,'/providers/Microsoft.Storage/storageAccounts/', parameters('storageAccountName')), '2019-06-01').keys[0].value)]"
-						}
-					}
-				},
+                        "[parameters('dataFactoryName')]"
+                    ],
+                    "properties": {
+                        "type": "AzureBlobStorage",
+                        "typeProperties": {
+                            "connectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('storageAccountName'),';AccountKey=',listKeys(concat(resourceGroup().id,'/providers/Microsoft.Storage/storageAccounts/', parameters('storageAccountName')), '2019-06-01').keys[0].value)]"
+                        }
+                    }
+                },
                 {
                     "condition": "[not(equals(parameters('selectDataLoader'),'SQL Database'))]",
                     "name": "[concat(parameters('dataFactoryName'), '/AzureSynapseAnalyticsStaging')]",
@@ -175,7 +175,7 @@
                     "type": "Microsoft.DataFactory/factories/datasets",
                     "apiVersion": "2018-06-01",
                     "name": "[concat(parameters('dataFactoryName'), '/ArmtemplateTestDatasetIn')]",
-                   
+
                     "dependsOn": [
                         "[parameters('dataFactoryName')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/publicStorageLinkedService')]"
@@ -286,7 +286,7 @@
                         "type": "AzureSqlDWTable",
                         "schema": [],
                         "typeProperties": {
-                            "schema": "",
+                            "schema": "definitive_HC",
                             "table": "stagingdhc"
                         }
                     },
@@ -312,7 +312,7 @@
                         "type": "AzureSqlDWTable",
                         "schema": [],
                         "typeProperties": {
-                            "schema": "",
+                            "schema": "definitive_HC",
                             "table": "stagingdhc"
                         }
                     },
@@ -338,7 +338,7 @@
                         "type": "AzureSqlDWTable",
                         "schema": [],
                         "typeProperties": {
-                            "schema": "",
+                            "schema": "definitive_HC",
                             "table": "operationaldhc"
                         }
                     },
@@ -364,7 +364,7 @@
                         "type": "AzureSqlTable",
                         "schema": [],
                         "typeProperties": {
-                            "schema": "",
+                            "schema": "definitive_HC",
                             "table": "stagingdhc"
                         }
                     },
@@ -390,7 +390,7 @@
                         "type": "AzureSqlTable",
                         "schema": [],
                         "typeProperties": {
-                            "schema": "",
+                            "schema": "definitive_HC",
                             "table": "stagingdhc"
                         }
                     },
@@ -416,7 +416,7 @@
                         "type": "AzureSqlTable",
                         "schema": [],
                         "typeProperties": {
-                            "schema": "",
+                            "schema": "definitive_HC",
                             "table": "operationaldhc"
                         }
                     },
@@ -454,8 +454,12 @@
                                     "name": "SynapseStagingSink"
                                 }
                             ],
-                            "transformations": [],
-                            "script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\trowUrlColumn: 'filename',\n\tinferDriftedColumnTypes: true) ~> SourceCSV\nSourceCSV sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tstaged: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SynapseStagingSink"
+                            "transformations": [
+                                {
+                                    "name": "CleanData"
+                                }
+                            ],
+                            "script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\trowUrlColumn: 'filename',\n\tinferDriftedColumnTypes: true) ~> SourceCSV\nSourceCSV derive(each(match(type=='string'), $$ = trim(toString($$))),\n\t\teach(match(type=='integer'), $$ = toInteger($$)),\n\t\teach(match(type=='short'), $$ = toShort($$)),\n\t\teach(match(type=='double'), $$ = round(toDouble($$),3)),\n\t\teach(match(type=='decimal'), $$ = toDecimal($$))) ~> CleanData\nCleanData sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tstaged: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SynapseStagingSink"
                         }
                     },
                     "dependsOn": [
@@ -539,8 +543,12 @@
                                     "name": "SQLStagingSink"
                                 }
                             ],
-                            "transformations": [],
-                            "script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\trowUrlColumn: 'filename',\n\tinferDriftedColumnTypes: true) ~> SourceCSV\nSourceCSV sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tstaged: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SynapseStagingSink\nSourceCSV sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SQLStagingSink"
+                            "transformations": [
+                                {
+                                    "name": "CleanData"
+                                }
+                            ],
+                            "script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\trowUrlColumn: 'filename',\n\tinferDriftedColumnTypes: true) ~> SourceCSV\nSourceCSV derive(each(match(type=='string'), $$ = trim(toString($$))),\n\t\teach(match(type=='short'), $$ = toShort($$)),\n\t\teach(match(type=='integer'), $$ = toInteger($$)),\n\t\teach(match(type=='double'), $$ = round(toDouble($$),3)),\n\t\teach(match(type=='decimal'), $$ = toDecimal($$))) ~> CleanData\nCleanData sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tstaged: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SynapseStagingSink\nCleanData sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SQLStagingSink"
                         }
                     },
                     "dependsOn": [
@@ -598,9 +606,10 @@
                         }
                     },
                     "dependsOn": [
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/ArmtemplateTestDatasetOutSource')]",
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/AzureSynapseAnalyticsStagingTableSink')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/SqlDbStagingSource')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/SynapseOperationalTable_sink')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/SqlOperationalSink')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/AzureSynapseAnalyticsStagingTableSource')]",
                         "[parameters('dataFactoryName')]"
                     ]
                 },
@@ -633,8 +642,12 @@
                                     "name": "SQLStagingSink"
                                 }
                             ],
-                            "transformations": [],
-                            "script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\trowUrlColumn: 'filename',\n\tinferDriftedColumnTypes: true) ~> SourceCSV\nSourceCSV sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SQLStagingSink"
+                            "transformations": [
+                                {
+                                    "name": "CleanData"
+                                }
+                            ],
+                            "script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\trowUrlColumn: 'filename',\n\tinferDriftedColumnTypes: true) ~> SourceCSV\nSourceCSV derive(each(match(type=='string'), $$ = trim(toString($$))),\n\t\teach(match(type=='double'), $$ = round(toDouble($$),3)),\n\t\teach(match(type=='short'), $$ = toShort($$)),\n\t\teach(match(type=='integer'), $$ = toInteger($$)),\n\t\teach(match(type=='decimal'), $$ = toDecimal($$))) ~> CleanData\nCleanData sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SQLStagingSink"
                         }
                     },
                     "dependsOn": [
@@ -684,7 +697,7 @@
                         "[parameters('dataFactoryName')]"
                     ]
                 },
-           
+
                 {
                     "condition": "[equals(parameters('selectDataLoader'),'Synapse Database Warehouse')]",
                     "type": "Microsoft.DataFactory/factories/pipelines",
@@ -774,7 +787,7 @@
                                 "typeProperties": {
                                     "source": {
                                         "type": "SqlDWSource",
-                                        "sqlReaderQuery": "IF (select Count(*) from sys.symmetric_keys where name like '%DatabaseMasterKey%') = 0\n\nBEGIN\n\nCREATE master key ;\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND\nBEGIN\n\nCREATE master key ;\nselect Count(*) from sys.symmetric_keys;\nEND\n",
+                                        "sqlReaderQuery": "IF (select Count(*) from sys.symmetric_keys where name like '%DatabaseMasterKey%') = 0\n\nBEGIN\n\nCREATE master key;\n\nIF NOT EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC' )\n\n    EXEC('CREATE SCHEMA [definitive_HC] AUTHORIZATION [dbo]');\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\nIF NOT EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC' )\n\n    EXEC('CREATE SCHEMA [definitive_HC] AUTHORIZATION [dbo]');\n\nselect Count(*) from sys.symmetric_keys;\n\nEND\n",
                                         "queryTimeout": "02:00:00"
                                     },
                                     "dataset": {
@@ -835,7 +848,7 @@
                                         "dependencyConditions": [
                                             "Succeeded"
                                         ]
-                                    }, 
+                                    },
                                     "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/customerStorageLinkedService')]"
                                 ],
                                 "policy": {
@@ -868,6 +881,37 @@
                                         "computeType": "General"
                                     }
                                 }
+                            },
+                            {
+                                "name": "Create Views in Synapse",
+                                "type": "Lookup",
+                                "dependsOn": [
+                                    {
+                                        "activity": "LoadIntoOperationalTable",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 0,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "SqlDWSource",
+                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'dhc_view')\n    EXEC('create view definitive_HC.dhc_view as select State_Name, Num_Staffed_Beds from definitive_HC.operationaldhc;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "queryTimeout": "00:10:00"
+                                    },
+                                    "dataset": {
+                                        "referenceName": "SynapseOperationalTable_sink",
+                                        "type": "DatasetReference"
+                                    }
+                                }
                             }
                         ],
                         "annotations": []
@@ -897,7 +941,7 @@
                                 "type": "Copy",
                                 "dependsOn": [],
                                 "policy": {
-                                    "timeout": "7.00:00:00",
+                                    "timeout": "0.00:20:00",
                                     "retry": 3,
                                     "retryIntervalInSeconds": 30,
                                     "secureOutput": false,
@@ -963,8 +1007,8 @@
                                     }
                                 ],
                                 "policy": {
-                                    "timeout": "7.00:00:00",
-                                    "retry": 3,
+                                    "timeout": "0.00:10:00",
+                                    "retry": 0,
                                     "retryIntervalInSeconds": 30,
                                     "secureOutput": false,
                                     "secureInput": false
@@ -973,11 +1017,42 @@
                                 "typeProperties": {
                                     "source": {
                                         "type": "SqlDWSource",
-                                        "sqlReaderQuery": "IF (select Count(*) from sys.symmetric_keys where name like '%DatabaseMasterKey%') = 0\n\nBEGIN\n\nCREATE master key ;\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND\nBEGIN\n\nCREATE master key ;\nselect Count(*) from sys.symmetric_keys;\nEND\n",
-                                        "queryTimeout": "02:00:00"
+                                        "sqlReaderQuery": "IF (select Count(*) from sys.symmetric_keys where name like '%DatabaseMasterKey%') = 0\n\nBEGIN\n\nCREATE master key;\n\nIF NOT EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC' )\n\n    EXEC('CREATE SCHEMA [definitive_HC] AUTHORIZATION [dbo]');\nselect Count(*) from sys.symmetric_keys;\n\n\nEND\n\nELSE \n\nBEGIN\nIF NOT EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC' )\n\n    EXEC('CREATE SCHEMA [definitive_HC] AUTHORIZATION [dbo]');\n\nselect Count(*) from sys.symmetric_keys;\n\nEND\n",
+                                        "queryTimeout": "00:05:00"
                                     },
                                     "dataset": {
                                         "referenceName": "AzureSynapseAnalyticsStagingTableSource",
+                                        "type": "DatasetReference"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "Verify Schema in SQL DB",
+                                "type": "Lookup",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Verify Master Key",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "0.00:10:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "AzureSqlSource",
+                                        "sqlReaderQuery": "IF NOT EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC') \n\nBEGIN\n\n    EXEC('CREATE SCHEMA [definitive_HC] AUTHORIZATION [dbo]');\n\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "queryTimeout": "00:05:00"
+                                    },
+                                    "dataset": {
+                                        "referenceName": "SqlDbStagingSource",
                                         "type": "DatasetReference"
                                     }
                                 }
@@ -987,7 +1062,7 @@
                                 "type": "ExecuteDataFlow",
                                 "dependsOn": [
                                     {
-                                        "activity": "Verify Master Key",
+                                        "activity": "Verify Schema in SQL DB",
                                         "dependencyConditions": [
                                             "Succeeded"
                                         ]
@@ -995,7 +1070,7 @@
                                     "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/customerStorageLinkedService')]"
                                 ],
                                 "policy": {
-                                    "timeout": "7.00:00:00",
+                                    "timeout": "0.00:30:00",
                                     "retry": 3,
                                     "retryIntervalInSeconds": 30,
                                     "secureOutput": false,
@@ -1070,6 +1145,68 @@
                                         "computeType": "General"
                                     }
                                 }
+                            },
+                            {
+                                "name": "Create Views in Synapse",
+                                "type": "Lookup",
+                                "dependsOn": [
+                                    {
+                                        "activity": "LoadIntoOperationalTable_SynapseWithSQL",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "0.00:10:00",
+                                    "retry": 0,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "SqlDWSource",
+                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'dhc_view')\n    EXEC('create view definitive_HC.dhc_view as select State_Name, Num_Staffed_Beds from definitive_HC.operationaldhc;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "queryTimeout": "00:10:00"
+                                    },
+                                    "dataset": {
+                                        "referenceName": "AzureSynapseAnalyticsStagingTableSource",
+                                        "type": "DatasetReference"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "Create Views in SQL DB",
+                                "type": "Lookup",
+                                "dependsOn": [
+                                    {
+                                        "activity": "LoadIntoOperationalTable_SynapseWithSQL",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "0.00:10:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "AzureSqlSource",
+                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'dhc_view')\n    EXEC('create view definitive_HC.dhc_view as select State_Name, Num_Staffed_Beds from definitive_HC.operationaldhc;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "queryTimeout": "00:05:00"
+                                    },
+                                    "dataset": {
+                                        "referenceName": "SqlDbStagingSource",
+                                        "type": "DatasetReference"
+                                    }
+                                }
                             }
                         ],
                         "annotations": []
@@ -1077,6 +1214,9 @@
                     "dependsOn": [
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/ArmtemplateTestDatasetIn')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/ArmtemplateTestDatasetOutSink')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/SqlDbStagingSource')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/AzureSynapseAnalyticsStagingTableSource')]",
+
                         "[parameters('dataFactoryName')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/dataflows/LoadIntoStagingTable_SynapseWithSQL')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/customerStorageLinkedService')]",
@@ -1153,11 +1293,42 @@
                                 ]
                             },
                             {
+                                "name": "Verify Schema in SQL DB",
+                                "type": "Lookup",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Copy latest data",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 0,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "AzureSqlSource",
+                                        "sqlReaderQuery": "IF NOT EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC') \n\nBEGIN\n\n    EXEC('CREATE SCHEMA [definitive_HC] AUTHORIZATION [dbo]');\n\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "queryTimeout": "00:10:00"
+                                    },
+                                    "dataset": {
+                                        "referenceName": "SqlDbStagingSource",
+                                        "type": "DatasetReference"
+                                    }
+                                }
+                            },
+                            {
                                 "name": "LoadIntoStagingTable_SQL",
                                 "type": "ExecuteDataFlow",
                                 "dependsOn": [
                                     {
-                                        "activity": "Copy latest data",
+                                        "activity": "Verify Schema in SQL DB",
                                         "dependencyConditions": [
                                             "Succeeded"
                                         ]
@@ -1240,6 +1411,37 @@
                                         "computeType": "General"
                                     }
                                 }
+                            },
+                            {
+                                "name": "Create Views in SQL DB",
+                                "type": "Lookup",
+                                "dependsOn": [
+                                    {
+                                        "activity": "LoadIntoOperationalTable_SQL",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 0,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "AzureSqlSource",
+                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'dhc_view')\n    EXEC('create view definitive_HC.dhc_view as select State_Name, Num_Staffed_Beds from definitive_HC.operationaldhc;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "queryTimeout": "00:10:00"
+                                    },
+                                    "dataset": {
+                                        "referenceName": "SqlOperationalSink",
+                                        "type": "DatasetReference"
+                                    }
+                                }
                             }
                         ],
                         "annotations": []
@@ -1255,24 +1457,24 @@
                 },
                 {
                     "condition": "[equals(parameters('selectDataLoader'),'Synapse Database Warehouse')]",
-                    "name":"[concat(parameters('dataFactoryName'), '/SynapseDataLoaderPipelineTrigger')]",
-                    "type":"Microsoft.DataFactory/factories/triggers",
-                    "apiVersion":"2018-06-01",
+                    "name": "[concat(parameters('dataFactoryName'), '/SynapseDataLoaderPipelineTrigger')]",
+                    "type": "Microsoft.DataFactory/factories/triggers",
+                    "apiVersion": "2018-06-01",
                     "dependsOn": [
                         "[parameters('dataFactoryName')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/pipelines/SynapseDataLoader')]"
                     ],
-                    "properties":{
-                        "annotations":[
+                    "properties": {
+                        "annotations": [
                         ],
-                        "runtimeState":"Started",
-                        "pipelines":[
+                        "runtimeState": "Started",
+                        "pipelines": [
                             {
-                                "pipelineReference":{
-                                    "referenceName":"SynapseDataLoader",
-                                    "type":"PipelineReference"
+                                "pipelineReference": {
+                                    "referenceName": "SynapseDataLoader",
+                                    "type": "PipelineReference"
                                 },
-                                "parameters":{
+                                "parameters": {
                                 }
                             }
                         ],
@@ -1292,24 +1494,24 @@
                 },
                 {
                     "condition": "[equals(parameters('selectDataLoader'),'Both')]",
-                    "name":"[concat(parameters('dataFactoryName'), '/SynapseAndSqlDataLoaderPipelineTrigger')]",
-                    "type":"Microsoft.DataFactory/factories/triggers",
-                    "apiVersion":"2018-06-01",
+                    "name": "[concat(parameters('dataFactoryName'), '/SynapseAndSqlDataLoaderPipelineTrigger')]",
+                    "type": "Microsoft.DataFactory/factories/triggers",
+                    "apiVersion": "2018-06-01",
                     "dependsOn": [
                         "[parameters('dataFactoryName')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/pipelines/SynapseAndSqlDataLoader')]"
                     ],
-                    "properties":{
-                        "annotations":[
+                    "properties": {
+                        "annotations": [
                         ],
-                        "runtimeState":"Started",
-                        "pipelines":[
+                        "runtimeState": "Started",
+                        "pipelines": [
                             {
-                                "pipelineReference":{
-                                    "referenceName":"SynapseAndSqlDataLoader",
-                                    "type":"PipelineReference"
+                                "pipelineReference": {
+                                    "referenceName": "SynapseAndSqlDataLoader",
+                                    "type": "PipelineReference"
                                 },
-                                "parameters":{
+                                "parameters": {
                                 }
                             }
                         ],
@@ -1329,24 +1531,24 @@
                 },
                 {
                     "condition": "[equals(parameters('selectDataLoader'),'SQL Database')]",
-                    "name":"[concat(parameters('dataFactoryName'), '/SqlDataLoaderPipelineTrigger')]",
-                    "type":"Microsoft.DataFactory/factories/triggers",
-                    "apiVersion":"2018-06-01",
+                    "name": "[concat(parameters('dataFactoryName'), '/SqlDataLoaderPipelineTrigger')]",
+                    "type": "Microsoft.DataFactory/factories/triggers",
+                    "apiVersion": "2018-06-01",
                     "dependsOn": [
                         "[parameters('dataFactoryName')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/pipelines/SqlDataLoader')]"
                     ],
-                    "properties":{
-                        "annotations":[
+                    "properties": {
+                        "annotations": [
                         ],
-                        "runtimeState":"Started",
-                        "pipelines":[
+                        "runtimeState": "Started",
+                        "pipelines": [
                             {
-                                "pipelineReference":{
-                                    "referenceName":"SqlDataLoader",
-                                    "type":"PipelineReference"
+                                "pipelineReference": {
+                                    "referenceName": "SqlDataLoader",
+                                    "type": "PipelineReference"
                                 },
-                                "parameters":{
+                                "parameters": {
                                 }
                             }
                         ],

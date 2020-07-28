@@ -1,8 +1,10 @@
 # Clone Azure Notebook
 
+The following button will take you to the hosted Azure notebook project. From there you can click 'Clone' to cloen the project into your own Azure Notebook account.
+
 [![Azure Notebooks](https://notebooks.azure.com/launch.svg)](https://notebooks.azure.com/anon-cbd95a/projects/load-azure-blob-to-azure-synap)
 
-# This notebook documents the URLs and sample code to access the COVID-19 data published by Definitive Health Care and how it can be loaded into Azure Synapse or Azure SQL DB
+## This notebook documents the URLs and sample code to access the COVID-19 data published by Definitive Health Care and how it can be loaded into Azure Synapse or Azure SQL DB
 
 URL of the curated data
 

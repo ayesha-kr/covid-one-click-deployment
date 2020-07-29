@@ -125,12 +125,15 @@
               "Both"
             ],
             "metadata": {
-                "description": "Specify if you want to write data into SQL database."
+                "description": "Specify if you want to write the data into SQL database."
             }
           },
           "notificationEmail": {
             "type": "string",
-            "defaultValue": ""
+            "defaultValue": "",
+            "metadata": {
+                "description": "Please specify a single email address where you would like to receive ADF Pipeline alerts."
+            }
         }
     },
     "variables": {

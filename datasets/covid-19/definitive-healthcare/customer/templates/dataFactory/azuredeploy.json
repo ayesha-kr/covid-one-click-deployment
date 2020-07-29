@@ -67,7 +67,7 @@
                 "Both"
             ],
             "metadata": {
-                "description": "Specify if you want to write data into SQL database."
+                "description": "Specify if you want to write the data into SQL database."
             }
         },
         "triggerStartTime": {
@@ -76,7 +76,10 @@
         },
         "notificationEmail": {
             "type": "string",
-            "defaultValue": ""
+            "defaultValue": "",
+             "metadata": {
+                "description": "Please specify comma separated email addresses on which you would like to receive the ADF pipeline alerts."
+            }
         }
     },
     "variables": {
@@ -1591,7 +1594,7 @@
                     "apiVersion": "2018-03-01",
                     "tags": {},
                     "properties": {
-                        "description": "Metic alert for pipeline failure",
+                        "description": "Metric alert for pipeline failure",
                         "severity": "0",
                         "enabled": "true",
                         "scopes": ["[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]"],
@@ -1640,7 +1643,7 @@
                     "apiVersion": "2018-03-01",
                     "tags": {},
                     "properties": {
-                        "description": "Metic alert for activity failure in a pipeline",
+                        "description": "Metric alert for activity failure in a pipeline",
                         "severity": "0",
                         "enabled": "true",
                         "scopes": ["[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]"],
@@ -1742,7 +1745,7 @@
                     "apiVersion": "2018-03-01",
                     "tags": {},
                     "properties": {
-                        "description": "Metic alert for pipeline failure",
+                        "description": "Metric alert for pipeline failure",
                         "severity": "0",
                         "enabled": "true",
                         "scopes": ["[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]"],
@@ -1791,7 +1794,7 @@
                     "apiVersion": "2018-03-01",
                     "tags": {},
                     "properties": {
-                        "description": "Metic alert for activity failure in a pipeline",
+                        "description": "Metric alert for activity failure in a pipeline",
                         "severity": "0",
                         "enabled": "true",
                         "scopes": ["[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]"],
@@ -1893,7 +1896,7 @@
                     "apiVersion": "2018-03-01",
                     "tags": {},
                     "properties": {
-                        "description": "Metic alert for pipeline failure",
+                        "description": "Metric alert for pipeline failure",
                         "severity": "0",
                         "enabled": "true",
                         "scopes": ["[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]"],
@@ -1942,7 +1945,7 @@
                     "apiVersion": "2018-03-01",
                     "tags": {},
                     "properties": {
-                        "description": "Metic alert for activity failure in a pipeline",
+                        "description": "Metric alert for activity failure in a pipeline",
                         "severity": "0",
                         "enabled": "true",
                         "scopes": ["[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]"],

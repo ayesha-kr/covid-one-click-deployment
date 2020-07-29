@@ -52,14 +52,12 @@
             }
           },
           "iriStorageAccountKey": {
-              "defaultValue": "2WHLncGOY3t8pTgWl56Y5fYevGZGnlIcHKps+NoVLyuSnRJ6HfYuKteFUZkV7qjHE6CxveAyKlO3NG21pg33Jg==",
               "type": "securestring",
               "metadata": {
                   "description": "Account key for IRI storage account."
               }
           },
           "newTimesStorageAccountKey": {
-              "defaultValue": "JU16c5VGh7oIrdJFzOcIcVKT9ofFEXeD7DqDGYWu+5hl9VojQME/jb3GRvb/kt/xGZsAYMStao1bqLnStFCchw==",
               "type": "securestring",
               "metadata": {
                   "description": "Account key for NewYork Times storage account."

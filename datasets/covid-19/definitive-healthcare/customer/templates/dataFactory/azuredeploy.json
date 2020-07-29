@@ -1391,7 +1391,7 @@
                         "description": "Metic alert for pipeline failure",
                         "severity": "0",
                         "enabled": "true",
-                        "scopes": ["[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName'))]"],
+                        "scopes": ["[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]"],
                         "evaluationFrequency":"PT1M",
                         "windowSize": "PT1M",
                         "criteria": {
@@ -1425,7 +1425,7 @@
                         ]
                     },
                     "dependsOn": [
-                        "[variables('dataFactoryUniqueName')]",
+                        "[parameters('dataFactoryName')]",
                         "EmailNotificationPipelineFailure"
                     ]
                 },
@@ -1440,7 +1440,7 @@
                         "description": "Metic alert for activity failure in a pipeline",
                         "severity": "0",
                         "enabled": "true",
-                        "scopes": ["[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName'))]"],
+                        "scopes": ["[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]"],
                         "evaluationFrequency":"PT1M",
                         "windowSize": "PT1M",
                         "criteria": {
@@ -1484,7 +1484,7 @@
                         ]
                     },
                     "dependsOn": [
-                        "[variables('dataFactoryUniqueName')]",
+                        "[parameters('dataFactoryName')]",
                         "EmailNotificationPipelineFailure"
                     ]
                 },
@@ -1517,7 +1517,7 @@
                         "scope": {
                             "scopeType": "Resource",
                             "values": [
-                                "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName'))]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/actionGroups/', 'EmailNotificationPipelineFailure')]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'synapsePipelineAlertConfig')]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'synapseActivityAlertConfig')]"
@@ -1536,7 +1536,7 @@
                         "description": "Metic alert for pipeline failure",
                         "severity": "0",
                         "enabled": "true",
-                        "scopes": ["[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName'))]"],
+                        "scopes": ["[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]"],
                         "evaluationFrequency":"PT1M",
                         "windowSize": "PT1M",
                         "criteria": {
@@ -1570,7 +1570,7 @@
                         ]
                     },
                     "dependsOn": [
-                        "[variables('dataFactoryUniqueName')]",
+                        "[parameters('dataFactoryName')]",
                         "EmailNotificationPipelineFailure"
                     ]
                 },
@@ -1585,7 +1585,7 @@
                         "description": "Metic alert for activity failure in a pipeline",
                         "severity": "0",
                         "enabled": "true",
-                        "scopes": ["[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName'))]"],
+                        "scopes": ["[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]"],
                         "evaluationFrequency":"PT1M",
                         "windowSize": "PT1M",
                         "criteria": {
@@ -1629,7 +1629,7 @@
                         ]
                     },
                     "dependsOn": [
-                        "[variables('dataFactoryUniqueName')]",
+                        "[parameters('dataFactoryName')]",
                         "EmailNotificationPipelineFailure"
                     ]
                 },
@@ -1662,7 +1662,7 @@
                         "scope": {
                             "scopeType": "Resource",
                             "values": [
-                                "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName'))]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/actionGroups/', 'EmailNotificationPipelineFailure')]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlAndSynapsePipelineAlertConfig')]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlAndSynapseActivityAlertConfig')]"
@@ -1681,7 +1681,7 @@
                         "description": "Metic alert for pipeline failure",
                         "severity": "0",
                         "enabled": "true",
-                        "scopes": ["[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName'))]"],
+                        "scopes": ["[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]"],
                         "evaluationFrequency":"PT1M",
                         "windowSize": "PT1M",
                         "criteria": {
@@ -1715,7 +1715,7 @@
                         ]
                     },
                     "dependsOn": [
-                        "[variables('dataFactoryUniqueName')]",
+                        "[parameters('dataFactoryName')]",
                         "EmailNotificationPipelineFailure"
                     ]
                 },
@@ -1730,7 +1730,7 @@
                         "description": "Metic alert for activity failure in a pipeline",
                         "severity": "0",
                         "enabled": "true",
-                        "scopes": ["[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName'))]"],
+                        "scopes": ["[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]"],
                         "evaluationFrequency":"PT1M",
                         "windowSize": "PT1M",
                         "criteria": {
@@ -1774,7 +1774,7 @@
                         ]
                     },
                     "dependsOn": [
-                        "[variables('dataFactoryUniqueName')]",
+                        "[parameters('dataFactoryName')]",
                         "EmailNotificationPipelineFailure"
                     ]
                 },
@@ -1807,7 +1807,7 @@
                         "scope": {
                             "scopeType": "Resource",
                             "values": [
-                                "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', variables('dataFactoryUniqueName'))]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/actionGroups/', 'EmailNotificationPipelineFailure')]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlPipelineAlertConfig')]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlActivityAlertConfig')]"

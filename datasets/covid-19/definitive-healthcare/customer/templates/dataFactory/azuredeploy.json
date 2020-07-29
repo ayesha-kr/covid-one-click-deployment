@@ -1768,7 +1768,7 @@
                                                                         {
                                             "name":"PipelineName",
                                             "operator": "Include",
-                                            "values": ["SynapseDataLoader"]
+                                            "values": ["SqlDataLoader"]
                                         },
                                                                         {
                                             "name":"FailureType",

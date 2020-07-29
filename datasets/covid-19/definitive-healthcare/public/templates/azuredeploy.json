@@ -31,35 +31,37 @@
             ],
             "metadata": {
                 "description": "Please specify if you want to write curated data into SQL database."
-            }
+            },
+            "defaultValue": "No"
+            
         },
         "serverName": {
             "type": "string",
             "metadata": {
                 "description": "The name you provide will be appended with a unique sting to make it globally available. Your server name can contain only lowercase letters, numbers, and '-', but can't start or end with '-' or have more than 50 characters."
             },
-            "defaultValue": "Specify SQL server name if selected 'Yes'"
+            "defaultValue": "demo-public-sql-server"
         },
         "databaseName": {
             "type": "string",
             "metadata": {
                 "description": "Value should not match special patterns. It should contain a length of maximum of 128."
             },
-            "defaultValue": "Specify SQL database name if selected 'Yes'"
+            "defaultValue": "demopubsqldb"
         },
         "sqlAdministratorLogin": {
             "type": "string",
             "metadata": {
                 "description": "Your login name must not contain a SQL Identifier or a typical system name (like admin, administrator, sa, root, dbmanager, loginmanager, etc.) or a built-in database user or role (like dbo, guest, public, etc.)"
             },
-            "defaultValue": "Specify administrator username of SQL server if selected 'Yes'"
+            "defaultValue": "demo"
         },
         "sqlAdministratorLoginPassword": {
             "type": "securestring",
             "metadata": {
                 "description": "Your password must be at least 8 characters in length. Your password must contain characters from three of the following categories – English uppercase letters, English lowercase letters, numbers (0-9), and non-alphanumeric characters (!, $, #, %, etc.) Your password cannot contain all or part of the login name. Part of a login name is defined as three or more consecutive alphanumeric characters."
             },
-            "defaultValue": "*********"
+            "defaultValue": "abcd@1234"
         },
         "currentTime": {
             "type": "string",

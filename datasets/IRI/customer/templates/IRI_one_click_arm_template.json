@@ -3,12 +3,14 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "factoryName": {
+            "defaultValue": "iri-demo-data-factory",
             "type": "string",
             "metadata": {
                 "description": "The name you provide will be appended with a unique sting to make it globally available. The name can contain only letters, numbers and hyphens. The first and last characters must be a letter or number. Spaces are not allowed."
             }
         },
         "storageAccountName": {
+            "defaultValue": "iridemoblob",
             "type": "string",
             "metadata": {
                 "description": "The name you provide will be appended with a unique sting to make it globally available. The field can contain only lowercase letters and numbers. Name must be between 1 and 11 characters."
@@ -22,36 +24,42 @@
             }
         },
         "serverName": {
+            "defaultValue": "iri-demo-sql-server",
             "type": "string",
             "metadata": {
                 "description": "The name you provide will be appended with a unique sting to make it globally available. Your server name can contain only lowercase letters, numbers, and '-', but can't start or end with '-' or have more than 50 characters."
             }
         },
         "dataWarehouseName": {
+            "defaultValue": "IriDemoSynapse",
             "type": "string",
             "metadata": {
                 "description": "Value should not match special patterns. It should contain a length of maximum of 128."
             }
         },
         "sqlAdministratorLogin": {
+            "defaultValue": "iriuser",
             "type": "string",
             "metadata": {
                 "description": "Your login name must not contain a SQL Identifier or a typical system name (like admin, administrator, sa, root, dbmanager, loginmanager, etc.) or a built-in database user or role (like dbo, guest, public, etc.)"
             }
           },
         "sqlAdministratorLoginPassword": {
+            "defaultValue": "iri@12345",
             "type": "securestring",
             "metadata": {
                 "description": "Your password must be at least 8 characters in length. Your password must contain characters from three of the following categories – English uppercase letters, English lowercase letters, numbers (0-9), and non-alphanumeric characters (!, $, #, %, etc.) Your password cannot contain all or part of the login name. Part of a login name is defined as three or more consecutive alphanumeric characters."
             }
           },
           "iriStorageAccountKey": {
+              "defaultValue": "2WHLncGOY3t8pTgWl56Y5fYevGZGnlIcHKps+NoVLyuSnRJ6HfYuKteFUZkV7qjHE6CxveAyKlO3NG21pg33Jg==",
               "type": "securestring",
               "metadata": {
                   "description": "Account key for IRI storage account."
               }
           },
           "newTimesStorageAccountKey": {
+              "defaultValue": "JU16c5VGh7oIrdJFzOcIcVKT9ofFEXeD7DqDGYWu+5hl9VojQME/jb3GRvb/kt/xGZsAYMStao1bqLnStFCchw==",
               "type": "securestring",
               "metadata": {
                   "description": "Account key for NewYork Times storage account."
@@ -836,9 +844,18 @@
                                 },
                                 {
                                     "name": "ReplaceSpaceWithUnderScoreCP"
+                                },
+                                {
+                                    "name": "CPDistinctRows"
+                                },
+                                {
+                                    "name": "FWDistinctRows"
+                                },
+                                {
+                                    "name": "FTBDistinctRows"
                                 }
                             ],
-                           "script": "source(output(\n\t\tBrand as string,\n\t\t{Major Brand} as string,\n\t\tManufacturer as string,\n\t\t{Parent Company} as string,\n\t\t{Sub Category} as string,\n\t\tCategory as string,\n\t\tAisle as string,\n\t\tDepartment as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true) ~> cupsplates\nsource(output(\n\t\tBrand as string,\n\t\t{Major Brand} as string,\n\t\tManufacturer as string,\n\t\t{Parent Company} as string,\n\t\t{Sub Category} as string,\n\t\tCategory as string,\n\t\tAisle as string,\n\t\tDepartment as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true) ~> foilswraps\nsource(output(\n\t\tBrand as string,\n\t\t{Major Brand} as string,\n\t\tManufacturer as string,\n\t\t{Parent Company} as string,\n\t\t{Sub Category} as string,\n\t\tCategory as string,\n\t\tAisle as string,\n\t\tDepartment as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true) ~> foodtrashbags\nfoilswraps select(mapColumn(\n\t\teach(patternMatch(`.*`),\n\t\t\tregexReplace($$,' ','_') = $$)\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ReplaceSpaceWithUnderScoreFW\nfoodtrashbags select(mapColumn(\n\t\teach(patternMatch(`.*`),\n\t\t\tregexReplace($$,' ','_') = $$)\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ReplaceSpaceWithUnderScoreFT\ncupsplates select(mapColumn(\n\t\teach(patternMatch(`.*`),\n\t\t\tregexReplace($$,' ','_') = $$)\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ReplaceSpaceWithUnderScoreCP\nReplaceSpaceWithUnderScoreCP sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tstaged: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> LoadCupsPlatesDimToSynapse\nReplaceSpaceWithUnderScoreFW sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tstaged: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> LoadFoilsWrapsDimToSynapse\nReplaceSpaceWithUnderScoreFT sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tstaged: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> LoadFoodTrashbagsDimToSynapse"
+                            "script": "source(output(\n\t\tBrand as string,\n\t\t{Major Brand} as string,\n\t\tManufacturer as string,\n\t\t{Parent Company} as string,\n\t\t{Sub Category} as string,\n\t\tCategory as string,\n\t\tAisle as string,\n\t\tDepartment as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true) ~> cupsplates\nsource(output(\n\t\tBrand as string,\n\t\t{Major Brand} as string,\n\t\tManufacturer as string,\n\t\t{Parent Company} as string,\n\t\t{Sub Category} as string,\n\t\tCategory as string,\n\t\tAisle as string,\n\t\tDepartment as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> foilswraps\nsource(output(\n\t\tBrand as string,\n\t\t{Major Brand} as string,\n\t\tManufacturer as string,\n\t\t{Parent Company} as string,\n\t\t{Sub Category} as string,\n\t\tCategory as string,\n\t\tAisle as string,\n\t\tDepartment as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> foodtrashbags\nfoilswraps select(mapColumn(\n\t\teach(patternMatch(`.*`),\n\t\t\tregexReplace($$,' ','_') = $$)\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ReplaceSpaceWithUnderScoreFW\nfoodtrashbags select(mapColumn(\n\t\teach(patternMatch(`.*`),\n\t\t\tregexReplace($$,' ','_') = $$)\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ReplaceSpaceWithUnderScoreFT\ncupsplates select(mapColumn(\n\t\teach(patternMatch(`.*`),\n\t\t\tregexReplace($$,' ','_') = $$)\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ReplaceSpaceWithUnderScoreCP\nReplaceSpaceWithUnderScoreCP aggregate(groupBy(Category,\n\t\tBrand),\n\tMajor_Brand = first(Major_Brand),\n\t\tManufacturer = first(Manufacturer),\n\t\tParent_Company =  first(Parent_Company),\n\t\tSub_Category = first(Sub_Category),\n\t\tAisle = first(Aisle),\n\t\tDepartment = first(Department)) ~> CPDistinctRows\nReplaceSpaceWithUnderScoreFW aggregate(groupBy(Brand,\n\t\tCategory),\n\tMajor_Brand = first(Major_Brand),\n\t\tManufacturer = first(Manufacturer),\n\t\tParent_Company = first(Parent_Company),\n\t\tSub_Category = first(Sub_Category),\n\t\tAisle = first(Aisle),\n\t\tDepartment = first(Department)) ~> FWDistinctRows\nReplaceSpaceWithUnderScoreFT aggregate(groupBy(Brand,\n\t\tCategory),\n\tMajor_Brand = first(Major_Brand),\n\t\tManufacturer = first(Manufacturer),\n\t\tParent_Company = first(Parent_Company),\n\t\tSub_Category = first(Sub_Category),\n\t\tAisle = first(Aisle),\n\t\tDepartment = first(Department)) ~> FTBDistinctRows\nCPDistinctRows sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tstaged: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> LoadCupsPlatesDimToSynapse\nFWDistinctRows sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tstaged: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> LoadFoilsWrapsDimToSynapse\nFTBDistinctRows sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tstaged: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> LoadFoodTrashbagsDimToSynapse"
                         }
                     },
                     "dependsOn": [
@@ -916,9 +933,18 @@
                                 },
                                 {
                                     "name": "ReplaceSpaceWithUnderScoreCP"
+                                },
+                                {
+                                    "name": "CPDistinctRows"
+                                },
+                                {
+                                    "name": "FWDistinctRows"
+                                },
+                                {
+                                    "name": "FTBDistinctRows"
                                 }
                             ],
-                            "script": "source(output(\n\t\tDate as date,\n\t\tCounty as string,\n\t\t{Product Category} as string,\n\t\t{Product Brand} as string,\n\t\t{In Stock Rate} as double,\n\t\t{Agg Weight} as double\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\twildcardPaths:['by_country/cups_plates*.csv']) ~> cupsplates\nsource(output(\n\t\tDate as date,\n\t\tCounty as string,\n\t\t{Product Category} as string,\n\t\t{Product Brand} as string,\n\t\t{In Stock Rate} as double,\n\t\t{Agg Weight} as double\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\twildcardPaths:['by_country/foils_wraps*.csv']) ~> foilswraps\nsource(output(\n\t\tDate as date,\n\t\tCounty as string,\n\t\t{Product Category} as string,\n\t\t{Product Brand} as string,\n\t\t{In Stock Rate} as double,\n\t\t{Agg Weight} as double\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\twildcardPaths:['by_country/food_trash_bags*.csv']) ~> foodtrashbags\nfoilswraps select(mapColumn(\n\t\teach(patternMatch(`.*`),\n\t\t\tregexReplace($$,' ','_') = $$)\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ReplaceSpaceWithUnderScoreFW\nfoodtrashbags select(mapColumn(\n\t\teach(patternMatch(`.*`),\n\t\t\tregexReplace($$,' ','_') = $$)\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ReplaceSpaceWithUnderScoreFT\ncupsplates select(mapColumn(\n\t\teach(patternMatch(`.*`),\n\t\t\tregexReplace($$,' ','_') = $$)\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ReplaceSpaceWithUnderScoreCP\nReplaceSpaceWithUnderScoreCP sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tstaged: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> LoadCupsPlatesFactToSynapse\nReplaceSpaceWithUnderScoreFW sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tstaged: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> LoadFoilsWrapsFactToSynapse\nReplaceSpaceWithUnderScoreFT sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tstaged: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> LoadFoodTrashbagsDimToSynapse"
+                            "script": "source(output(\n\t\tDate as date,\n\t\tCounty as string,\n\t\t{Product Category} as string,\n\t\t{Product Brand} as string,\n\t\t{In Stock Rate} as double,\n\t\t{Agg Weight} as double\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\twildcardPaths:['by_country/cups_plates*.csv']) ~> cupsplates\nsource(output(\n\t\tDate as date,\n\t\tCounty as string,\n\t\t{Product Category} as string,\n\t\t{Product Brand} as string,\n\t\t{In Stock Rate} as double,\n\t\t{Agg Weight} as double\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\twildcardPaths:['by_country/foils_wraps*.csv']) ~> foilswraps\nsource(output(\n\t\tDate as date,\n\t\tCounty as string,\n\t\t{Product Category} as string,\n\t\t{Product Brand} as string,\n\t\t{In Stock Rate} as double,\n\t\t{Agg Weight} as double\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\twildcardPaths:['by_country/food_trash_bags*.csv']) ~> foodtrashbags\nfoilswraps select(mapColumn(\n\t\teach(patternMatch(`.*`),\n\t\t\tregexReplace($$,' ','_') = $$)\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ReplaceSpaceWithUnderScoreFW\nfoodtrashbags select(mapColumn(\n\t\teach(patternMatch(`.*`),\n\t\t\tregexReplace($$,' ','_') = $$)\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ReplaceSpaceWithUnderScoreFT\ncupsplates select(mapColumn(\n\t\teach(patternMatch(`.*`),\n\t\t\tregexReplace($$,' ','_') = $$)\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ReplaceSpaceWithUnderScoreCP\nReplaceSpaceWithUnderScoreCP aggregate(groupBy(Date,\n\t\tCounty,\n\t\tProduct_Category,\n\t\tProduct_Brand),\n\tIn_Stock_Rate = first(In_Stock_Rate),\n\t\tAgg_Weight = first(Agg_Weight)) ~> CPDistinctRows\nReplaceSpaceWithUnderScoreFW aggregate(groupBy(Date,\n\t\tCounty,\n\t\tProduct_Category,\n\t\tProduct_Brand),\n\tIn_Stock_Rate = first(In_Stock_Rate),\n\t\tAgg_Weight = first(Agg_Weight)) ~> FWDistinctRows\nReplaceSpaceWithUnderScoreFT aggregate(groupBy(Date,\n\t\tCounty,\n\t\tProduct_Category,\n\t\tProduct_Brand),\n\tIn_Stock_Rate = first(In_Stock_Rate),\n\t\tAgg_Weight = first(Agg_Weight)) ~> FTBDistinctRows\nCPDistinctRows sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tstaged: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> LoadCupsPlatesFactToSynapse\nFWDistinctRows sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tstaged: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> LoadFoilsWrapsFactToSynapse\nFTBDistinctRows sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tstaged: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> LoadFoodTrashbagsDimToSynapse"
                         }
                     },
                     "dependsOn": [

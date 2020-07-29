@@ -1495,7 +1495,7 @@
                     "condition": "[equals(parameters('selectDataLoader'),'Synapse Database Warehouse')]",
                     "type": "Microsoft.AlertsManagement/actionRules",
                     "apiVersion": "2019-05-05-preview",
-                    "name": "suppressResolveNotification",
+                    "name": "suppressResolveNotificationSynapse",
                     "location": "global",
                     "properties": {
                         "conditions": {
@@ -1646,7 +1646,7 @@
                     "condition": "[equals(parameters('selectDataLoader'),'Both')]",
                     "type": "Microsoft.AlertsManagement/actionRules",
                     "apiVersion": "2019-05-05-preview",
-                    "name": "suppressResolveNotification",
+                    "name": "suppressResolveNotificationBoth",
                     "location": "global",
                     "properties": {
                         "conditions": {
@@ -1797,7 +1797,7 @@
                     "condition": "[equals(parameters('selectDataLoader'),'SQL Database')]",
                     "type": "Microsoft.AlertsManagement/actionRules",
                     "apiVersion": "2019-05-05-preview",
-                    "name": "suppressResolveNotification",
+                    "name": "suppressResolveNotificationSQL",
                     "location": "global",
                     "properties": {
                         "conditions": {

@@ -1378,7 +1378,10 @@
                           "emailAddress": "[parameters('notificationEmail')]"
                         }
                       ]
-                    }
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]"
+                    ]
                   },
                 {
                     "condition": "[equals(parameters('selectDataLoader'),'Synapse Database Warehouse')]",
@@ -1523,7 +1526,13 @@
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'synapseActivityAlertConfig')]"
                             ]
                         }
-                    }
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "EmailNotificationPipelineFailure"
+                        "synapsePipelineAlertConfig",
+                        "synapseActivityAlertConfig"
+                    ]
                 },
                 {
                     "condition": "[equals(parameters('selectDataLoader'),'Both')]",
@@ -1668,7 +1677,13 @@
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlAndSynapseActivityAlertConfig')]"
                             ]
                         }
-                    }
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "EmailNotificationPipelineFailure",
+                        "sqlAndSynapsePipelineAlertConfig",
+                        "sqlAndSynapseActivityAlertConfig"
+                    ]
                 },
                 {
                     "condition": "[equals(parameters('selectDataLoader'),'SQL Database')]",
@@ -1813,7 +1828,13 @@
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlActivityAlertConfig')]"
                             ]
                         }
-                    }
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "EmailNotificationPipelineFailure",
+                        "sqlPipelineAlertConfig",
+                        "sqlActivityAlertConfig"
+                    ]
                 }
 
             ]

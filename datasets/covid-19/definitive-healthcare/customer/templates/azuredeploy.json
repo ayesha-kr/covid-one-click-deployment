@@ -127,7 +127,11 @@
             "metadata": {
                 "description": "Specify if you want to write data into SQL database."
             }
-          }
+          },
+          "notificationEmail": {
+            "type": "string",
+            "defaultValue": ""
+        }
     },
     "variables": {
         "databaseCollation": "SQL_Latin1_General_CP1_CI_AS",
@@ -255,6 +259,9 @@
                 },
                 "selectDataLoader": {
                     "value": "[parameters('selectDataLoader')]"
+                },
+                "notificationEmail": {
+                    "value": "[parameters('notificationEmail')]"
                 }
               }
             }

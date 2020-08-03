@@ -57,7 +57,7 @@
                   "description": "Account key for IRI storage account."
               }
           },
-          "newTimesStorageAccountKey": {
+          "newyorkTimesStorageAccountKey": {
               "type": "securestring",
               "metadata": {
                   "description": "Account key for NewYork Times storage account."
@@ -283,7 +283,7 @@
                         "annotations": [],
                         "type": "AzureBlobStorage",
                         "typeProperties": {
-                            "connectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=covidtrackingnytimes;AccountKey=',parameters('newTimesStorageAccountKey'))]"
+                            "connectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=covidtrackingnytimes;AccountKey=',parameters('newyorkTimesStorageAccountKey'))]"
                         }
                     },
                     "dependsOn": [
@@ -524,7 +524,7 @@
                                 "typeProperties": {
                                     "source": {
                                         "type": "SqlDWSource",
-                                        "sqlReaderQuery": "select 1",
+                                        "sqlReaderQuery": "\n\nDROP VIEW IF EXISTS iri.cp_view;\n\nEXEC('Create VIEW iri.cp_view\nAS\nSELECT cp.Date, cp.County, cp.Product_Category, cp.Product_brand, cp.In_Stock_Rate, cp.Agg_Weight,\n       csd.state,\n       cpd.Major_Brand, cpd.Manufacturer, cpd.Parent_Company, cpd.Sub_Category, cpd.Aisle, cpd.Department\nFROM iri.cups_plates_by_county_fact cp\nLEFT JOIN iri.county_state_dim csd ON cp.County=csd.County\nLEFT JOIN iri.cups_plates_dim cpd ON cp.Product_Brand=cpd.Brand;');\n\nDROP VIEW IF EXISTS iri.fw_view;\n\nEXEC('CREATE VIEW iri.fw_view\nAS\nSELECT fw.Date, fw.County, fw.Product_Category, fw.Product_brand, fw.In_Stock_Rate, fw.Agg_Weight,\n       csd.state,\n       fwd.Major_Brand, fwd.Manufacturer, fwd.Parent_Company, fwd.Sub_Category, fwd.Aisle, fwd.Department\nFROM iri.foils_wraps_by_county_fact fw\nLEFT JOIN iri.county_state_dim csd ON fw.County=csd.County\nLEFT JOIN iri.foils_wraps_dim fwd ON fw.Product_Brand=fwd.Brand');\n\nDROP VIEW IF EXISTS iri.ft_view;\n\nEXEC('CREATE VIEW iri.ft_view\nAS\nSELECT ft.Date, ft.County, ft.Product_Category, ft.Product_brand, ft.In_Stock_Rate, ft.Agg_Weight,\n       csd.state,\n       ftd.Major_Brand, ftd.Manufacturer, ftd.Parent_Company, ftd.Sub_Category, ftd.Aisle, ftd.Department\nFROM iri.food_trashbag_by_county_fact ft\nLEFT JOIN iri.county_state_dim csd ON ft.County=csd.County\nLEFT JOIN iri.food_trashbags_dim ftd ON ft.Product_Brand=ftd.Brand');\n\nselect 1",
                                         "queryTimeout": "02:00:00"
                                     },
                                     "dataset": {

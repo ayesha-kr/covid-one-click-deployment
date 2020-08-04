@@ -82,7 +82,7 @@
             "properties": {
                 "fileSystem": "public",
                 "subscriptionId": "6df48df0-802d-4891-9f31-7cc1879f3cb4",
-                "resourceGroup": "Covid_Tracking_DefinitiveHC",
+                "resourceGroup": "[resourceGroup().name]",
                 "storagedataShareAccountName": "covidtrackingdefinitive"
             }
         },

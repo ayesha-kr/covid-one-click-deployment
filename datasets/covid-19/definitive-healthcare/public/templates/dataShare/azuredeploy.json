@@ -31,6 +31,12 @@
         },
         "currentTime": {
             "type": "string"
+        },
+        "storagedataShareAccountName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the storage account to be shared"
+            }
         }
     },
     "variables": {},
@@ -83,7 +89,7 @@
                 "fileSystem": "public",
                 "subscriptionId": "6df48df0-802d-4891-9f31-7cc1879f3cb4",
                 "resourceGroup": "[resourceGroup().name]",
-                "storagedataShareAccountName": "covidtrackingdefinitive"
+                "storagedataShareAccountName": "[parameters('storagedataShareAccountName')]"
             }
         },
         {

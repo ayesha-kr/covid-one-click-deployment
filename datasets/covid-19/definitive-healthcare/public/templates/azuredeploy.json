@@ -66,12 +66,41 @@
         "currentTime": {
             "type": "string",
             "defaultValue": "[utcNow('u')]"
+        },
+        "dataShareAccountName": {
+            "type": "String",
+            "defaultValue": "demo_public_datashare",
+            "metadata": {
+                "description": "Data share account name should have length of 1 - 77, and cannot contain <>%&:\\?/#*$^();,.|-+={}[]!~@"
+            }
+        },
+        "shareName": {
+            "type": "String",
+            "defaultValue": "demo_public_share",
+            "metadata": {
+                "description": "Name can only contain alphanumeric characters, hyphen and underscore"
+            }
+        },
+        "datasetName": {
+            "type": "String",
+            "defaultValue": "demo_public_dataset",
+            "metadata": {
+                "description": "Dataset name can only contain number, letters, - and _"
+            }
+        },
+        "roleNameGuid": {
+            "type": "string",
+            "defaultValue": "[newGuid()]",
+            "metadata": {
+                "description": "A new GUID used to identify the role assignment"
+            }
         }
     },
     "variables": {
         "factoryName": "[concat(parameters('factoryName'), uniquestring(resourceGroup().id))]",
         "storageAccountName": "[concat(parameters('storageAccountName'), uniquestring(resourceGroup().id))]",
-        "serverName": "[concat(parameters('serverName'), uniquestring(resourceGroup().id))]"
+        "serverName": "[concat(parameters('serverName'), uniquestring(resourceGroup().id))]",
+        "dataShareAccountName": "[concat(parameters('dataShareAccountName'), uniquestring(resourceGroup().id))]"
     },
     "resources": [
         {
@@ -94,11 +123,36 @@
             }
         },
         {
-            "name": "sqlServerTemplate",
+            "name": "dataShareTemplate",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2018-05-01",
             "dependsOn": [
                 "[resourceId('Microsoft.Resources/deployments','storageTemplate')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/public/templates/dataShare/azuredeploy.json"
+                },
+                "parameters": {
+                    "dataShareAccountName": {
+                        "value": "[variables('dataShareAccountName')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "roleNameGuid": {
+                        "value": "[parameters('roleNameGuid')]"
+                    }
+                }
+            }
+        },
+        {
+            "name": "sqlServerTemplate",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments','dataShareTemplate')]"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -166,6 +220,37 @@
                     },
                     "currentTime": {
                         "value": "[parameters('currentTime')]"
+                    }
+                }
+            }
+        },
+        {
+            "name": "shareAndDatasetTemplate",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments','dataFactoryTemplate')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/public/templates/shareAndDataset/azuredeploy.json"
+                },
+                "parameters": {
+                    "dataShareAccountName": {
+                        "value": "[variables('dataShareAccountName')]"
+                    },
+                    "storageAccountName": {
+                        "value": "[variables('storageAccountName')]"
+                    },
+                    "currentTime": {
+                        "value": "[parameters('currentTime')]"
+                    },
+                    "shareName": {
+                        "value": "[parameters('shareName')]"
+                    },
+                    "datasetName": {
+                        "value": "[parameters('datasetName')]"
                     }
                 }
             }

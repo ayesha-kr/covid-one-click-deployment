@@ -15,6 +15,9 @@
             }
         }
     },
+    "variables": {
+        "containerName": "public"
+    },
     "resources": [
         {
             "type": "Microsoft.Storage/storageAccounts",
@@ -57,7 +60,7 @@
               {
                 "type": "blobServices/containers",
                 "apiVersion": "2019-06-01",
-                "name": "public",
+                "name": "[concat('default/', variables('containerName'))]",
                 "dependsOn": [
                   "[parameters('storageAccountName')]"
                 ]

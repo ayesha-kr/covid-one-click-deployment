@@ -49,7 +49,6 @@
     },
     "resources": [
         {
-            "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'Yes')]",
             "name": "[parameters('serverName')]",
             "type": "Microsoft.Sql/servers",
             "apiVersion": "2019-06-01-preview",
@@ -65,7 +64,6 @@
             },
             "resources": [
                 {
-                    "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'Yes')]",
                     "name": "[parameters('databaseName')]",
                     "type": "databases",
                     "apiVersion": "2019-06-01-preview",
@@ -83,7 +81,6 @@
                     ]
                 },
                 {
-                    "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'Yes')]",
                     "name": "AllowAllMicrosoftAzureIps",
                     "type": "firewallrules",
                     "apiVersion": "2015-05-01-preview",

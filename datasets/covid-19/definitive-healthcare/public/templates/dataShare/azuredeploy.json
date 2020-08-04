@@ -63,50 +63,6 @@
             "dependsOn": [
                 "[resourceId('Microsoft.DataShare/accounts', parameters('dataShareAccountName'))]"
             ]
-        },
-        {
-            "type": "Microsoft.DataShare/accounts/shares",
-            "apiVersion": "2019-11-01",
-            "name": "[concat(parameters('dataShareAccountName'), '/', parameters('shareName'))]",
-            "dependsOn": [
-                "[resourceId('Microsoft.DataShare/accounts', parameters('dataShareAccountName'))]",
-                "[parameters('roleNameGuid')]"
-            ],
-            "properties": {
-                "shareKind": "CopyBased"
-            }
-        },
-        {
-            "type": "Microsoft.DataShare/accounts/shares/dataSets",
-            "apiVersion": "2019-11-01",
-            "name": "[concat(parameters('dataShareAccountName'), '/',parameters('shareName'), '/',parameters('datasetName'))]",
-            "dependsOn": [
-                "[resourceId('Microsoft.DataShare/accounts/shares', parameters('dataShareAccountName'), parameters('shareName'))]",
-                "[resourceId('Microsoft.DataShare/accounts', parameters('dataShareAccountName'))]",
-                "[parameters('roleNameGuid')]"
-            ],
-            "kind": "Container",
-            "properties": {
-                "containerName": "public",
-                "subscriptionId": "6df48df0-802d-4891-9f31-7cc1879f3cb4",
-                "resourceGroup": "[resourceGroup().name]",
-                "storageAccountName": "[parameters('storageAccountName')]"
-            }
-        },
-        {
-            "type": "Microsoft.DataShare/accounts/shares/synchronizationSettings",
-            "apiVersion": "2019-11-01",
-            "name": "[concat(parameters('dataShareAccountName'), '/',parameters('shareName'), '/', 'synchronizationSetting')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.DataShare/accounts/shares',parameters('dataShareAccountName'), parameters('shareName'))]",
-                "[resourceId('Microsoft.DataShare/accounts', parameters('dataShareAccountName'))]",
-                "[parameters('roleNameGuid')]"
-            ],
-            "kind": "ScheduleBased",
-            "properties": {
-                "recurrenceInterval": "Day",
-                "synchronizationTime": "[parameters('currentTime')]"
-            }
         }
     ]
 }

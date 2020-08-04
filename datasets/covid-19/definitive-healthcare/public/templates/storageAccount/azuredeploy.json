@@ -52,7 +52,16 @@
                     "keySource": "Microsoft.Storage"
                 },
                 "accessTier": "Hot"
-            }
+            },
+              "resources": [
+                {
+                  "type": "blobServices/containers",
+                  "apiVersion": "2019-06-01",
+                  "name": "public",
+                  "dependsOn": [
+                    "[parameters('storageAccountName')]"
+                  ]
+                }
         },
         {
             "type": "Microsoft.Storage/storageAccounts/blobServices",

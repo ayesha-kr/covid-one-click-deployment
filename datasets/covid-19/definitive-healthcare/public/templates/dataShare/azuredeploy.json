@@ -84,9 +84,9 @@
                 "[resourceId('Microsoft.DataShare/accounts', parameters('dataShareAccountName'))]",
                 "[parameters('roleNameGuid')]"
             ],
-            "kind": "AdlsGen2FileSystem",
+            "kind": "Container",
             "properties": {
-                "fileSystem": "public",
+                "containerName": "public",
                 "subscriptionId": "6df48df0-802d-4891-9f31-7cc1879f3cb4",
                 "resourceGroup": "[resourceGroup().name]",
                 "storageAccountName": "[parameters('storageAccountName')]"

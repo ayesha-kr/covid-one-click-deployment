@@ -5,7 +5,7 @@
         "dataShareAccountName": {
             "type": "String",
             "metadata": {
-                "description": "Data share account name should have length of 3 - 90, and cannot contain <>%&:\\?/#*$^();,.|-+={}[]!~@"
+                "description": "Data share account name should have length of 1 - 77, and cannot contain <>%&:\\?/#*$^();,.|-+={}[]!~@"
             }
         },
         "location": {

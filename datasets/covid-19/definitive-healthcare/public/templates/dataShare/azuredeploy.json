@@ -32,7 +32,7 @@
         "currentTime": {
             "type": "string"
         },
-        "storagedataShareAccountName": {
+        "storageAccountName": {
             "type": "string",
             "metadata": {
                 "description": "Name of the storage account to be shared"
@@ -89,7 +89,7 @@
                 "fileSystem": "public",
                 "subscriptionId": "6df48df0-802d-4891-9f31-7cc1879f3cb4",
                 "resourceGroup": "[resourceGroup().name]",
-                "storagedataShareAccountName": "[parameters('storagedataShareAccountName')]"
+                "storageAccountName": "[parameters('storageAccountName')]"
             }
         },
         {

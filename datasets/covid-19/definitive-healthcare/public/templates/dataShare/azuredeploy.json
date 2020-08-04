@@ -11,31 +11,10 @@
         "location": {
             "type": "String"
         },
-        "shareName": {
-            "type": "String",
-            "metadata": {
-                "description": "Name can only contain alphanumeric characters, hyphen and underscore"
-            }
-        },
-        "datasetName": {
-            "type": "String",
-            "metadata": {
-                "description": "Dataset name can only contain number, letters, - and _"
-            }
-        },
         "roleNameGuid": {
             "type": "string",
             "metadata": {
                 "description": "A new GUID used to identify the role assignment"
-            }
-        },
-        "currentTime": {
-            "type": "string"
-        },
-        "storageAccountName": {
-            "type": "string",
-            "metadata": {
-                "description": "Name of the storage account to be shared"
             }
         }
     },

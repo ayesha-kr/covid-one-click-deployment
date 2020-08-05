@@ -71,16 +71,18 @@
             }
         },
         "triggerStartTime": {
-            "type": "string",
-            "defaultValue": "[utcNow('u')]"
+            "type": "string"
         },
         "notificationEmail": {
             "type": "string",
-            "defaultValue": "",
             "metadata": {
                 "description": "Please specify comma separated email addresses on which you would like to receive the ADF pipeline alerts."
             }
+        },
+        "webHookUri": {
+            "type": "string"
         }
+
     },
     "variables": {
     },
@@ -1580,6 +1582,12 @@
                             {
                                 "name": "notifEmail",
                                 "emailAddress": "[parameters('notificationEmail')]"
+                            }
+                        ],
+                        "webhookReceivers": [
+                            {
+                              "name": "contosoHook",
+                              "serviceUri": "[parameters('webHookUri')]"
                             }
                         ]
                     },

@@ -227,7 +227,7 @@
                                     }
                                 },
                                 "method": "post",
-                                "path": "/v3/beta/teams/@{encodeURIComponent('f798deee-f476-4ea9-99d5-21ac38e68c2b')}/channels/@{encodeURIComponent('19:e394e84136874d82923f8dbfe75c74d1@thread.tacv2')}/messages"
+                                "path": "/v3/beta/teams/@{encodeURIComponent('')}/channels/@{encodeURIComponent('')}/messages"
                             }
                         }
                     },

@@ -2589,7 +2589,7 @@
                         "description": "Metric alert for pipeline failure",
                         "severity": "0",
                         "enabled": "true",
-                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]" ],
+                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('factoryName'))]" ],
                         "evaluationFrequency": "PT1M",
                         "windowSize": "PT1M",
                         "criteria": {
@@ -2638,7 +2638,7 @@
                         "description": "Metric alert for activity failure in a pipeline",
                         "severity": "0",
                         "enabled": "true",
-                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]" ],
+                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('factoryName'))]" ],
                         "evaluationFrequency": "PT1M",
                         "windowSize": "PT1M",
                         "criteria": {
@@ -2697,7 +2697,7 @@
                         "description": "Metric alert for pipeline failure",
                         "severity": "0",
                         "enabled": "true",
-                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]" ],
+                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('factoryName'))]" ],
                         "evaluationFrequency": "PT1M",
                         "windowSize": "PT1M",
                         "criteria": {
@@ -2746,7 +2746,7 @@
                         "description": "Metric alert for activity failure in a pipeline",
                         "severity": "0",
                         "enabled": "true",
-                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]" ],
+                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('factoryName'))]" ],
                         "evaluationFrequency": "PT1M",
                         "windowSize": "PT1M",
                         "criteria": {
@@ -2823,7 +2823,7 @@
                         "scope": {
                             "scopeType": "Resource",
                             "values": [
-                                "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('factoryName'))]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/actionGroups/', 'NotificationPipelineFailure')]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'covidTrackingWithoutSqlActivityAlertConfig')]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'covidTrackingWithoutSqlPipelineAlertConfig')]"
@@ -2831,7 +2831,7 @@
                         }
                     },
                     "dependsOn": [
-                        "[parameters('dataFactoryName')]",
+                        "[parameters('factoryName')]",
                         "NotificationPipelineFailure",
                         "covidTrackingWithoutSqlPipelineAlertConfig",
                         "covidTrackingWithoutSqlActivityAlertConfig"
@@ -2866,7 +2866,7 @@
                         "scope": {
                             "scopeType": "Resource",
                             "values": [
-                                "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('factoryName'))]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/actionGroups/', 'NotificationPipelineFailure')]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'covidTrackingWithSqlActivityAlertConfig')]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'covidTrackingWithSqlPipelineAlertConfig')]"
@@ -2874,7 +2874,7 @@
                         }
                     },
                     "dependsOn": [
-                        "[parameters('dataFactoryName')]",
+                        "[parameters('factoryName')]",
                         "NotificationPipelineFailure",
                         "covidTrackingWithSqlPipelineAlertConfig",
                         "covidTrackingWithSqlActivityAlertConfig"

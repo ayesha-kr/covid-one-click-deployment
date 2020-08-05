@@ -71,6 +71,14 @@
             "metadata": {
                 "description": "Please specify comma separated email addresses on which you would like to receive the ADF pipeline alerts."
             }
+        },
+        "enableMicrosoftTeamsNotification": {
+            "defaultValue": "Yes",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "type": "string"
         }
     },
     "variables": {
@@ -134,6 +142,78 @@
             }
         },
         {
+            "condition": "[equals(parameters('enableMicrosoftTeamsNotification'),'Yes')]",
+            "name": "logicAppTemplate",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "properties": {
+              "mode": "Incremental",
+              "templateLink": {
+                "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/dev-zahid/datasets/covid-19/definitive-healthcare/public/templates/logicApp/azuredeploy.json"
+              },
+              "parameters": {
+                "location": {
+                  "value": "[parameters('location')]"
+                },
+                "logicAppName": {
+                    "value": "[parameters('logicAppName')]"
+                }
+              }
+            }
+        },
+        {
+            "condition": "[equals(parameters('enableMicrosoftTeamsNotification'),'Yes')]",
+            "name": "dataFactoryTemplate",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments','sqlServerTemplate')]",
+                "[resourceId('Microsoft.Resources/deployments','logicAppTemplate')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/dev-zahid/datasets/covid-19/definitive-healthcare/public/templates/dataFactory/azuredeploy.json"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[variables('factoryName')]"
+                    },
+                    "storageAccountName": {
+                        "value": "[variables('storageAccountName')]"
+                    },
+                    "doYouWantToWriteCuratedDataToSQLDatabase": {
+                        "value": "[parameters('doYouWantToWriteCuratedDataToSQLDatabase')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "sqlAdministratorLogin": {
+                        "value": "[parameters('sqlAdministratorLogin')]"
+                    },
+                    "sqlAdministratorLoginPassword": {
+                        "value": "[parameters('sqlAdministratorLoginPassword')]"
+                    },
+                    "databaseName": {
+                        "value": "[parameters('databaseName')]"
+                    },
+                    "serverName": {
+                        "value": "[variables('serverName')]"
+                    },
+                    "currentTime": {
+                        "value": "[parameters('currentTime')]"
+                    },
+                    "notificationEmail": {
+                        "value": "[parameters('notificationEmail')]"
+                    },
+                    "webHookUri": {
+                        "value": "[reference('logicAppTemplate','2018-05-01').outputs.WebHookURI.value]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[equals(parameters('enableMicrosoftTeamsNotification'),'No')]",
             "name": "dataFactoryTemplate",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2018-05-01",
@@ -177,7 +257,7 @@
                         "value": "[parameters('notificationEmail')]"
                     },
                     "webHookUri": {
-                        "value": "[parameters('webHookUri')]"
+                        "value": "[reference('logicAppTemplate','2018-05-01').outputs.WebHookURI.value]"
                     }
                 }
             }

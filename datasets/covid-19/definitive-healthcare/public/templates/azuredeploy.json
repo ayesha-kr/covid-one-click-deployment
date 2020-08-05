@@ -77,7 +77,7 @@
         "factoryName": "[concat(parameters('factoryName'), uniquestring(resourceGroup().id))]",
         "storageAccountName": "[concat(parameters('storageAccountName'), uniquestring(resourceGroup().id))]",
         "serverName": "[concat(parameters('serverName'), uniquestring(resourceGroup().id))]",
-        "webHookUri": ""
+        "webHookUri": "https://null"
     },
     "resources": [
         {

@@ -71,7 +71,8 @@
             }
         },
         "triggerStartTime": {
-            "type": "string"
+            "type": "string",
+            "defaultValue": "[utcNow('u')]"
         },
         "notificationEmail": {
             "type": "string",

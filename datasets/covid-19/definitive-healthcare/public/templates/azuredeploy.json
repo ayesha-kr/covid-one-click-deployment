@@ -79,6 +79,10 @@
                 "No"
             ],
             "type": "string"
+        },
+        "logicAppName": {
+            "defaultValue": "TeamsNotify",
+            "type": "String"
         }
     },
     "variables": {

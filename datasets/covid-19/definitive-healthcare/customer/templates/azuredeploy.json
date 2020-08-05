@@ -134,6 +134,10 @@
             "metadata": {
                 "description": "Please specify a single email address where you would like to receive ADF Pipeline alerts."
             }
+        },
+        "logicAppName": {
+            "defaultValue": "TeamsNotify",
+            "type": "String"
         }
     },
     "variables": {
@@ -213,6 +217,25 @@
                 },
                 "selectDataLoader": {
                     "value": "[parameters('selectDataLoader')]"
+                }
+              }
+            }
+        },
+        {
+            "name": "logicAppTemplate",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "properties": {
+              "mode": "Incremental",
+              "templateLink": {
+                "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/customer/templates/logicApp/azuredeploy.json"
+              },
+              "parameters": {
+                "location": {
+                  "value": "[parameters('location')]"
+                },
+                "logicAppName": {
+                    "value": "[parameters('logicAppName')]"
                 }
               }
             }

@@ -177,7 +177,7 @@
                 {
                     "type": "Microsoft.DataFactory/factories/datasets",
                     "apiVersion": "2018-06-01",
-                    "name": "[concat(parameters('dataFactoryName'), '/ArmtemplateTestDatasetIn')]",
+                    "name": "[concat(parameters('dataFactoryName'), '/inputDataset')]",
 
                     "dependsOn": [
                         "[parameters('dataFactoryName')]",
@@ -211,7 +211,7 @@
                 {
                     "type": "Microsoft.DataFactory/factories/datasets",
                     "apiVersion": "2018-06-01",
-                    "name": "[concat(parameters('dataFactoryName'), '/ArmtemplateTestDatasetOutSource')]",
+                    "name": "[concat(parameters('dataFactoryName'), '/outputDatasetSource')]",
                     "dependsOn": [
                         "[parameters('dataFactoryName')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/customerStorageLinkedService')]"
@@ -243,7 +243,7 @@
                 {
                     "type": "Microsoft.DataFactory/factories/datasets",
                     "apiVersion": "2018-06-01",
-                    "name": "[concat(parameters('dataFactoryName'), '/ArmtemplateTestDatasetOutSink')]",
+                    "name": "[concat(parameters('dataFactoryName'), '/outputDatasetSink')]",
                     "dependsOn": [
                         "[parameters('dataFactoryName')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/customerStorageLinkedService')]"
@@ -442,7 +442,7 @@
                             "sources": [
                                 {
                                     "dataset": {
-                                        "referenceName": "ArmtemplateTestDatasetOutSource",
+                                        "referenceName": "outputDatasetSource",
                                         "type": "DatasetReference"
                                     },
                                     "name": "SourceCSV"
@@ -467,7 +467,7 @@
                     },
                     "dependsOn": [
                         "[parameters('dataFactoryName')]",
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/ArmtemplateTestDatasetOutSource')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/outputDatasetSource')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/AzureSynapseAnalyticsStagingTableSink')]"
                     ]
                 },
@@ -524,7 +524,7 @@
                             "sources": [
                                 {
                                     "dataset": {
-                                        "referenceName": "ArmtemplateTestDatasetOutSource",
+                                        "referenceName": "outputDatasetSource",
                                         "type": "DatasetReference"
                                     },
                                     "name": "SourceCSV"
@@ -555,7 +555,7 @@
                         }
                     },
                     "dependsOn": [
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/ArmtemplateTestDatasetOutSource')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/outputDatasetSource')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/AzureSynapseAnalyticsStagingTableSink')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/SqlDbStagingSink')]",
                         "[parameters('dataFactoryName')]"
@@ -630,7 +630,7 @@
                             "sources": [
                                 {
                                     "dataset": {
-                                        "referenceName": "ArmtemplateTestDatasetOutSource",
+                                        "referenceName": "outputDatasetSource",
                                         "type": "DatasetReference"
                                     },
                                     "name": "SourceCSV"
@@ -654,7 +654,7 @@
                         }
                     },
                     "dependsOn": [
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/ArmtemplateTestDatasetOutSource')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/outputDatasetSource')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/AzureSynapseAnalyticsStagingTableSink')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/SqlDbStagingSink')]",
                         "[parameters('dataFactoryName')]"
@@ -756,13 +756,13 @@
                                 },
                                 "inputs": [
                                     {
-                                        "referenceName": "ArmtemplateTestDatasetIn",
+                                        "referenceName": "inputDataset",
                                         "type": "DatasetReference"
                                     }
                                 ],
                                 "outputs": [
                                     {
-                                        "referenceName": "ArmtemplateTestDatasetOutSink",
+                                        "referenceName": "outputDatasetSink",
                                         "type": "DatasetReference"
                                     }
                                 ]
@@ -922,8 +922,8 @@
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/dataflows/LoadIntoStagingTable')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/dataflows/LoadIntoOperationalTable')]",
                         "[parameters('dataFactoryName')]",
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/ArmtemplateTestDatasetIn')]",
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/ArmtemplateTestDatasetOutSink')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/inputDataset')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/outputDatasetSink')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/AzureSynapseAnalyticsStagingTableSource')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/SynapseOperationalTable_sink')]"
                     ]
@@ -984,14 +984,14 @@
                                 },
                                 "inputs": [
                                     {
-                                        "referenceName": "ArmtemplateTestDatasetIn",
+                                        "referenceName": "inputDataset",
                                         "type": "DatasetReference",
                                         "parameters": {}
                                     }
                                 ],
                                 "outputs": [
                                     {
-                                        "referenceName": "ArmtemplateTestDatasetOutSink",
+                                        "referenceName": "outputDatasetSink",
                                         "type": "DatasetReference",
                                         "parameters": {}
                                     }
@@ -1214,8 +1214,8 @@
                         "annotations": []
                     },
                     "dependsOn": [
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/ArmtemplateTestDatasetIn')]",
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/ArmtemplateTestDatasetOutSink')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/inputDataset')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/outputDatasetSink')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/SqlDbStagingSource')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/AzureSynapseAnalyticsStagingTableSource')]",
 
@@ -1281,14 +1281,14 @@
                                 },
                                 "inputs": [
                                     {
-                                        "referenceName": "ArmtemplateTestDatasetIn",
+                                        "referenceName": "inputDataset",
                                         "type": "DatasetReference",
                                         "parameters": {}
                                     }
                                 ],
                                 "outputs": [
                                     {
-                                        "referenceName": "ArmtemplateTestDatasetOutSink",
+                                        "referenceName": "outputDatasetSink",
                                         "type": "DatasetReference",
                                         "parameters": {}
                                     }
@@ -1449,8 +1449,8 @@
                         "annotations": []
                     },
                     "dependsOn": [
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/ArmtemplateTestDatasetIn')]",
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/ArmtemplateTestDatasetOutSink')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/inputDataset')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/outputDatasetSink')]",
                         "[parameters('dataFactoryName')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/dataflows/LoadIntoStagingTable_SQL')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/customerStorageLinkedService')]",

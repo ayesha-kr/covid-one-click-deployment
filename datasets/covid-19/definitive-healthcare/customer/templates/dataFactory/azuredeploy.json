@@ -1574,7 +1574,7 @@
                 {
                     "type": "Microsoft.Insights/actionGroups",
                     "apiVersion": "2018-03-01",
-                    "name": "EmailNotificationPipelineFailure",
+                    "name": "NotificationPipelineFailure",
                     "location": "Global",
                     "properties": {
                         "groupShortName": "failureAlert",
@@ -1636,13 +1636,13 @@
                         },
                         "actions": [
                             {
-                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','EmailNotificationPipelineFailure')]"
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationPipelineFailure')]"
                             }
                         ]
                     },
                     "dependsOn": [
                         "[parameters('dataFactoryName')]",
-                        "EmailNotificationPipelineFailure"
+                        "NotificationPipelineFailure"
                     ]
                 },
                 {
@@ -1695,13 +1695,13 @@
                         },
                         "actions": [
                             {
-                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','EmailNotificationPipelineFailure')]"
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationPipelineFailure')]"
                             }
                         ]
                     },
                     "dependsOn": [
                         "[parameters('dataFactoryName')]",
-                        "EmailNotificationPipelineFailure"
+                        "NotificationPipelineFailure"
                     ]
                 },
                 {
@@ -1734,7 +1734,7 @@
                             "scopeType": "Resource",
                             "values": [
                                 "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]",
-                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/actionGroups/', 'EmailNotificationPipelineFailure')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/actionGroups/', 'NotificationPipelineFailure')]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'synapsePipelineAlertConfig')]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'synapseActivityAlertConfig')]"
                             ]
@@ -1742,7 +1742,7 @@
                     },
                     "dependsOn": [
                         "[parameters('dataFactoryName')]",
-                        "EmailNotificationPipelineFailure",
+                        "NotificationPipelineFailure",
                         "synapsePipelineAlertConfig",
                         "synapseActivityAlertConfig"
                     ]
@@ -1787,13 +1787,13 @@
                         },
                         "actions": [
                             {
-                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','EmailNotificationPipelineFailure')]"
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationPipelineFailure')]"
                             }
                         ]
                     },
                     "dependsOn": [
                         "[parameters('dataFactoryName')]",
-                        "EmailNotificationPipelineFailure"
+                        "NotificationPipelineFailure"
                     ]
                 },
                 {
@@ -1846,13 +1846,13 @@
                         },
                         "actions": [
                             {
-                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','EmailNotificationPipelineFailure')]"
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationPipelineFailure')]"
                             }
                         ]
                     },
                     "dependsOn": [
                         "[parameters('dataFactoryName')]",
-                        "EmailNotificationPipelineFailure"
+                        "NotificationPipelineFailure"
                     ]
                 },
                 {
@@ -1885,7 +1885,7 @@
                             "scopeType": "Resource",
                             "values": [
                                 "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]",
-                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/actionGroups/', 'EmailNotificationPipelineFailure')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/actionGroups/', 'NotificationPipelineFailure')]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlAndSynapsePipelineAlertConfig')]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlAndSynapseActivityAlertConfig')]"
                             ]
@@ -1893,7 +1893,7 @@
                     },
                     "dependsOn": [
                         "[parameters('dataFactoryName')]",
-                        "EmailNotificationPipelineFailure",
+                        "NotificationPipelineFailure",
                         "sqlAndSynapsePipelineAlertConfig",
                         "sqlAndSynapseActivityAlertConfig"
                     ]
@@ -1938,13 +1938,13 @@
                         },
                         "actions": [
                             {
-                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','EmailNotificationPipelineFailure')]"
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationPipelineFailure')]"
                             }
                         ]
                     },
                     "dependsOn": [
                         "[parameters('dataFactoryName')]",
-                        "EmailNotificationPipelineFailure"
+                        "NotificationPipelineFailure"
                     ]
                 },
                 {
@@ -1971,7 +1971,7 @@
                                         {
                                             "name": "ActivityType",
                                             "operator": "Include",
-                                            "values": [ "Copy", "ExecuteDataFlow" ]
+                                            "values": [ "Copy", "Lookup", "ExecuteDataFlow" ]
                                         },
                                         {
                                             "name": "Name",
@@ -1997,13 +1997,13 @@
                         },
                         "actions": [
                             {
-                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','EmailNotificationPipelineFailure')]"
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationPipelineFailure')]"
                             }
                         ]
                     },
                     "dependsOn": [
                         "[parameters('dataFactoryName')]",
-                        "EmailNotificationPipelineFailure"
+                        "NotificationPipelineFailure"
                     ]
                 },
                 {
@@ -2036,7 +2036,7 @@
                             "scopeType": "Resource",
                             "values": [
                                 "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]",
-                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/actionGroups/', 'EmailNotificationPipelineFailure')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/actionGroups/', 'NotificationPipelineFailure')]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlPipelineAlertConfig')]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlActivityAlertConfig')]"
                             ]
@@ -2044,7 +2044,7 @@
                     },
                     "dependsOn": [
                         "[parameters('dataFactoryName')]",
-                        "EmailNotificationPipelineFailure",
+                        "NotificationPipelineFailure",
                         "sqlPipelineAlertConfig",
                         "sqlActivityAlertConfig"
                     ]

@@ -137,7 +137,7 @@
         },
         "dataShareAccountName": {
             "type": "string",
-            "defaultValue": "demo_public_datashare",
+            "defaultValue": "demo_customer_datashare",
             "metadata": {
                 "description": "Data share account name should have length of 1 - 77, and cannot contain <>%&:\\?/#*$^();,.|-+={}[]!~@"
             }

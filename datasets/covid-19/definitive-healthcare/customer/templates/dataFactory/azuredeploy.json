@@ -2,6 +2,26 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "dataFactoryName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name you provide will be appended with a unique sting to make it globally available. The name can contain only letters, numbers and hyphens. The first and last characters must be a letter or number. Spaces are not allowed."
+            }
+        },
+        "dataFactoryLocation": {
+            "type": "string",
+            "metadata": {
+            }
+        },
+        "storageAccountName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name you provide will be appended with a unique sting to make it globally available. The field can contain only lowercase letters and numbers. Name must be between 1 and 11 characters."
+            }
+        },
+        "sasURI": {
+            "type": "string"
+        },
         "sqlServerName": {
             "type": "string",
             "metadata": {
@@ -24,23 +44,7 @@
             "type": "securestring",
             "metadata": {
                 "description": "Your password must be at least 8 characters in length. Your password must contain characters from three of the following categories – English uppercase letters, English lowercase letters, numbers (0-9), and non-alphanumeric characters (!, $, #, %, etc.) Your password cannot contain all or part of the login name. Part of a login name is defined as three or more consecutive alphanumeric characters."
-            }
-        },
-        "allowAzureIPs": {
-            "type": "bool",
-            "metadata": {
-                "description": "Allow Azure services to access server."
-            }
-        },
-        "sqlConnectionType": {
-            "allowedValues": [
-                "Default",
-                "Redirect",
-                "Proxy"
-            ],
-            "type": "string",
-            "metadata": {
-                "description": "SQL logical server connection type."
+
             }
         },
         "sqlDBName": {
@@ -55,133 +59,1989 @@
                 "description": "Value should not match special patterns. It should contain a length of maximum of 128."
             }
         },
-        "transparentDataEncryption": {
-            "type": "string",
-            "allowedValues": [
-                "Enabled",
-                "Disabled"
-            ],
-            "metadata": {
-                "description": "Enable/Disable Transparent Data Encryption"
-            }
-        },
-        "serviceLevelObjective": {
-            "type": "string",
-            "metadata": {
-                "description": "Data warehouse tier."
-            }
-        },
         "selectDataLoader": {
             "type": "string",
             "allowedValues": [
-              "SQL Database",
-              "Synapse Database Warehouse",
-              "Both"
+                "SQL Database",
+                "Synapse Database Warehouse",
+                "Both"
             ],
             "metadata": {
-                "description": "Specify if you want to write data into SQL database."
+                "description": "Specify if you want to write the data into SQL database."
             }
-          }
+        },
+        "triggerStartTime": {
+            "type": "string",
+            "defaultValue": "[utcNow('u')]"
+        },
+        "notificationEmail": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Please specify comma separated email addresses on which you would like to receive the ADF pipeline alerts."
+            }
+        }
     },
     "variables": {
-        "databaseCollation": "SQL_Latin1_General_CP1_CI_AS"
     },
     "resources": [
         {
-            "type": "Microsoft.Sql/servers",
-            "apiVersion": "2015-05-01-preview",
-            "name": "[parameters('sqlServerName')]",
-            "location": "[parameters('location')]",
-            "tags": {
-                "Environment": "Customer",
-                "AssociatedDataSet": "CovidDefinitiveHC"
-            },
-            "properties": {
-                "administratorLogin": "[parameters('sqlAdministratorLogin')]",
-                "administratorLoginPassword": "[parameters('sqlAdministratorLoginPassword')]",
-                "version": "12.0"
+            "type": "Microsoft.DataFactory/factories",
+            "apiVersion": "2018-06-01",
+            "name": "[parameters('dataFactoryName')]",
+            "location": "[parameters('dataFactoryLocation')]",
+            "identity": {
+                "type": "SystemAssigned"
             },
             "resources": [
                 {
-                    "condition": "[not(equals(parameters('selectDataLoader'),'Synapse Database Warehouse'))]",
-                    "type": "databases",
-                    "apiVersion": "2019-06-01-preview",
-                    "name": "[parameters('sqlDBName')]",
-                    "sku": {
-                        "name": "Basic",
-                        "tier": "Basic",
-                        "capacity": 5
-                    },
-                    "location": "[parameters('location')]",
-                    "tags": {
-                        "Environment": "Customer",
-                        "AssociatedDataSet": "CovidDefinitiveHC"
-                    },
-                    "properties": {
-                        "collation": "[variables('databaseCollation')]"
-                    },
+                    "type": "Microsoft.DataFactory/factories/linkedServices",
+                    "apiVersion": "2018-06-01",
+                    "name": "[concat(parameters('dataFactoryName'), '/publicStorageLinkedService')]",
                     "dependsOn": [
-                        "[resourceId('Microsoft.Sql/servers', concat(parameters('sqlServerName')))]"
-                    ]
-                },
-                {
-                    "condition": "[parameters('allowAzureIPs')]",
-                    "type": "firewallRules",
-                    "apiVersion": "2018-06-01-preview",
-                    "name": "AllowAllWindowsAzureIps",
-                    "location": "[parameters('location')]",
-                    "tags": {
-                        "Environment": "Customer",
-                        "AssociatedDataSet": "CovidDefinitiveHC"
-                    },
-                    "dependsOn": [
-                        "[resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))]"
+                        "[parameters('dataFactoryName')]"
                     ],
                     "properties": {
-                        "endIpAddress": "0.0.0.0",
-                        "startIpAddress": "0.0.0.0"
+                        "annotations": [],
+                        "type": "AzureBlobStorage",
+                        "typeProperties": {
+                            "sasUri": {
+                                "type": "SecureString",
+                                "value": "[parameters('sasURI')]"
+                            }
+                        }
+                    }
+                },
+                {
+                    "type": "Microsoft.DataFactory/factories/linkedServices",
+                    "apiVersion": "2018-06-01",
+                    "name": "[concat(parameters('dataFactoryName'), '/customerStorageLinkedService')]",
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]"
+                    ],
+                    "properties": {
+                        "type": "AzureBlobStorage",
+                        "typeProperties": {
+                            "connectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('storageAccountName'),';AccountKey=',listKeys(concat(resourceGroup().id,'/providers/Microsoft.Storage/storageAccounts/', parameters('storageAccountName')), '2019-06-01').keys[0].value)]"
+                        }
                     }
                 },
                 {
                     "condition": "[not(equals(parameters('selectDataLoader'),'SQL Database'))]",
-                    "type": "databases",
-                    "kind": "v12.0,user,datawarehouse",
-                    "name": "[parameters('dataWarehouseName')]",
-                    "apiVersion": "2015-05-01-preview",
-                    "location": "[parameters('location')]",
-                    "tags": {
-                        "Environment": "Customer",
-                        "AssociatedDataSet": "CovidDefinitiveHC"
-                    },
+                    "name": "[concat(parameters('dataFactoryName'), '/AzureSynapseAnalyticsStaging')]",
+                    "type": "Microsoft.DataFactory/factories/linkedServices",
+                    "apiVersion": "2018-06-01",
                     "properties": {
-                        "edition": "DataWarehouse",
-                        "status": "Online",
-                        "requestedServiceObjectiveName": "[parameters('serviceLevelObjective')]",
-                        "collation": "SQL_Latin1_General_CP1_CI_AS",
-                        "readScale": "Disabled",
-                        "zoneRedundant": false,
-                        "isUpgradeRequested": false
+                        "annotations": [],
+                        "type": "AzureSqlDW",
+                        "typeProperties": {
+                            "connectionString": "[concat('integrated security=False;encrypt=True;connection timeout=30;data source=',parameters('sqlServerName'),'.database.windows.net;initial catalog=',parameters('dataWarehouseName'),';user id=',parameters('sqlAdministratorLogin'),';Password=',parameters('sqlAdministratorLoginPassword'))]"
+                        }
                     },
                     "dependsOn": [
-                        "[parameters('sqlServerName')]"
+                        "[parameters('dataFactoryName')]"
+                    ]
+                },
+                {
+                    "condition": "[not(equals(parameters('selectDataLoader'),'SQL Database'))]",
+                    "name": "[concat(parameters('dataFactoryName'), '/AzureSynapseOperational')]",
+                    "type": "Microsoft.DataFactory/factories/linkedServices",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "annotations": [],
+                        "type": "AzureSqlDW",
+                        "typeProperties": {
+                            "connectionString": "[concat('integrated security=False;encrypt=True;connection timeout=30;data source=',parameters('sqlServerName'),'.database.windows.net;initial catalog=',parameters('dataWarehouseName'),';user id=',parameters('sqlAdministratorLogin'), ';Password=', parameters('sqlAdministratorLoginPassword'))]"
+                        }
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]"
+                    ]
+                },
+                {
+                    "condition": "[not(equals(parameters('selectDataLoader'),'Synapse Database Warehouse'))]",
+                    "name": "[concat(parameters('dataFactoryName'), '/AzureSqlDatabase')]",
+                    "type": "Microsoft.DataFactory/factories/linkedServices",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "annotations": [],
+                        "type": "AzureSqlDatabase",
+                        "typeProperties": {
+                            "connectionString": "[concat('data source=',parameters('sqlServerName'),'.database.windows.net;integrated security=False;Server=tcp:',parameters('sqlServerName'),'.database.windows.net,1433;Initial Catalog=',parameters('sqlDBName'),';Persist Security Info=False;User ID=',parameters('sqlAdministratorLogin'),';Password=',parameters('sqlAdministratorLoginPassword'),';MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;')]"
+                        }
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]"
+                    ]
+                },
+                {
+                    "type": "Microsoft.DataFactory/factories/datasets",
+                    "apiVersion": "2018-06-01",
+                    "name": "[concat(parameters('dataFactoryName'), '/ArmtemplateTestDatasetIn')]",
+
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/publicStorageLinkedService')]"
                     ],
-                    "resources": [
-                        {
-                            "condition": "[not(equals(parameters('selectDataLoader'),'SQL Database'))]",
-                            "comments": "Transparent Data Encryption",
-                            "name": "current",
-                            "type": "transparentDataEncryption",
-                            "apiVersion": "2017-03-01-preview",
-                            "properties": {
-                                "status": "[parameters('transparentDataEncryption')]"
+                    "properties": {
+                        "folder": {
+                            "name": "CovidDefinitiveHC/Sources"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "publicStorageLinkedService",
+                            "type": "LinkedServiceReference"
+                        },
+                        "annotations": [],
+                        "type": "DelimitedText",
+                        "typeProperties": {
+                            "location": {
+                                "type": "AzureBlobStorageLocation",
+                                "fileName": "covid_tracking.csv",
+                                "folderPath": "curated/covid-19/covid_tracking/latest",
+                                "container": "public"
                             },
-                            "dependsOn": [
-                                "[parameters('dataWarehouseName')]"
+                            "columnDelimiter": ",",
+                            "escapeChar": "\\",
+                            "firstRowAsHeader": true,
+                            "quoteChar": "\""
+                        },
+                        "schema": []
+                    }
+                },
+                {
+                    "type": "Microsoft.DataFactory/factories/datasets",
+                    "apiVersion": "2018-06-01",
+                    "name": "[concat(parameters('dataFactoryName'), '/ArmtemplateTestDatasetOutSource')]",
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/customerStorageLinkedService')]"
+                    ],
+                    "properties": {
+                        "folder": {
+                            "name": "CovidDefinitiveHC/Sources"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "customerStorageLinkedService",
+                            "type": "LinkedServiceReference"
+                        },
+                        "annotations": [],
+                        "type": "DelimitedText",
+                        "typeProperties": {
+                            "location": {
+                                "type": "AzureBlobStorageLocation",
+                                "folderPath": "output",
+                                "container": "staging"
+                            },
+                            "columnDelimiter": ",",
+                            "escapeChar": "\\",
+                            "firstRowAsHeader": true,
+                            "quoteChar": "\""
+                        },
+                        "schema": []
+                    }
+                },
+                {
+                    "type": "Microsoft.DataFactory/factories/datasets",
+                    "apiVersion": "2018-06-01",
+                    "name": "[concat(parameters('dataFactoryName'), '/ArmtemplateTestDatasetOutSink')]",
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/customerStorageLinkedService')]"
+                    ],
+                    "properties": {
+                        "folder": {
+                            "name": "CovidDefinitiveHC/Sinks"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "customerStorageLinkedService",
+                            "type": "LinkedServiceReference"
+                        },
+                        "annotations": [],
+                        "type": "DelimitedText",
+                        "typeProperties": {
+                            "location": {
+                                "type": "AzureBlobStorageLocation",
+                                "folderPath": "output",
+                                "container": "staging"
+                            },
+                            "columnDelimiter": ",",
+                            "escapeChar": "\\",
+                            "firstRowAsHeader": true,
+                            "quoteChar": "\""
+                        },
+                        "schema": []
+                    }
+                },
+                {
+                    "condition": "[not(equals(parameters('selectDataLoader'),'SQL Database'))]",
+                    "name": "[concat(parameters('dataFactoryName'), '/AzureSynapseAnalyticsStagingTableSource')]",
+                    "type": "Microsoft.DataFactory/factories/datasets",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "folder": {
+                            "name": "CovidDefinitiveHC/Sources"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "AzureSynapseAnalyticsStaging",
+                            "type": "LinkedServiceReference"
+                        },
+                        "annotations": [],
+                        "type": "AzureSqlDWTable",
+                        "schema": [],
+                        "typeProperties": {
+                            "schema": "definitive_HC",
+                            "table": "stagingdhc"
+                        }
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/AzureSynapseAnalyticsStaging')]"
+                    ]
+                },
+                {
+                    "condition": "[not(equals(parameters('selectDataLoader'),'SQL Database'))]",
+                    "name": "[concat(parameters('dataFactoryName'), '/AzureSynapseAnalyticsStagingTableSink')]",
+                    "type": "Microsoft.DataFactory/factories/datasets",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "folder": {
+                            "name": "CovidDefinitiveHC/Sinks"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "AzureSynapseAnalyticsStaging",
+                            "type": "LinkedServiceReference"
+                        },
+                        "annotations": [],
+                        "type": "AzureSqlDWTable",
+                        "schema": [],
+                        "typeProperties": {
+                            "schema": "definitive_HC",
+                            "table": "stagingdhc"
+                        }
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/AzureSynapseAnalyticsStaging')]"
+                    ]
+                },
+                {
+                    "condition": "[not(equals(parameters('selectDataLoader'),'SQL Database'))]",
+                    "name": "[concat(parameters('dataFactoryName'), '/SynapseOperationalTable_sink')]",
+                    "type": "Microsoft.DataFactory/factories/datasets",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "folder": {
+                            "name": "CovidDefinitiveHC/Sinks"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "AzureSynapseOperational",
+                            "type": "LinkedServiceReference"
+                        },
+                        "annotations": [],
+                        "type": "AzureSqlDWTable",
+                        "schema": [],
+                        "typeProperties": {
+                            "schema": "definitive_HC",
+                            "table": "operationaldhc"
+                        }
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/AzureSynapseOperational')]"
+                    ]
+                },
+                {
+                    "condition": "[not(equals(parameters('selectDataLoader'),'Synapse Database Warehouse'))]",
+                    "name": "[concat(parameters('dataFactoryName'), '/SqlDbStagingSource')]",
+                    "type": "Microsoft.DataFactory/factories/datasets",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "folder": {
+                            "name": "CovidDefinitiveHC/Sources"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "AzureSqlDatabase",
+                            "type": "LinkedServiceReference"
+                        },
+                        "annotations": [],
+                        "type": "AzureSqlTable",
+                        "schema": [],
+                        "typeProperties": {
+                            "schema": "definitive_HC",
+                            "table": "stagingdhc"
+                        }
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/AzureSqlDatabase')]"
+                    ]
+                },
+                {
+                    "condition": "[not(equals(parameters('selectDataLoader'),'Synapse Database Warehouse'))]",
+                    "name": "[concat(parameters('dataFactoryName'), '/SqlDbStagingSink')]",
+                    "type": "Microsoft.DataFactory/factories/datasets",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "folder": {
+                            "name": "CovidDefinitiveHC/Sinks"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "AzureSqlDatabase",
+                            "type": "LinkedServiceReference"
+                        },
+                        "annotations": [],
+                        "type": "AzureSqlTable",
+                        "schema": [],
+                        "typeProperties": {
+                            "schema": "definitive_HC",
+                            "table": "stagingdhc"
+                        }
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/AzureSqlDatabase')]"
+                    ]
+                },
+                {
+                    "condition": "[not(equals(parameters('selectDataLoader'),'Synapse Database Warehouse'))]",
+                    "name": "[concat(parameters('dataFactoryName'), '/SqlOperationalSink')]",
+                    "type": "Microsoft.DataFactory/factories/datasets",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "folder": {
+                            "name": "CovidDefinitiveHC/Sinks"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "AzureSqlDatabase",
+                            "type": "LinkedServiceReference"
+                        },
+                        "annotations": [],
+                        "type": "AzureSqlTable",
+                        "schema": [],
+                        "typeProperties": {
+                            "schema": "definitive_HC",
+                            "table": "operationaldhc"
+                        }
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/AzureSqlDatabase')]"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('selectDataLoader'),'Synapse Database Warehouse')]",
+                    "name": "[concat(parameters('dataFactoryName'), '/LoadIntoStagingTable')]",
+                    "type": "Microsoft.DataFactory/factories/dataflows",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "folder": {
+                            "name": "CovidDefinitiveHC"
+                        },
+                        "type": "MappingDataFlow",
+                        "typeProperties": {
+                            "sources": [
+                                {
+                                    "dataset": {
+                                        "referenceName": "ArmtemplateTestDatasetOutSource",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "SourceCSV"
+                                }
+                            ],
+                            "sinks": [
+                                {
+                                    "dataset": {
+                                        "referenceName": "AzureSynapseAnalyticsStagingTableSink",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "SynapseStagingSink"
+                                }
+                            ],
+                            "transformations": [
+                                {
+                                    "name": "CleanData"
+                                }
+                            ],
+                            "script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\trowUrlColumn: 'filename',\n\tinferDriftedColumnTypes: true) ~> SourceCSV\nSourceCSV derive(each(match(type=='string'), $$ = trim(toString($$))),\n\t\teach(match(type=='integer'), $$ = toInteger($$)),\n\t\teach(match(type=='short'), $$ = toShort($$)),\n\t\teach(match(type=='double'), $$ = round(toDouble($$),3)),\n\t\teach(match(type=='decimal'), $$ = toDecimal($$))) ~> CleanData\nCleanData sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tstaged: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SynapseStagingSink"
+                        }
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/ArmtemplateTestDatasetOutSource')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/AzureSynapseAnalyticsStagingTableSink')]"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('selectDataLoader'),'Synapse Database Warehouse')]",
+                    "name": "[concat(parameters('dataFactoryName'), '/LoadIntoOperationalTable')]",
+                    "type": "Microsoft.DataFactory/factories/dataflows",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "folder": {
+                            "name": "CovidDefinitiveHC"
+                        },
+                        "type": "MappingDataFlow",
+                        "typeProperties": {
+                            "sources": [
+                                {
+                                    "dataset": {
+                                        "referenceName": "AzureSynapseAnalyticsStagingTableSource",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "sourceSynapseStagingTable"
+                                }
+                            ],
+                            "sinks": [
+                                {
+                                    "dataset": {
+                                        "referenceName": "SynapseOperationalTable_sink",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "SynapseOperationalTable"
+                                }
+                            ],
+                            "transformations": [],
+                            "script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table',\n\tstaged: false) ~> sourceSynapseStagingTable\nsourceSynapseStagingTable sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tstaged: true,\n\tpostSQLs:['\\n'],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SynapseOperationalTable"
+                        }
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/AzureSynapseAnalyticsStagingTableSource')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/SynapseOperationalTable_sink')]"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('selectDataLoader'),'Both')]",
+                    "name": "[concat(parameters('dataFactoryName'), '/LoadIntoStagingTable_SynapseWithSQL')]",
+                    "type": "Microsoft.DataFactory/factories/dataflows",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "folder": {
+                            "name": "CovidDefinitiveHC"
+                        },
+                        "type": "MappingDataFlow",
+                        "typeProperties": {
+                            "sources": [
+                                {
+                                    "dataset": {
+                                        "referenceName": "ArmtemplateTestDatasetOutSource",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "SourceCSV"
+                                }
+                            ],
+                            "sinks": [
+                                {
+                                    "dataset": {
+                                        "referenceName": "AzureSynapseAnalyticsStagingTableSink",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "SynapseStagingSink"
+                                },
+                                {
+                                    "dataset": {
+                                        "referenceName": "SqlDbStagingSink",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "SQLStagingSink"
+                                }
+                            ],
+                            "transformations": [
+                                {
+                                    "name": "CleanData"
+                                }
+                            ],
+                            "script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\trowUrlColumn: 'filename',\n\tinferDriftedColumnTypes: true) ~> SourceCSV\nSourceCSV derive(each(match(type=='string'), $$ = trim(toString($$))),\n\t\teach(match(type=='short'), $$ = toShort($$)),\n\t\teach(match(type=='integer'), $$ = toInteger($$)),\n\t\teach(match(type=='double'), $$ = round(toDouble($$),3)),\n\t\teach(match(type=='decimal'), $$ = toDecimal($$))) ~> CleanData\nCleanData sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tstaged: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SynapseStagingSink\nCleanData sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SQLStagingSink"
+                        }
+                    },
+                    "dependsOn": [
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/ArmtemplateTestDatasetOutSource')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/AzureSynapseAnalyticsStagingTableSink')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/SqlDbStagingSink')]",
+                        "[parameters('dataFactoryName')]"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('selectDataLoader'),'Both')]",
+                    "name": "[concat(parameters('dataFactoryName'), '/LoadIntoOperationalTable_SynapseWithSQL')]",
+                    "type": "Microsoft.DataFactory/factories/dataflows",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "folder": {
+                            "name": "CovidDefinitiveHC"
+                        },
+                        "type": "MappingDataFlow",
+                        "typeProperties": {
+                            "sources": [
+                                {
+                                    "dataset": {
+                                        "referenceName": "AzureSynapseAnalyticsStagingTableSource",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "sourceSynapseStagingTable"
+                                },
+                                {
+                                    "dataset": {
+                                        "referenceName": "SqlDbStagingSource",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "sourceSqlDbStaging"
+                                }
+                            ],
+                            "sinks": [
+                                {
+                                    "dataset": {
+                                        "referenceName": "SynapseOperationalTable_sink",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "SynapseOperationalTable"
+                                },
+                                {
+                                    "dataset": {
+                                        "referenceName": "SqlOperationalSink",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "SqlOperationalSink"
+                                }
+                            ],
+                            "transformations": [],
+                            "script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table',\n\tstaged: false) ~> sourceSynapseStagingTable\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> sourceSqlDbStaging\nsourceSynapseStagingTable sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tt:true,\n\tformat: 'table',\n\tstaged: true,\n\tpostSQLs:['\\n'],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SynapseOperationalTable\nsourceSqlDbStaging sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SqlOperationalSink"
+                        }
+                    },
+                    "dependsOn": [
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/SqlDbStagingSource')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/SynapseOperationalTable_sink')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/SqlOperationalSink')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/AzureSynapseAnalyticsStagingTableSource')]",
+                        "[parameters('dataFactoryName')]"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('selectDataLoader'),'SQL Database')]",
+                    "name": "[concat(parameters('dataFactoryName'), '/LoadIntoStagingTable_SQL')]",
+                    "type": "Microsoft.DataFactory/factories/dataflows",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "folder": {
+                            "name": "CovidDefinitiveHC"
+                        },
+                        "type": "MappingDataFlow",
+                        "typeProperties": {
+                            "sources": [
+                                {
+                                    "dataset": {
+                                        "referenceName": "ArmtemplateTestDatasetOutSource",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "SourceCSV"
+                                }
+                            ],
+                            "sinks": [
+                                {
+                                    "dataset": {
+                                        "referenceName": "SqlDbStagingSink",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "SQLStagingSink"
+                                }
+                            ],
+                            "transformations": [
+                                {
+                                    "name": "CleanData"
+                                }
+                            ],
+                            "script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\trowUrlColumn: 'filename',\n\tinferDriftedColumnTypes: true) ~> SourceCSV\nSourceCSV derive(each(match(type=='string'), $$ = trim(toString($$))),\n\t\teach(match(type=='double'), $$ = round(toDouble($$),3)),\n\t\teach(match(type=='short'), $$ = toShort($$)),\n\t\teach(match(type=='integer'), $$ = toInteger($$)),\n\t\teach(match(type=='decimal'), $$ = toDecimal($$))) ~> CleanData\nCleanData sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SQLStagingSink"
+                        }
+                    },
+                    "dependsOn": [
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/ArmtemplateTestDatasetOutSource')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/AzureSynapseAnalyticsStagingTableSink')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/SqlDbStagingSink')]",
+                        "[parameters('dataFactoryName')]"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('selectDataLoader'),'SQL Database')]",
+                    "name": "[concat(parameters('dataFactoryName'), '/LoadIntoOperationalTable_SQL')]",
+                    "type": "Microsoft.DataFactory/factories/dataflows",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "folder": {
+                            "name": "CovidDefinitiveHC"
+                        },
+                        "type": "MappingDataFlow",
+                        "typeProperties": {
+                            "sources": [
+                                {
+                                    "dataset": {
+                                        "referenceName": "SqlDbStagingSource",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "sourceSqlDbStaging"
+                                }
+                            ],
+                            "sinks": [
+                                {
+                                    "dataset": {
+                                        "referenceName": "SqlOperationalSink",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "SqlOperationalSink"
+                                }
+                            ],
+                            "transformations": [],
+                            "script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> sourceSqlDbStaging\nsourceSqlDbStaging sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SqlOperationalSink"
+                        }
+                    },
+                    "dependsOn": [
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/SqlOperationalSink')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/SqlDbStagingSource')]",
+                        "[parameters('dataFactoryName')]"
+                    ]
+                },
+
+                {
+                    "condition": "[equals(parameters('selectDataLoader'),'Synapse Database Warehouse')]",
+                    "type": "Microsoft.DataFactory/factories/pipelines",
+                    "apiVersion": "2018-06-01",
+                    "name": "[concat(parameters('dataFactoryName'), '/SynapseDataLoader')]",
+                    "properties": {
+                        "folder": {
+                            "name": "CovidDefinitiveHC"
+                        },
+                        "activities": [
+                            {
+                                "name": "Copy latest data",
+                                "type": "Copy",
+                                "dependsOn": [],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "DelimitedTextSource",
+                                        "storeSettings": {
+                                            "type": "AzureBlobStorageReadSettings",
+                                            "recursive": true
+                                        },
+                                        "formatSettings": {
+                                            "type": "DelimitedTextReadSettings"
+                                        }
+                                    },
+                                    "sink": {
+                                        "type": "DelimitedTextSink",
+                                        "storeSettings": {
+                                            "type": "AzureBlobStorageWriteSettings"
+                                        },
+                                        "formatSettings": {
+                                            "type": "DelimitedTextWriteSettings",
+                                            "quoteAllText": true,
+                                            "fileExtension": ".txt"
+                                        }
+                                    },
+                                    "enableStaging": false,
+                                    "translator": {
+                                        "type": "TabularTranslator",
+                                        "typeConversion": true,
+                                        "typeConversionSettings": {
+                                            "allowDataTruncation": true,
+                                            "treatBooleanAsNumber": false
+                                        }
+                                    }
+                                },
+                                "inputs": [
+                                    {
+                                        "referenceName": "ArmtemplateTestDatasetIn",
+                                        "type": "DatasetReference"
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "referenceName": "ArmtemplateTestDatasetOutSink",
+                                        "type": "DatasetReference"
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "Verify Master Key",
+                                "type": "Lookup",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Copy latest data",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "SqlDWSource",
+                                        "sqlReaderQuery": "IF (select Count(*) from sys.symmetric_keys where name like '%DatabaseMasterKey%') = 0\n\nBEGIN\n\nCREATE master key;\n\nIF NOT EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC' )\n\n    EXEC('CREATE SCHEMA [definitive_HC] AUTHORIZATION [dbo]');\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\nIF NOT EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC' )\n\n    EXEC('CREATE SCHEMA [definitive_HC] AUTHORIZATION [dbo]');\n\nselect Count(*) from sys.symmetric_keys;\n\nEND\n",
+                                        "queryTimeout": "02:00:00"
+                                    },
+                                    "dataset": {
+                                        "referenceName": "AzureSynapseAnalyticsStagingTableSource",
+                                        "type": "DatasetReference"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "LoadIntoStagingTable",
+                                "type": "ExecuteDataFlow",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Verify Master Key",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    },
+                                    "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/customerStorageLinkedService')]"
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "dataflow": {
+                                        "referenceName": "LoadIntoStagingTable",
+                                        "type": "DataFlowReference",
+                                        "parameters": {},
+                                        "datasetParameters": {
+                                            "SourceCSV": {},
+                                            "SynapseStagingSink": {}
+                                        }
+                                    },
+                                    "staging": {
+                                        "linkedService": {
+                                            "referenceName": "customerStorageLinkedService",
+                                            "type": "LinkedServiceReference"
+                                        },
+                                        "folderPath": "staging"
+                                    },
+                                    "compute": {
+                                        "coreCount": 8,
+                                        "computeType": "General"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "LoadIntoOperationalTable",
+                                "type": "ExecuteDataFlow",
+                                "dependsOn": [
+                                    {
+                                        "activity": "LoadIntoStagingTable",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    },
+                                    "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/customerStorageLinkedService')]"
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "dataflow": {
+                                        "referenceName": "LoadIntoOperationalTable",
+                                        "type": "DataFlowReference",
+                                        "parameters": {},
+                                        "datasetParameters": {
+                                            "sourceSynapseStagingTable": {},
+                                            "SynapseOperationalTable": {}
+                                        }
+                                    },
+                                    "staging": {
+                                        "linkedService": {
+                                            "referenceName": "customerStorageLinkedService",
+                                            "type": "LinkedServiceReference"
+                                        },
+                                        "folderPath": "staging"
+                                    },
+                                    "compute": {
+                                        "coreCount": 8,
+                                        "computeType": "General"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "Create Views in Synapse",
+                                "type": "Lookup",
+                                "dependsOn": [
+                                    {
+                                        "activity": "LoadIntoOperationalTable",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 0,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "SqlDWSource",
+                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'dhc_view')\n    EXEC('create view definitive_HC.dhc_view as select State_Name, Num_Staffed_Beds from definitive_HC.operationaldhc;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "queryTimeout": "00:10:00"
+                                    },
+                                    "dataset": {
+                                        "referenceName": "SynapseOperationalTable_sink",
+                                        "type": "DatasetReference"
+                                    }
+                                }
+                            }
+                        ],
+                        "annotations": []
+                    },
+                    "dependsOn": [
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/dataflows/LoadIntoStagingTable')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/dataflows/LoadIntoOperationalTable')]",
+                        "[parameters('dataFactoryName')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/ArmtemplateTestDatasetIn')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/ArmtemplateTestDatasetOutSink')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/AzureSynapseAnalyticsStagingTableSource')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/SynapseOperationalTable_sink')]"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('selectDataLoader'),'Both')]",
+                    "name": "[concat(parameters('dataFactoryName'), '/SynapseAndSqlDataLoader')]",
+                    "type": "Microsoft.DataFactory/factories/pipelines",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "folder": {
+                            "name": "CovidDefinitiveHC"
+                        },
+                        "activities": [
+                            {
+                                "name": "Copy latest data",
+                                "type": "Copy",
+                                "dependsOn": [],
+                                "policy": {
+                                    "timeout": "0.00:20:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "DelimitedTextSource",
+                                        "storeSettings": {
+                                            "type": "AzureBlobStorageReadSettings",
+                                            "recursive": true
+                                        },
+                                        "formatSettings": {
+                                            "type": "DelimitedTextReadSettings"
+                                        }
+                                    },
+                                    "sink": {
+                                        "type": "DelimitedTextSink",
+                                        "storeSettings": {
+                                            "type": "AzureBlobStorageWriteSettings"
+                                        },
+                                        "formatSettings": {
+                                            "type": "DelimitedTextWriteSettings",
+                                            "quoteAllText": true,
+                                            "fileExtension": ".txt"
+                                        }
+                                    },
+                                    "enableStaging": false,
+                                    "translator": {
+                                        "type": "TabularTranslator",
+                                        "typeConversion": true,
+                                        "typeConversionSettings": {
+                                            "allowDataTruncation": true,
+                                            "treatBooleanAsNumber": false
+                                        }
+                                    }
+                                },
+                                "inputs": [
+                                    {
+                                        "referenceName": "ArmtemplateTestDatasetIn",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "referenceName": "ArmtemplateTestDatasetOutSink",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "Verify Master Key",
+                                "type": "Lookup",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Copy latest data",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "0.00:10:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "SqlDWSource",
+                                        "sqlReaderQuery": "IF (select Count(*) from sys.symmetric_keys where name like '%DatabaseMasterKey%') = 0\n\nBEGIN\n\nCREATE master key;\n\nIF NOT EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC' )\n\n    EXEC('CREATE SCHEMA [definitive_HC] AUTHORIZATION [dbo]');\nselect Count(*) from sys.symmetric_keys;\n\n\nEND\n\nELSE \n\nBEGIN\nIF NOT EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC' )\n\n    EXEC('CREATE SCHEMA [definitive_HC] AUTHORIZATION [dbo]');\n\nselect Count(*) from sys.symmetric_keys;\n\nEND\n",
+                                        "queryTimeout": "00:05:00"
+                                    },
+                                    "dataset": {
+                                        "referenceName": "AzureSynapseAnalyticsStagingTableSource",
+                                        "type": "DatasetReference"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "Verify Schema in SQL DB",
+                                "type": "Lookup",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Verify Master Key",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "0.00:10:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "AzureSqlSource",
+                                        "sqlReaderQuery": "IF NOT EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC') \n\nBEGIN\n\n    EXEC('CREATE SCHEMA [definitive_HC] AUTHORIZATION [dbo]');\n\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "queryTimeout": "00:05:00"
+                                    },
+                                    "dataset": {
+                                        "referenceName": "SqlDbStagingSource",
+                                        "type": "DatasetReference"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "LoadIntoStagingTable_SynapseWithSQL",
+                                "type": "ExecuteDataFlow",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Verify Schema in SQL DB",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    },
+                                    "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/customerStorageLinkedService')]"
+                                ],
+                                "policy": {
+                                    "timeout": "0.00:30:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "dataflow": {
+                                        "referenceName": "LoadIntoStagingTable_SynapseWithSQL",
+                                        "type": "DataFlowReference",
+                                        "parameters": {},
+                                        "datasetParameters": {
+                                            "SourceCSV": {},
+                                            "SynapseStagingSink": {},
+                                            "SQLStagingSink": {}
+                                        }
+                                    },
+                                    "staging": {
+                                        "linkedService": {
+                                            "referenceName": "customerStorageLinkedService",
+                                            "type": "LinkedServiceReference"
+                                        },
+                                        "folderPath": "staging"
+                                    },
+                                    "compute": {
+                                        "coreCount": 8,
+                                        "computeType": "General"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "LoadIntoOperationalTable_SynapseWithSQL",
+                                "type": "ExecuteDataFlow",
+                                "dependsOn": [
+                                    {
+                                        "activity": "LoadIntoStagingTable_SynapseWithSQL",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    },
+                                    "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/customerStorageLinkedService')]"
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "dataflow": {
+                                        "referenceName": "LoadIntoOperationalTable_SynapseWithSQL",
+                                        "type": "DataFlowReference",
+                                        "parameters": {},
+                                        "datasetParameters": {
+                                            "sourceSynapseStagingTable": {},
+                                            "sourceSqlDbStaging": {},
+                                            "SynapseOperationalTable": {},
+                                            "SqlOperationalSink": {}
+                                        }
+                                    },
+                                    "staging": {
+                                        "linkedService": {
+                                            "referenceName": "customerStorageLinkedService",
+                                            "type": "LinkedServiceReference"
+                                        },
+                                        "folderPath": "staging"
+                                    },
+                                    "compute": {
+                                        "coreCount": 8,
+                                        "computeType": "General"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "Create Views in Synapse",
+                                "type": "Lookup",
+                                "dependsOn": [
+                                    {
+                                        "activity": "LoadIntoOperationalTable_SynapseWithSQL",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "0.00:10:00",
+                                    "retry": 0,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "SqlDWSource",
+                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'dhc_view')\n    EXEC('create view definitive_HC.dhc_view as select State_Name, Num_Staffed_Beds from definitive_HC.operationaldhc;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "queryTimeout": "00:10:00"
+                                    },
+                                    "dataset": {
+                                        "referenceName": "AzureSynapseAnalyticsStagingTableSource",
+                                        "type": "DatasetReference"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "Create Views in SQL DB",
+                                "type": "Lookup",
+                                "dependsOn": [
+                                    {
+                                        "activity": "LoadIntoOperationalTable_SynapseWithSQL",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "0.00:10:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "AzureSqlSource",
+                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'dhc_view')\n    EXEC('create view definitive_HC.dhc_view as select State_Name, Num_Staffed_Beds from definitive_HC.operationaldhc;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "queryTimeout": "00:05:00"
+                                    },
+                                    "dataset": {
+                                        "referenceName": "SqlDbStagingSource",
+                                        "type": "DatasetReference"
+                                    }
+                                }
+                            }
+                        ],
+                        "annotations": []
+                    },
+                    "dependsOn": [
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/ArmtemplateTestDatasetIn')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/ArmtemplateTestDatasetOutSink')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/SqlDbStagingSource')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/AzureSynapseAnalyticsStagingTableSource')]",
+
+                        "[parameters('dataFactoryName')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/dataflows/LoadIntoStagingTable_SynapseWithSQL')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/customerStorageLinkedService')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/dataflows/LoadIntoOperationalTable_SynapseWithSQL')]"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('selectDataLoader'),'SQL Database')]",
+                    "name": "[concat(parameters('dataFactoryName'), '/SqlDataLoader')]",
+                    "type": "Microsoft.DataFactory/factories/pipelines",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "folder": {
+                            "name": "CovidDefinitiveHC"
+                        },
+                        "activities": [
+                            {
+                                "name": "Copy latest data",
+                                "type": "Copy",
+                                "dependsOn": [],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "DelimitedTextSource",
+                                        "storeSettings": {
+                                            "type": "AzureBlobStorageReadSettings",
+                                            "recursive": true
+                                        },
+                                        "formatSettings": {
+                                            "type": "DelimitedTextReadSettings"
+                                        }
+                                    },
+                                    "sink": {
+                                        "type": "DelimitedTextSink",
+                                        "storeSettings": {
+                                            "type": "AzureBlobStorageWriteSettings"
+                                        },
+                                        "formatSettings": {
+                                            "type": "DelimitedTextWriteSettings",
+                                            "quoteAllText": true,
+                                            "fileExtension": ".txt"
+                                        }
+                                    },
+                                    "enableStaging": false,
+                                    "translator": {
+                                        "type": "TabularTranslator",
+                                        "typeConversion": true,
+                                        "typeConversionSettings": {
+                                            "allowDataTruncation": true,
+                                            "treatBooleanAsNumber": false
+                                        }
+                                    }
+                                },
+                                "inputs": [
+                                    {
+                                        "referenceName": "ArmtemplateTestDatasetIn",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "referenceName": "ArmtemplateTestDatasetOutSink",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "Verify Schema in SQL DB",
+                                "type": "Lookup",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Copy latest data",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 0,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "AzureSqlSource",
+                                        "sqlReaderQuery": "IF NOT EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC') \n\nBEGIN\n\n    EXEC('CREATE SCHEMA [definitive_HC] AUTHORIZATION [dbo]');\n\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "queryTimeout": "00:10:00"
+                                    },
+                                    "dataset": {
+                                        "referenceName": "SqlDbStagingSource",
+                                        "type": "DatasetReference"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "LoadIntoStagingTable_SQL",
+                                "type": "ExecuteDataFlow",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Verify Schema in SQL DB",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    },
+                                    "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/customerStorageLinkedService')]"
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "dataflow": {
+                                        "referenceName": "LoadIntoStagingTable_SQL",
+                                        "type": "DataFlowReference",
+                                        "parameters": {},
+                                        "datasetParameters": {
+                                            "SourceCSV": {},
+                                            "SynapseStagingSink": {},
+                                            "SQLStagingSink": {}
+                                        }
+                                    },
+                                    "staging": {
+                                        "linkedService": {
+                                            "referenceName": "customerStorageLinkedService",
+                                            "type": "LinkedServiceReference"
+                                        },
+                                        "folderPath": "staging"
+                                    },
+                                    "compute": {
+                                        "coreCount": 8,
+                                        "computeType": "General"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "LoadIntoOperationalTable_SQL",
+                                "type": "ExecuteDataFlow",
+                                "dependsOn": [
+                                    {
+                                        "activity": "LoadIntoStagingTable_SQL",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    },
+                                    "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/customerStorageLinkedService')]"
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "dataflow": {
+                                        "referenceName": "LoadIntoOperationalTable_SQL",
+                                        "type": "DataFlowReference",
+                                        "parameters": {},
+                                        "datasetParameters": {
+                                            "sourceSynapseStagingTable": {},
+                                            "sourceSqlDbStaging": {},
+                                            "SynapseOperationalTable": {},
+                                            "SqlOperationalSink": {}
+                                        }
+                                    },
+                                    "staging": {
+                                        "linkedService": {
+                                            "referenceName": "customerStorageLinkedService",
+                                            "type": "LinkedServiceReference"
+                                        },
+                                        "folderPath": "staging"
+                                    },
+                                    "compute": {
+                                        "coreCount": 8,
+                                        "computeType": "General"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "Create Views in SQL DB",
+                                "type": "Lookup",
+                                "dependsOn": [
+                                    {
+                                        "activity": "LoadIntoOperationalTable_SQL",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 0,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "AzureSqlSource",
+                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'dhc_view')\n    EXEC('create view definitive_HC.dhc_view as select State_Name, Num_Staffed_Beds from definitive_HC.operationaldhc;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "queryTimeout": "00:10:00"
+                                    },
+                                    "dataset": {
+                                        "referenceName": "SqlOperationalSink",
+                                        "type": "DatasetReference"
+                                    }
+                                }
+                            }
+                        ],
+                        "annotations": []
+                    },
+                    "dependsOn": [
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/ArmtemplateTestDatasetIn')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/ArmtemplateTestDatasetOutSink')]",
+                        "[parameters('dataFactoryName')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/dataflows/LoadIntoStagingTable_SQL')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/customerStorageLinkedService')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/dataflows/LoadIntoOperationalTable_SQL')]"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('selectDataLoader'),'Synapse Database Warehouse')]",
+                    "name": "[concat(parameters('dataFactoryName'), '/SynapseDataLoaderPipelineTrigger')]",
+                    "type": "Microsoft.DataFactory/factories/triggers",
+                    "apiVersion": "2018-06-01",
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/pipelines/SynapseDataLoader')]"
+                    ],
+                    "properties": {
+                        "annotations": [
+                        ],
+                        "runtimeState": "Started",
+                        "pipelines": [
+                            {
+                                "pipelineReference": {
+                                    "referenceName": "SynapseDataLoader",
+                                    "type": "PipelineReference"
+                                },
+                                "parameters": {
+                                }
+                            }
+                        ],
+                        "type": "TumblingWindowTrigger",
+                        "typeProperties": {
+                            "frequency": "Minute",
+                            "interval": 15,
+                            "startTime": "[parameters('triggerStartTime')]",
+                            "delay": "00:00:00",
+                            "maxConcurrency": 1,
+                            "retryPolicy": {
+                                "count": 3,
+                                "intervalInSeconds": 30
+                            }
+                        }
+                    }
+                },
+                {
+                    "condition": "[equals(parameters('selectDataLoader'),'Both')]",
+                    "name": "[concat(parameters('dataFactoryName'), '/SynapseAndSqlDataLoaderPipelineTrigger')]",
+                    "type": "Microsoft.DataFactory/factories/triggers",
+                    "apiVersion": "2018-06-01",
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/pipelines/SynapseAndSqlDataLoader')]"
+                    ],
+                    "properties": {
+                        "annotations": [
+                        ],
+                        "runtimeState": "Started",
+                        "pipelines": [
+                            {
+                                "pipelineReference": {
+                                    "referenceName": "SynapseAndSqlDataLoader",
+                                    "type": "PipelineReference"
+                                },
+                                "parameters": {
+                                }
+                            }
+                        ],
+                        "type": "TumblingWindowTrigger",
+                        "typeProperties": {
+                            "frequency": "Minute",
+                            "interval": 15,
+                            "startTime": "[parameters('triggerStartTime')]",
+                            "delay": "00:00:00",
+                            "maxConcurrency": 1,
+                            "retryPolicy": {
+                                "count": 3,
+                                "intervalInSeconds": 30
+                            }
+                        }
+                    }
+                },
+                {
+                    "condition": "[equals(parameters('selectDataLoader'),'SQL Database')]",
+                    "name": "[concat(parameters('dataFactoryName'), '/SqlDataLoaderPipelineTrigger')]",
+                    "type": "Microsoft.DataFactory/factories/triggers",
+                    "apiVersion": "2018-06-01",
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/pipelines/SqlDataLoader')]"
+                    ],
+                    "properties": {
+                        "annotations": [
+                        ],
+                        "runtimeState": "Started",
+                        "pipelines": [
+                            {
+                                "pipelineReference": {
+                                    "referenceName": "SqlDataLoader",
+                                    "type": "PipelineReference"
+                                },
+                                "parameters": {
+                                }
+                            }
+                        ],
+                        "type": "TumblingWindowTrigger",
+                        "typeProperties": {
+                            "frequency": "Minute",
+                            "interval": 15,
+                            "startTime": "[parameters('triggerStartTime')]",
+                            "delay": "00:00:00",
+                            "maxConcurrency": 1,
+                            "retryPolicy": {
+                                "count": 3,
+                                "intervalInSeconds": 30
+                            }
+                        }
+                    }
+                },
+                {
+                    "type": "Microsoft.Insights/actionGroups",
+                    "apiVersion": "2018-03-01",
+                    "name": "EmailNotificationPipelineFailure",
+                    "location": "Global",
+                    "properties": {
+                        "groupShortName": "failureAlert",
+                        "enabled": true,
+                        "emailReceivers": [
+                            {
+                                "name": "notifEmail",
+                                "emailAddress": "[parameters('notificationEmail')]"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('selectDataLoader'),'Synapse Database Warehouse')]",
+                    "name": "synapsePipelineAlertConfig",
+                    "type": "Microsoft.Insights/metricAlerts",
+                    "location": "global",
+                    "apiVersion": "2018-03-01",
+                    "tags": {},
+                    "properties": {
+                        "description": "Metric alert for pipeline failure",
+                        "severity": "0",
+                        "enabled": "true",
+                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]" ],
+                        "evaluationFrequency": "PT1M",
+                        "windowSize": "PT1M",
+                        "criteria": {
+                            "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
+                            "allOf": [
+                                {
+                                    "name": "1st criterion",
+                                    "metricName": "PipelineFailedRuns",
+                                    "dimensions": [
+                                        {
+                                            "name": "Name",
+                                            "operator": "Include",
+                                            "values": [ "SynapseDataLoader" ]
+                                        },
+                                        {
+                                            "name": "FailureType",
+                                            "operator": "Include",
+                                            "values": [ "UserError", "SystemError", "BadGateway" ]
+                                        }
+                                    ],
+                                    "operator": "GreaterThanOrEqual",
+                                    "threshold": "0.10",
+                                    "timeAggregation": "Average"
+                                }
+                            ]
+                        },
+                        "actions": [
+                            {
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','EmailNotificationPipelineFailure')]"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "EmailNotificationPipelineFailure"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('selectDataLoader'),'Synapse Database Warehouse')]",
+                    "name": "synapseActivityAlertConfig",
+                    "type": "Microsoft.Insights/metricAlerts",
+                    "location": "global",
+                    "apiVersion": "2018-03-01",
+                    "tags": {},
+                    "properties": {
+                        "description": "Metric alert for activity failure in a pipeline",
+                        "severity": "0",
+                        "enabled": "true",
+                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]" ],
+                        "evaluationFrequency": "PT1M",
+                        "windowSize": "PT1M",
+                        "criteria": {
+                            "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
+                            "allOf": [
+                                {
+                                    "name": "1st criterion",
+                                    "metricName": "ActivityFailedRuns",
+                                    "dimensions": [
+                                        {
+                                            "name": "ActivityType",
+                                            "operator": "Include",
+                                            "values": [ "Copy", "Lookup", "ExecuteDataFlow" ]
+                                        },
+                                        {
+                                            "name": "Name",
+                                            "operator": "Include",
+                                            "values": [ "Copy latest data", "Verify Master Key", "LoadIntoStagingTable", "LoadIntoOperationalTable" ]
+                                        },
+                                        {
+                                            "name": "PipelineName",
+                                            "operator": "Include",
+                                            "values": [ "SynapseDataLoader" ]
+                                        },
+                                        {
+                                            "name": "FailureType",
+                                            "operator": "Include",
+                                            "values": [ "UserError", "SystemError", "BadGateway" ]
+                                        }
+                                    ],
+                                    "operator": "GreaterThanOrEqual",
+                                    "threshold": "0.10",
+                                    "timeAggregation": "Average"
+                                }
+                            ]
+                        },
+                        "actions": [
+                            {
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','EmailNotificationPipelineFailure')]"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "EmailNotificationPipelineFailure"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('selectDataLoader'),'Synapse Database Warehouse')]",
+                    "type": "Microsoft.AlertsManagement/actionRules",
+                    "apiVersion": "2019-05-05-preview",
+                    "name": "suppressResolveNotificationSynapse",
+                    "location": "global",
+                    "properties": {
+                        "conditions": {
+                            "severity": {
+                                "operator": "Equals",
+                                "values": [
+                                    "Sev0"
+                                ]
+                            },
+                            "monitorCondition": {
+                                "operator": "Equals",
+                                "values": [
+                                    "Resolved"
+                                ]
+                            }
+                        },
+                        "suppressionConfig": {
+                            "recurrenceType": "always"
+                        },
+                        "status": "Enabled",
+                        "type": "Suppression",
+                        "scope": {
+                            "scopeType": "Resource",
+                            "values": [
+                                "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/actionGroups/', 'EmailNotificationPipelineFailure')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'synapsePipelineAlertConfig')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'synapseActivityAlertConfig')]"
                             ]
                         }
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "EmailNotificationPipelineFailure",
+                        "synapsePipelineAlertConfig",
+                        "synapseActivityAlertConfig"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('selectDataLoader'),'Both')]",
+                    "name": "sqlAndSynapsePipelineAlertConfig",
+                    "type": "Microsoft.Insights/metricAlerts",
+                    "location": "global",
+                    "apiVersion": "2018-03-01",
+                    "tags": {},
+                    "properties": {
+                        "description": "Metric alert for pipeline failure",
+                        "severity": "0",
+                        "enabled": "true",
+                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]" ],
+                        "evaluationFrequency": "PT1M",
+                        "windowSize": "PT1M",
+                        "criteria": {
+                            "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
+                            "allOf": [
+                                {
+                                    "name": "1st criterion",
+                                    "metricName": "PipelineFailedRuns",
+                                    "dimensions": [
+                                        {
+                                            "name": "Name",
+                                            "operator": "Include",
+                                            "values": [ "SynapseAndSqlDataLoader" ]
+                                        },
+                                        {
+                                            "name": "FailureType",
+                                            "operator": "Include",
+                                            "values": [ "UserError", "SystemError", "BadGateway" ]
+                                        }
+                                    ],
+                                    "operator": "GreaterThanOrEqual",
+                                    "threshold": "0.10",
+                                    "timeAggregation": "Average"
+                                }
+                            ]
+                        },
+                        "actions": [
+                            {
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','EmailNotificationPipelineFailure')]"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "EmailNotificationPipelineFailure"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('selectDataLoader'),'Both')]",
+                    "name": "sqlAndSynapseActivityAlertConfig",
+                    "type": "Microsoft.Insights/metricAlerts",
+                    "location": "global",
+                    "apiVersion": "2018-03-01",
+                    "tags": {},
+                    "properties": {
+                        "description": "Metric alert for activity failure in a pipeline",
+                        "severity": "0",
+                        "enabled": "true",
+                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]" ],
+                        "evaluationFrequency": "PT1M",
+                        "windowSize": "PT1M",
+                        "criteria": {
+                            "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
+                            "allOf": [
+                                {
+                                    "name": "1st criterion",
+                                    "metricName": "ActivityFailedRuns",
+                                    "dimensions": [
+                                        {
+                                            "name": "ActivityType",
+                                            "operator": "Include",
+                                            "values": [ "Copy", "Lookup", "ExecuteDataFlow" ]
+                                        },
+                                        {
+                                            "name": "Name",
+                                            "operator": "Include",
+                                            "values": [ "Copy latest data", "Verify Master Key", "LoadIntoStagingTable_SynapseWithSQL", "LoadIntoOperationalTable_SynapseWithSQL" ]
+                                        },
+                                        {
+                                            "name": "PipelineName",
+                                            "operator": "Include",
+                                            "values": [ "SynapseAndSqlDataLoader" ]
+                                        },
+                                        {
+                                            "name": "FailureType",
+                                            "operator": "Include",
+                                            "values": [ "UserError", "SystemError", "BadGateway" ]
+                                        }
+                                    ],
+                                    "operator": "GreaterThanOrEqual",
+                                    "threshold": "0.10",
+                                    "timeAggregation": "Average"
+                                }
+                            ]
+                        },
+                        "actions": [
+                            {
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','EmailNotificationPipelineFailure')]"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "EmailNotificationPipelineFailure"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('selectDataLoader'),'Both')]",
+                    "type": "Microsoft.AlertsManagement/actionRules",
+                    "apiVersion": "2019-05-05-preview",
+                    "name": "suppressResolveNotificationBoth",
+                    "location": "global",
+                    "properties": {
+                        "conditions": {
+                            "severity": {
+                                "operator": "Equals",
+                                "values": [
+                                    "Sev0"
+                                ]
+                            },
+                            "monitorCondition": {
+                                "operator": "Equals",
+                                "values": [
+                                    "Resolved"
+                                ]
+                            }
+                        },
+                        "suppressionConfig": {
+                            "recurrenceType": "always"
+                        },
+                        "status": "Enabled",
+                        "type": "Suppression",
+                        "scope": {
+                            "scopeType": "Resource",
+                            "values": [
+                                "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/actionGroups/', 'EmailNotificationPipelineFailure')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlAndSynapsePipelineAlertConfig')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlAndSynapseActivityAlertConfig')]"
+                            ]
+                        }
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "EmailNotificationPipelineFailure",
+                        "sqlAndSynapsePipelineAlertConfig",
+                        "sqlAndSynapseActivityAlertConfig"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('selectDataLoader'),'SQL Database')]",
+                    "name": "sqlPipelineAlertConfig",
+                    "type": "Microsoft.Insights/metricAlerts",
+                    "location": "global",
+                    "apiVersion": "2018-03-01",
+                    "tags": {},
+                    "properties": {
+                        "description": "Metric alert for pipeline failure",
+                        "severity": "0",
+                        "enabled": "true",
+                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]" ],
+                        "evaluationFrequency": "PT1M",
+                        "windowSize": "PT1M",
+                        "criteria": {
+                            "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
+                            "allOf": [
+                                {
+                                    "name": "1st criterion",
+                                    "metricName": "PipelineFailedRuns",
+                                    "dimensions": [
+                                        {
+                                            "name": "Name",
+                                            "operator": "Include",
+                                            "values": [ "SqlDataLoader" ]
+                                        },
+                                        {
+                                            "name": "FailureType",
+                                            "operator": "Include",
+                                            "values": [ "UserError", "SystemError", "BadGateway" ]
+                                        }
+                                    ],
+                                    "operator": "GreaterThanOrEqual",
+                                    "threshold": "0.10",
+                                    "timeAggregation": "Average"
+                                }
+                            ]
+                        },
+                        "actions": [
+                            {
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','EmailNotificationPipelineFailure')]"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "EmailNotificationPipelineFailure"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('selectDataLoader'),'SQL Database')]",
+                    "name": "sqlActivityAlertConfig",
+                    "type": "Microsoft.Insights/metricAlerts",
+                    "location": "global",
+                    "apiVersion": "2018-03-01",
+                    "tags": {},
+                    "properties": {
+                        "description": "Metric alert for activity failure in a pipeline",
+                        "severity": "0",
+                        "enabled": "true",
+                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]" ],
+                        "evaluationFrequency": "PT1M",
+                        "windowSize": "PT1M",
+                        "criteria": {
+                            "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
+                            "allOf": [
+                                {
+                                    "name": "1st criterion",
+                                    "metricName": "ActivityFailedRuns",
+                                    "dimensions": [
+                                        {
+                                            "name": "ActivityType",
+                                            "operator": "Include",
+                                            "values": [ "Copy", "ExecuteDataFlow" ]
+                                        },
+                                        {
+                                            "name": "Name",
+                                            "operator": "Include",
+                                            "values": [ "Copy latest data", "LoadIntoStagingTable_SQL", "LoadIntoOperationalTable_SQL" ]
+                                        },
+                                        {
+                                            "name": "PipelineName",
+                                            "operator": "Include",
+                                            "values": [ "SqlDataLoader" ]
+                                        },
+                                        {
+                                            "name": "FailureType",
+                                            "operator": "Include",
+                                            "values": [ "UserError", "SystemError", "BadGateway" ]
+                                        }
+                                    ],
+                                    "operator": "GreaterThanOrEqual",
+                                    "threshold": "0.10",
+                                    "timeAggregation": "Average"
+                                }
+                            ]
+                        },
+                        "actions": [
+                            {
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','EmailNotificationPipelineFailure')]"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "EmailNotificationPipelineFailure"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('selectDataLoader'),'SQL Database')]",
+                    "type": "Microsoft.AlertsManagement/actionRules",
+                    "apiVersion": "2019-05-05-preview",
+                    "name": "suppressResolveNotificationSQL",
+                    "location": "global",
+                    "properties": {
+                        "conditions": {
+                            "severity": {
+                                "operator": "Equals",
+                                "values": [
+                                    "Sev0"
+                                ]
+                            },
+                            "monitorCondition": {
+                                "operator": "Equals",
+                                "values": [
+                                    "Resolved"
+                                ]
+                            }
+                        },
+                        "suppressionConfig": {
+                            "recurrenceType": "always"
+                        },
+                        "status": "Enabled",
+                        "type": "Suppression",
+                        "scope": {
+                            "scopeType": "Resource",
+                            "values": [
+                                "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/actionGroups/', 'EmailNotificationPipelineFailure')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlPipelineAlertConfig')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlActivityAlertConfig')]"
+                            ]
+                        }
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "EmailNotificationPipelineFailure",
+                        "sqlPipelineAlertConfig",
+                        "sqlActivityAlertConfig"
                     ]
                 }
             ]
         }
-    ]
+    ],
+    "outputs": {}
 }

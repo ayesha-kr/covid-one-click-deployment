@@ -251,12 +251,69 @@
             }
         },
         {
+            "condition": "[equals(parameters('enableMicrosoftTeamsNotification'),'Yes')]",
             "name": "azureDataFactoryTemplate",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2018-05-01",
             "dependsOn": [
                 "[resourceId('Microsoft.Resources/deployments','sqlServerTemplate')]",
                 "[resourceId('Microsoft.Resources/deployments','logicAppTemplate')]"
+            ],
+            "properties": {
+              "mode": "Incremental",
+              "templateLink": {
+                "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/dev-zahid/datasets/covid-19/definitive-healthcare/customer/templates/dataFactory/azuredeploy.json"
+              },
+              "parameters": {
+                "dataFactoryName": {
+                  "value": "[variables('dataFactoryUniqueName')]"
+                },
+                "dataFactoryLocation": {
+                  "value": "[parameters('dataFactoryLocation')]"
+                },
+                "storageAccountName": {
+                    "value": "[variables('storageAccountUniqueName')]"
+                },
+                "sasURI": {
+                    "value": "[parameters('sasURI')]"
+                },
+                "sqlServerName": {
+                    "value": "[variables('sqlServerUniqueName')]"
+                },
+                "location": {
+                    "value": "[parameters('location')]"
+                },
+                "sqlAdministratorLogin": {
+                    "value": "[parameters('sqlAdministratorLogin')]"
+                },
+                "sqlAdministratorLoginPassword": {
+                    "value": "[parameters('sqlAdministratorLoginPassword')]"
+                },
+                "sqlDBName": {
+                    "value": "[parameters('sqlDBName')]"
+                },
+                "dataWarehouseName": {
+                    "value": "[parameters('dataWarehouseName')]"
+                },
+                "selectDataLoader": {
+                    "value": "[parameters('selectDataLoader')]"
+                },
+                "notificationEmail": {
+                    "value": "[parameters('notificationEmail')]"
+                },
+                "webHookUri": {
+                    "value": "[reference('logicAppTemplate').outputs.WebHookURI.value]"
+                }
+              }
+            }
+        },
+        {
+            "condition": "[equals(parameters('enableMicrosoftTeamsNotification'),'No')]",
+            "name": "azureDataFactoryTemplate",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments','sqlServerTemplate')]"
             ],
             "properties": {
               "mode": "Incremental",

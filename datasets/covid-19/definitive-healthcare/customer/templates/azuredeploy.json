@@ -153,7 +153,7 @@
         "storageAccountUniqueName": "[toLower(concat(parameters('storageAccountName'), uniqueString(resourceGroup().id)))]",
         "sqlServerUniqueName": "[concat(parameters('sqlServerName'), uniqueString(resourceGroup().id))]",
         "dataFactoryUniqueName": "[concat(parameters('dataFactoryName'), uniqueString(resourceGroup().id))]",
-        "webHookUri": "[reference('logicAppTemplate').outputs.WebHookURI.value]"
+        "webHookUri": ""
     },
     "resources": [
         {
@@ -301,7 +301,7 @@
                     "value": "[parameters('notificationEmail')]"
                 },
                 "webHookUri": {
-                    "value": "[variables('webHookUri')]"
+                    "value": "[reference('logicAppTemplate').outputs.WebHookURI.value]"
                 }
               }
             }

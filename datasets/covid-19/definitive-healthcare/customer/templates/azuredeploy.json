@@ -268,7 +268,31 @@
                 }
               }
             }
+        },
+        {
+            "name": "dataShareTemplate",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments','azureDataFactoryTemplate')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/customer/templates/dataShare/azuredeploy.json"
+                },
+                "parameters": {
+                    "dataShareAccountName": {
+                        "value": "[variables('dataShareAccountName')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "roleNameGuid": {
+                        "value": "[parameters('roleNameGuid')]"
+                    }
+                }
+            }
         }
-
     ]
 }

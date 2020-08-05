@@ -71,15 +71,13 @@
             "metadata": {
                 "description": "Please specify comma separated email addresses on which you would like to receive the ADF pipeline alerts."
             }
-        },
-        "webHookUri": {
-            "type": "string"
         }
     },
     "variables": {
         "factoryName": "[concat(parameters('factoryName'), uniquestring(resourceGroup().id))]",
         "storageAccountName": "[concat(parameters('storageAccountName'), uniquestring(resourceGroup().id))]",
-        "serverName": "[concat(parameters('serverName'), uniquestring(resourceGroup().id))]"
+        "serverName": "[concat(parameters('serverName'), uniquestring(resourceGroup().id))]",
+        "webHookUri": ""
     },
     "resources": [
         {
@@ -177,6 +175,9 @@
                     },
                     "notificationEmail": {
                         "value": "[parameters('notificationEmail')]"
+                    },
+                    "webHookUri": {
+                        "value": "[parameters('webHookUri')]"
                     }
                 }
             }

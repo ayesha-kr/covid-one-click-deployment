@@ -1584,8 +1584,14 @@
                                 "name": "notifEmail",
                                 "emailAddress": "[parameters('notificationEmail')]"
                             }
-                        ]
-                    },
+                        ],
+                        "webhookReceivers": [
+                            {
+                              "name": "msftTeamsNotify",
+                              "serviceUri": "[parameters('webHookUri')]"
+                            }
+                        ],
+                    }
                     "dependsOn": [
                         "[parameters('dataFactoryName')]"
                     ]

@@ -56,6 +56,15 @@
         },
         "currentTime": {
             "type": "string"
+        },
+        "notificationEmail": {
+            "type": "string",
+            "metadata": {
+                "description": "Please specify comma separated email addresses on which you would like to receive the ADF pipeline alerts."
+            }
+        },
+        "webHookUri": {
+            "type": "string"
         }
     },
     "variables": {
@@ -74,7 +83,6 @@
             "identity": {
                 "type": "SystemAssigned"
             },
-            
             "resources": [
                 {
                     "name": "[concat(parameters('factoryName'), '/parquet_sink_dataset')]",
@@ -2527,8 +2535,7 @@
                                 "pipelineReference": {
                                     "referenceName": "Covid_Tracking_DefinitiveHC_Without_Sql_Sink",
                                     "type": "PipelineReference"
-                               }
-
+                                }
                             }
                         ],
                         "type": "ScheduleTrigger",
@@ -2545,7 +2552,335 @@
                         "[parameters('factoryName')]",
                         "[concat(variables('factoryId'), '/pipelines/Covid_Tracking_DefinitiveHC_Without_Sql_Sink')]"
                     ]
-                }                 
+                },
+                {
+                    "type": "Microsoft.Insights/actionGroups",
+                    "apiVersion": "2018-03-01",
+                    "name": "NotificationPipelineFailure",
+                    "location": "Global",
+                    "properties": {
+                        "groupShortName": "failureAlert",
+                        "enabled": true,
+                        "emailReceivers": [
+                            {
+                                "name": "notifEmail",
+                                "emailAddress": "[parameters('notificationEmail')]"
+                            }
+                        ],
+                        "webhookReceivers": [
+                            {
+                                "name": "msftTeamsNotify",
+                                "serviceUri": "[parameters('webHookUri')]"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[parameters('factoryName')]"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'No')]",
+                    "name": "covidTrackingWithoutSqlPipelineAlertConfig",
+                    "type": "Microsoft.Insights/metricAlerts",
+                    "location": "global",
+                    "apiVersion": "2018-03-01",
+                    "tags": {},
+                    "properties": {
+                        "description": "Metric alert for pipeline failure",
+                        "severity": "0",
+                        "enabled": "true",
+                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]" ],
+                        "evaluationFrequency": "PT1M",
+                        "windowSize": "PT1M",
+                        "criteria": {
+                            "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
+                            "allOf": [
+                                {
+                                    "name": "1st criterion",
+                                    "metricName": "PipelineFailedRuns",
+                                    "dimensions": [
+                                        {
+                                            "name": "Name",
+                                            "operator": "Include",
+                                            "values": [ "Covid_Tracking_DefinitiveHC_Without_Sql_Sink" ]
+                                        },
+                                        {
+                                            "name": "FailureType",
+                                            "operator": "Include",
+                                            "values": [ "UserError", "SystemError", "BadGateway" ]
+                                        }
+                                    ],
+                                    "operator": "GreaterThanOrEqual",
+                                    "threshold": "0.10",
+                                    "timeAggregation": "Average"
+                                }
+                            ]
+                        },
+                        "actions": [
+                            {
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationPipelineFailure')]"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[parameters('factoryName')]",
+                        "NotificationPipelineFailure"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'No')]",
+                    "name": "covidTrackingWithoutSqlActivityAlertConfig",
+                    "type": "Microsoft.Insights/metricAlerts",
+                    "location": "global",
+                    "apiVersion": "2018-03-01",
+                    "tags": {},
+                    "properties": {
+                        "description": "Metric alert for activity failure in a pipeline",
+                        "severity": "0",
+                        "enabled": "true",
+                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]" ],
+                        "evaluationFrequency": "PT1M",
+                        "windowSize": "PT1M",
+                        "criteria": {
+                            "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
+                            "allOf": [
+                                {
+                                    "name": "1st criterion",
+                                    "metricName": "ActivityFailedRuns",
+                                    "dimensions": [
+                                        {
+                                            "name": "ActivityType",
+                                            "operator": "Include",
+                                            "values": [ "Copy", "ExecuteDataFlow" ]
+                                        },
+                                        {
+                                            "name": "Name",
+                                            "operator": "Include",
+                                            "values": [ "To Raw Partition", "To Raw Overwrite", "Reformat Columns", "JSONL to JSON LATEST", "JSONL to JSON" ]
+                                        },
+                                        {
+                                            "name": "PipelineName",
+                                            "operator": "Include",
+                                            "values": [ "Covid_Tracking_DefinitiveHC_Without_Sql_Sink" ]
+                                        },
+                                        {
+                                            "name": "FailureType",
+                                            "operator": "Include",
+                                            "values": [ "UserError", "SystemError", "BadGateway" ]
+                                        }
+                                    ],
+                                    "operator": "GreaterThanOrEqual",
+                                    "threshold": "0.10",
+                                    "timeAggregation": "Average"
+                                }
+                            ]
+                        },
+                        "actions": [
+                            {
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationPipelineFailure')]"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[parameters('factoryName')]",
+                        "NotificationPipelineFailure"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'Yes')]",
+                    "name": "covidTrackingWithSqlPipelineAlertConfig",
+                    "type": "Microsoft.Insights/metricAlerts",
+                    "location": "global",
+                    "apiVersion": "2018-03-01",
+                    "tags": {},
+                    "properties": {
+                        "description": "Metric alert for pipeline failure",
+                        "severity": "0",
+                        "enabled": "true",
+                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]" ],
+                        "evaluationFrequency": "PT1M",
+                        "windowSize": "PT1M",
+                        "criteria": {
+                            "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
+                            "allOf": [
+                                {
+                                    "name": "1st criterion",
+                                    "metricName": "PipelineFailedRuns",
+                                    "dimensions": [
+                                        {
+                                            "name": "Name",
+                                            "operator": "Include",
+                                            "values": [ "Covid_Tracking_DefinitiveHC_With_Sql_Sink" ]
+                                        },
+                                        {
+                                            "name": "FailureType",
+                                            "operator": "Include",
+                                            "values": [ "UserError", "SystemError", "BadGateway" ]
+                                        }
+                                    ],
+                                    "operator": "GreaterThanOrEqual",
+                                    "threshold": "0.10",
+                                    "timeAggregation": "Average"
+                                }
+                            ]
+                        },
+                        "actions": [
+                            {
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationPipelineFailure')]"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[parameters('factoryName')]",
+                        "NotificationPipelineFailure"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'Yes')]",
+                    "name": "covidTrackingWithSqlActivityAlertConfig",
+                    "type": "Microsoft.Insights/metricAlerts",
+                    "location": "global",
+                    "apiVersion": "2018-03-01",
+                    "tags": {},
+                    "properties": {
+                        "description": "Metric alert for activity failure in a pipeline",
+                        "severity": "0",
+                        "enabled": "true",
+                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]" ],
+                        "evaluationFrequency": "PT1M",
+                        "windowSize": "PT1M",
+                        "criteria": {
+                            "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
+                            "allOf": [
+                                {
+                                    "name": "1st criterion",
+                                    "metricName": "ActivityFailedRuns",
+                                    "dimensions": [
+                                        {
+                                            "name": "ActivityType",
+                                            "operator": "Include",
+                                            "values": [ "Copy", "ExecuteDataFlow" ]
+                                        },
+                                        {
+                                            "name": "Name",
+                                            "operator": "Include",
+                                            "values": [ "To Raw Partition", "To Raw Overwrite", "Reformat Columns", "JSONL to JSON LATEST", "JSONL to JSON" ]
+                                        },
+                                        {
+                                            "name": "PipelineName",
+                                            "operator": "Include",
+                                            "values": [ "Covid_Tracking_DefinitiveHC_With_Sql_Sink" ]
+                                        },
+                                        {
+                                            "name": "FailureType",
+                                            "operator": "Include",
+                                            "values": [ "UserError", "SystemError", "BadGateway" ]
+                                        }
+                                    ],
+                                    "operator": "GreaterThanOrEqual",
+                                    "threshold": "0.10",
+                                    "timeAggregation": "Average"
+                                }
+                            ]
+                        },
+                        "actions": [
+                            {
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationPipelineFailure')]"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[parameters('factoryName')]",
+                        "NotificationPipelineFailure"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'No')]",
+                    "type": "Microsoft.AlertsManagement/actionRules",
+                    "apiVersion": "2019-05-05-preview",
+                    "name": "suppressResolveNotificationWithoutSQL",
+                    "location": "global",
+                    "properties": {
+                        "conditions": {
+                            "severity": {
+                                "operator": "Equals",
+                                "values": [
+                                    "Sev0"
+                                ]
+                            },
+                            "monitorCondition": {
+                                "operator": "Equals",
+                                "values": [
+                                    "Resolved"
+                                ]
+                            }
+                        },
+                        "suppressionConfig": {
+                            "recurrenceType": "always"
+                        },
+                        "status": "Enabled",
+                        "type": "Suppression",
+                        "scope": {
+                            "scopeType": "Resource",
+                            "values": [
+                                "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/actionGroups/', 'NotificationPipelineFailure')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'covidTrackingWithoutSqlActivityAlertConfig')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'covidTrackingWithoutSqlPipelineAlertConfig')]"
+                            ]
+                        }
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "NotificationPipelineFailure",
+                        "covidTrackingWithoutSqlPipelineAlertConfig",
+                        "covidTrackingWithoutSqlActivityAlertConfig"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'Yes')]",
+                    "type": "Microsoft.AlertsManagement/actionRules",
+                    "apiVersion": "2019-05-05-preview",
+                    "name": "suppressResolveNotificationWithSQL",
+                    "location": "global",
+                    "properties": {
+                        "conditions": {
+                            "severity": {
+                                "operator": "Equals",
+                                "values": [
+                                    "Sev0"
+                                ]
+                            },
+                            "monitorCondition": {
+                                "operator": "Equals",
+                                "values": [
+                                    "Resolved"
+                                ]
+                            }
+                        },
+                        "suppressionConfig": {
+                            "recurrenceType": "always"
+                        },
+                        "status": "Enabled",
+                        "type": "Suppression",
+                        "scope": {
+                            "scopeType": "Resource",
+                            "values": [
+                                "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/actionGroups/', 'NotificationPipelineFailure')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'covidTrackingWithSqlActivityAlertConfig')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'covidTrackingWithSqlPipelineAlertConfig')]"
+                            ]
+                        }
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "NotificationPipelineFailure",
+                        "covidTrackingWithSqlPipelineAlertConfig",
+                        "covidTrackingWithSqlActivityAlertConfig"
+                    ]
+                }
+
             ]
         }
     ],

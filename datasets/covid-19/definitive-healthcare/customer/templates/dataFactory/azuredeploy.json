@@ -1587,7 +1587,7 @@
                         ],
                         "webhookReceivers": [
                             {
-                              "name": "contosoHook",
+                              "name": "msftTeamsNotify",
                               "serviceUri": "[parameters('webHookUri')]"
                             }
                         ]

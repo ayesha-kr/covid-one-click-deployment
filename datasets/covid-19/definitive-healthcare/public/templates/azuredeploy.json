@@ -64,6 +64,16 @@
         "currentTime": {
             "type": "string",
             "defaultValue": "[utcNow('u')]"
+        },
+        "notificationEmail": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Please specify comma separated email addresses on which you would like to receive the ADF pipeline alerts."
+            }
+        },
+        "webHookUri": {
+            "type": "string"
         }
     },
     "variables": {
@@ -164,6 +174,9 @@
                     },
                     "currentTime": {
                         "value": "[parameters('currentTime')]"
+                    },
+                    "notificationEmail": {
+                        "value": "[parameters('notificationEmail')]"
                     }
                 }
             }

@@ -163,7 +163,7 @@
         },
         {
             "condition": "[equals(parameters('enableMicrosoftTeamsNotification'),'Yes')]",
-            "name": "dataFactoryTemplate",
+            "name": "dataFactoryTemplateWithTeamsNotif",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2018-05-01",
             "dependsOn": [
@@ -214,7 +214,7 @@
         },
         {
             "condition": "[equals(parameters('enableMicrosoftTeamsNotification'),'No')]",
-            "name": "dataFactoryTemplate",
+            "name": "dataFactoryTemplateWithoutTeamsNotif",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2018-05-01",
             "dependsOn": [

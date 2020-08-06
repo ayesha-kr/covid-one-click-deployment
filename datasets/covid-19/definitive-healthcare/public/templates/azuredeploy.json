@@ -17,7 +17,7 @@
             }
         },
         "location": {
-            "defaultValue": "East US",
+            "defaultValue": "[resourceGroup().location]",
             "type": "string",
             "metadata": {
                 "description": "Location of the data factory. Currently, only East US, East US 2, and West Europe are supported. "

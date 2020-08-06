@@ -141,13 +141,6 @@
             "metadata": {
                 "description": "Data share account name should have length of 1 - 77, and cannot contain <>%&:\\?/#*$^();,.|-+={}[]!~@"
             }
-        },
-        "roleNameGuid": {
-            "type": "string",
-            "defaultValue": "[newGuid()]",
-            "metadata": {
-                "description": "A new GUID used to identify the role assignment"
-            }
         }
     },
     "variables": {
@@ -302,9 +295,6 @@
                     },
                     "location": {
                         "value": "[parameters('location')]"
-                    },
-                    "roleNameGuid": {
-                        "value": "[parameters('roleNameGuid')]"
                     }
                 }
             }

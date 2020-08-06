@@ -178,8 +178,8 @@ steps:
 - task: AzureResourceManagerTemplateDeployment@3
   inputs:
     deploymentScope: 'Resource Group'
-    azureResourceManagerConnection: 'Azure subscription 1(80ebef40-3f7f-4972-b829-72efcd567faf)'
-    subscriptionId: '80ebef40-3f7f-4972-b829-72efcd567faf'
+    azureResourceManagerConnection: ''
+    subscriptionId: ''
     action: 'Create Or Update Resource Group'
     resourceGroupName: '$(ProductName)-$(Environment)'
     location: 'West Europe'
@@ -196,8 +196,8 @@ steps:
 - task: AzureResourceManagerTemplateDeployment@3
   inputs:
     deploymentScope: 'Resource Group'
-    azureResourceManagerConnection: 'Azure subscription 1(80ebef40-3f7f-4972-b829-72efcd567faf)'
-    subscriptionId: '80ebef40-3f7f-4972-b829-72efcd567faf'
+    azureResourceManagerConnection: ''
+    subscriptionId: ''
     action: 'Create Or Update Resource Group'
     resourceGroupName: '$(ProductName)-$(Environment)'
     location: 'West Europe'

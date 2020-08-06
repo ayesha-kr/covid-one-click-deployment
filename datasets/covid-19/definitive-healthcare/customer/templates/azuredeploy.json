@@ -358,7 +358,7 @@
                     "value": "[parameters('notificationEmail')]"
                 },
                 "webHookUri": {
-                    "value": "[reference('logicAppTemplate', '2018-05-01').outputs.WebHookURI.value]"
+                    "value": "null"
                 }
               }
             }

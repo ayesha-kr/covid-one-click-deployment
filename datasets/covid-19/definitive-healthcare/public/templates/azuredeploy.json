@@ -87,13 +87,6 @@
             "metadata": {
                 "description": "Dataset name can only contain number, letters, - and _"
             }
-        },
-        "roleNameGuid": {
-            "type": "string",
-            "defaultValue": "[newGuid()]",
-            "metadata": {
-                "description": "A new GUID used to identify the role assignment"
-            }
         }
     },
     "variables": {
@@ -140,9 +133,6 @@
                     },
                     "location": {
                         "value": "[parameters('location')]"
-                    },
-                    "roleNameGuid": {
-                        "value": "[parameters('roleNameGuid')]"
                     }
                 }
             }

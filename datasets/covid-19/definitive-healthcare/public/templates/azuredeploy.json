@@ -215,7 +215,7 @@
             }
         },
         {
-            "name": "shareAndDatasetTemplate",
+            "name": "shareTemplate",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2018-05-01",
             "dependsOn": [
@@ -230,17 +230,11 @@
                     "dataShareAccountName": {
                         "value": "[variables('dataShareAccountName')]"
                     },
-                    "storageAccountName": {
-                        "value": "[variables('storageAccountName')]"
-                    },
                     "currentTime": {
                         "value": "[parameters('currentTime')]"
                     },
                     "shareName": {
                         "value": "[parameters('shareName')]"
-                    },
-                    "datasetName": {
-                        "value": "[parameters('datasetName')]"
                     }
                 }
             }

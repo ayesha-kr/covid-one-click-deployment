@@ -180,7 +180,7 @@
                 {
                     "type": "Microsoft.DataFactory/factories/datasets",
                     "apiVersion": "2018-06-01",
-                    "name": "[concat(parameters('dataFactoryName'), '/inputDataset')]",
+                    "name": "[concat(parameters('dataFactoryName'), '/DhcInputDataset')]",
 
                     "dependsOn": [
                         "[parameters('dataFactoryName')]",
@@ -195,26 +195,21 @@
                             "type": "LinkedServiceReference"
                         },
                         "annotations": [],
-                        "type": "DelimitedText",
+                        "type": "Binary",
                         "typeProperties": {
                             "location": {
                                 "type": "AzureBlobStorageLocation",
                                 "fileName": "covid_tracking.csv",
                                 "folderPath": "curated/covid-19/covid_tracking/latest",
                                 "container": "public"
-                            },
-                            "columnDelimiter": ",",
-                            "escapeChar": "\\",
-                            "firstRowAsHeader": true,
-                            "quoteChar": "\""
-                        },
-                        "schema": []
+                            }
+                        }
                     }
                 },
                 {
                     "type": "Microsoft.DataFactory/factories/datasets",
                     "apiVersion": "2018-06-01",
-                    "name": "[concat(parameters('dataFactoryName'), '/outputDatasetSource')]",
+                    "name": "[concat(parameters('dataFactoryName'), '/DhcOutputDatasetSource')]",
                     "dependsOn": [
                         "[parameters('dataFactoryName')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/customerStorageLinkedService')]"
@@ -228,25 +223,20 @@
                             "type": "LinkedServiceReference"
                         },
                         "annotations": [],
-                        "type": "DelimitedText",
+                        "type": "Binary",
                         "typeProperties": {
                             "location": {
                                 "type": "AzureBlobStorageLocation",
                                 "folderPath": "output",
                                 "container": "staging"
-                            },
-                            "columnDelimiter": ",",
-                            "escapeChar": "\\",
-                            "firstRowAsHeader": true,
-                            "quoteChar": "\""
-                        },
-                        "schema": []
+                            }
+                        }
                     }
                 },
                 {
                     "type": "Microsoft.DataFactory/factories/datasets",
                     "apiVersion": "2018-06-01",
-                    "name": "[concat(parameters('dataFactoryName'), '/outputDatasetSink')]",
+                    "name": "[concat(parameters('dataFactoryName'), '/DhcOutputDatasetSink')]",
                     "dependsOn": [
                         "[parameters('dataFactoryName')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/customerStorageLinkedService')]"
@@ -445,7 +435,7 @@
                             "sources": [
                                 {
                                     "dataset": {
-                                        "referenceName": "outputDatasetSource",
+                                        "referenceName": "DhcOutputDatasetSource",
                                         "type": "DatasetReference"
                                     },
                                     "name": "SourceCSV"
@@ -470,7 +460,7 @@
                     },
                     "dependsOn": [
                         "[parameters('dataFactoryName')]",
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/outputDatasetSource')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/DhcOutputDatasetSource')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/AzureSynapseAnalyticsStagingTableSink')]"
                     ]
                 },
@@ -504,7 +494,7 @@
                                 }
                             ],
                             "transformations": [],
-                            "script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table',\n\tstaged: false) ~> sourceSynapseStagingTable\nsourceSynapseStagingTable sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tstaged: true,\n\tpostSQLs:['\\n'],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SynapseOperationalTable"
+                            "script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table',\n\tstaged: false) ~> sourceSynapseStagingTable\nsourceSynapseStagingTable sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tstaged: true,\n\tpostSQLs:['\\n'],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SynapseOperationalTable"
                         }
                     },
                     "dependsOn": [
@@ -527,7 +517,7 @@
                             "sources": [
                                 {
                                     "dataset": {
-                                        "referenceName": "outputDatasetSource",
+                                        "referenceName": "DhcOutputDatasetSource",
                                         "type": "DatasetReference"
                                     },
                                     "name": "SourceCSV"
@@ -558,7 +548,7 @@
                         }
                     },
                     "dependsOn": [
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/outputDatasetSource')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/DhcOutputDatasetSource')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/AzureSynapseAnalyticsStagingTableSink')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/SqlDbStagingSink')]",
                         "[parameters('dataFactoryName')]"
@@ -608,7 +598,7 @@
                                 }
                             ],
                             "transformations": [],
-                            "script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table',\n\tstaged: false) ~> sourceSynapseStagingTable\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> sourceSqlDbStaging\nsourceSynapseStagingTable sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tt:true,\n\tformat: 'table',\n\tstaged: true,\n\tpostSQLs:['\\n'],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SynapseOperationalTable\nsourceSqlDbStaging sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SqlOperationalSink"
+                            "script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table',\n\tstaged: false) ~> sourceSynapseStagingTable\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> sourceSqlDbStaging\nsourceSynapseStagingTable sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tstaged: true,\n\tpostSQLs:['\\n'],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tt: true) ~> SynapseOperationalTable\nsourceSqlDbStaging sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SqlOperationalSink"
                         }
                     },
                     "dependsOn": [
@@ -633,7 +623,7 @@
                             "sources": [
                                 {
                                     "dataset": {
-                                        "referenceName": "outputDatasetSource",
+                                        "referenceName": "DhcOutputDatasetSource",
                                         "type": "DatasetReference"
                                     },
                                     "name": "SourceCSV"
@@ -657,7 +647,7 @@
                         }
                     },
                     "dependsOn": [
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/outputDatasetSource')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/DhcOutputDatasetSource')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/AzureSynapseAnalyticsStagingTableSink')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/SqlDbStagingSink')]",
                         "[parameters('dataFactoryName')]"
@@ -759,13 +749,13 @@
                                 },
                                 "inputs": [
                                     {
-                                        "referenceName": "inputDataset",
+                                        "referenceName": "DhcInputDataset",
                                         "type": "DatasetReference"
                                     }
                                 ],
                                 "outputs": [
                                     {
-                                        "referenceName": "outputDatasetSink",
+                                        "referenceName": "DhcOutputDatasetSink",
                                         "type": "DatasetReference"
                                     }
                                 ]
@@ -925,8 +915,8 @@
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/dataflows/LoadIntoStagingTable')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/dataflows/LoadIntoOperationalTable')]",
                         "[parameters('dataFactoryName')]",
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/inputDataset')]",
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/outputDatasetSink')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/DhcInputDataset')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/DhcOutputDatasetSink')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/AzureSynapseAnalyticsStagingTableSource')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/SynapseOperationalTable_sink')]"
                     ]
@@ -987,14 +977,14 @@
                                 },
                                 "inputs": [
                                     {
-                                        "referenceName": "inputDataset",
+                                        "referenceName": "DhcInputDataset",
                                         "type": "DatasetReference",
                                         "parameters": {}
                                     }
                                 ],
                                 "outputs": [
                                     {
-                                        "referenceName": "outputDatasetSink",
+                                        "referenceName": "DhcOutputDatasetSink",
                                         "type": "DatasetReference",
                                         "parameters": {}
                                     }
@@ -1217,8 +1207,8 @@
                         "annotations": []
                     },
                     "dependsOn": [
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/inputDataset')]",
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/outputDatasetSink')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/DhcInputDataset')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/DhcOutputDatasetSink')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/SqlDbStagingSource')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/AzureSynapseAnalyticsStagingTableSource')]",
 
@@ -1284,14 +1274,14 @@
                                 },
                                 "inputs": [
                                     {
-                                        "referenceName": "inputDataset",
+                                        "referenceName": "DhcInputDataset",
                                         "type": "DatasetReference",
                                         "parameters": {}
                                     }
                                 ],
                                 "outputs": [
                                     {
-                                        "referenceName": "outputDatasetSink",
+                                        "referenceName": "DhcOutputDatasetSink",
                                         "type": "DatasetReference",
                                         "parameters": {}
                                     }
@@ -1452,8 +1442,8 @@
                         "annotations": []
                     },
                     "dependsOn": [
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/inputDataset')]",
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/outputDatasetSink')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/DhcInputDataset')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/DhcOutputDatasetSink')]",
                         "[parameters('dataFactoryName')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/dataflows/LoadIntoStagingTable_SQL')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/customerStorageLinkedService')]",

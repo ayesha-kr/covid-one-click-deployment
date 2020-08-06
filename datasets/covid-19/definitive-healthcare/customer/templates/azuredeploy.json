@@ -358,7 +358,7 @@
                     "value": "[parameters('notificationEmail')]"
                 },
                 "webHookUri": {
-                    "value": "null"
+                    "value": "http://example.com"
                 }
               }
             }

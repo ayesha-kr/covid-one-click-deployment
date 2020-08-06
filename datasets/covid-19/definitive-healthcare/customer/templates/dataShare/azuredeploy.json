@@ -36,8 +36,7 @@
             "name": "[parameters('roleNameGuid')]",
             "properties": {
                 "roleDefinitionId": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]",
-                "principalId": "[reference(resourceId('Microsoft.DataShare/accounts', parameters('dataShareAccountName')), '2019-11-01', 'Full').identity.principalId]",
-                "principalType": "ServicePrincipal"
+                "principalId": "[reference(resourceId('Microsoft.DataShare/accounts', parameters('dataShareAccountName')), '2019-11-01', 'Full').identity.principalId]"
             },
             "dependsOn": [
                 "[resourceId('Microsoft.DataShare/accounts', parameters('dataShareAccountName'))]"

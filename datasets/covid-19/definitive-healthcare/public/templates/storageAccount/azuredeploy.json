@@ -15,12 +15,19 @@
             }
         }
     },
+    "variables": {
+        "containerName": "public"
+    },
     "resources": [
         {
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2019-06-01",
             "name": "[parameters('storageAccountName')]",
             "location": "[parameters('location')]",
+            "tags": {
+                "Environment": "Public",
+                "AssociatedDataSet": "CovidDefinitiveHC"
+            },
             "sku": {
                 "name": "Standard_LRS",
                 "tier": "Standard"
@@ -48,7 +55,17 @@
                     "keySource": "Microsoft.Storage"
                 },
                 "accessTier": "Hot"
-            }
+            },
+            "resources": [
+              {
+                "type": "blobServices/containers",
+                "apiVersion": "2019-06-01",
+                "name": "[concat('default/', variables('containerName'))]",
+                "dependsOn": [
+                  "[parameters('storageAccountName')]"
+                ]
+              }
+            ]
         },
         {
             "type": "Microsoft.Storage/storageAccounts/blobServices",

@@ -1,0 +1,46 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "dataShareAccountName": {
+            "type": "String",
+            "metadata": {
+                "description": "Data share account name should have length of 1 - 77, and cannot contain <>%&:\\?/#*$^();,.|-+={}[]!~@"
+            }
+        },
+        "shareName": {
+            "type": "String",
+            "metadata": {
+                "description": "Name can only contain alphanumeric characters, hyphen and underscore"
+            }
+        },
+        "currentTime": {
+            "type": "string"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.DataShare/accounts/shares",
+            "apiVersion": "2019-11-01",
+            "name": "[concat(parameters('dataShareAccountName'), '/', parameters('shareName'))]",
+            "dependsOn": [],
+            "properties": {
+                "shareKind": "CopyBased"
+            }
+        },
+        {
+            "type": "Microsoft.DataShare/accounts/shares/synchronizationSettings",
+            "apiVersion": "2019-11-01",
+            "name": "[concat(parameters('dataShareAccountName'), '/',parameters('shareName'), '/', 'synchronizationSetting')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.DataShare/accounts/shares',parameters('dataShareAccountName'), parameters('shareName'))]"
+            ],
+            "kind": "ScheduleBased",
+            "properties": {
+                "recurrenceInterval": "Day",
+                "synchronizationTime": "[parameters('currentTime')]"
+            }
+        }
+    ]
+}

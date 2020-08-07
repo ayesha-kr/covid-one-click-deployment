@@ -1,0 +1,1645 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "defaultValue": "iri-demo-data-factory",
+            "type": "string",
+            "metadata": {
+                "description": "The name you provide will be appended with a unique sting to make it globally available. The name can contain only letters, numbers and hyphens. The first and last characters must be a letter or number. Spaces are not allowed."
+            }
+        },
+        "storageAccountName": {
+            "defaultValue": "iridemoblob",
+            "type": "string",
+            "metadata": {
+                "description": "The name you provide will be appended with a unique sting to make it globally available. The field can contain only lowercase letters and numbers. Name must be between 1 and 11 characters."
+            }
+        },
+        "location": {
+            "defaultValue": "East US",
+            "type": "string",
+            "metadata": {
+                "description": "Location of the data factory. Currently, only East US, East US 2, and West Europe are supported. "
+            }
+        },
+        "serverName": {
+            "defaultValue": "iri-demo-sql-server",
+            "type": "string",
+            "metadata": {
+                "description": "The name you provide will be appended with a unique sting to make it globally available. Your server name can contain only lowercase letters, numbers, and '-', but can't start or end with '-' or have more than 50 characters."
+            }
+        },
+        "dataWarehouseName": {
+            "defaultValue": "IriDemoSynapse",
+            "type": "string",
+            "metadata": {
+                "description": "Value should not match special patterns. It should contain a length of maximum of 128."
+            }
+        },
+        "sqlAdministratorLogin": {
+            "defaultValue": "iriuser",
+            "type": "string",
+            "metadata": {
+                "description": "Your login name must not contain a SQL Identifier or a typical system name (like admin, administrator, sa, root, dbmanager, loginmanager, etc.) or a built-in database user or role (like dbo, guest, public, etc.)"
+            }
+          },
+        "sqlAdministratorLoginPassword": {
+            "defaultValue": "iri@12345",
+            "type": "securestring",
+            "metadata": {
+                "description": "Your password must be at least 8 characters in length. Your password must contain characters from three of the following categories – English uppercase letters, English lowercase letters, numbers (0-9), and non-alphanumeric characters (!, $, #, %, etc.) Your password cannot contain all or part of the login name. Part of a login name is defined as three or more consecutive alphanumeric characters."
+            }
+          },
+          "iriStorageAccountKey": {
+              "type": "securestring",
+              "metadata": {
+                  "description": "Account key for IRI storage account."
+              }
+          },
+          "newyorkTimesStorageAccountKey": {
+              "type": "securestring",
+              "metadata": {
+                  "description": "Account key for NewYork Times storage account."
+              }
+          }
+    },
+    "variables": {
+        "factoryName": "[concat(parameters('factoryName'), uniquestring(resourceGroup().id))]",
+        "storageAccountName": "[concat(parameters('storageAccountName'), uniquestring(resourceGroup().id))]",
+        "serverName": "[concat(parameters('serverName'), uniquestring(resourceGroup().id))]",
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', variables('factoryName'))]",
+        "storageAccountId": "[concat(resourceGroup().id,'/providers/Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]"
+    },
+
+    "resources": [
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2019-06-01",
+            "name": "[variables('storageAccountName')]",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "kind": "StorageV2",
+            "properties": {
+                "networkAcls": {
+                    "bypass": "AzureServices",
+                    "virtualNetworkRules": [],
+                    "ipRules": [],
+                    "defaultAction": "Allow"
+                },
+                "supportsHttpsTrafficOnly": true,
+                "encryption": {
+                    "services": {
+                        "file": {
+                            "keyType": "Account",
+                            "enabled": true
+                        },
+                        "blob": {
+                            "keyType": "Account",
+                            "enabled": true
+                        }
+                    },
+                    "keySource": "Microsoft.Storage"
+                },
+                "accessTier": "Hot"
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices",
+            "apiVersion": "2019-06-01",
+            "name": "[concat(variables('storageAccountName'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+            ],
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "properties": {
+                "cors": {
+                    "corsRules": []
+                },
+                "deleteRetentionPolicy": {
+                    "enabled": false
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/fileServices",
+            "apiVersion": "2019-06-01",
+            "name": "[concat(variables('storageAccountName'), '/default')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+            ],
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "properties": {
+                "cors": {
+                    "corsRules": []
+                }
+            }
+
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+            "apiVersion": "2019-06-01",
+            "name": "[concat(variables('storageAccountName'), '/default/staging')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', variables('storageAccountName'), 'default')]",
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+            ],
+            "properties": {
+                "publicAccess": "None"
+            }
+        },
+        {
+            "name": "[variables('serverName')]",
+            "type": "Microsoft.Sql/servers",
+            "apiVersion": "2019-06-01-preview",
+            "location": "[parameters('location')]",
+            "properties": {
+              "administratorLogin": "[parameters('sqlAdministratorLogin')]",
+              "administratorLoginPassword": "[parameters('sqlAdministratorLoginPassword')]",
+              "version": "12.0"
+            },
+            "resources": [
+                {
+                    "name": "AllowAllMicrosoftAzureIps",
+                    "type": "firewallrules",
+                    "apiVersion": "2015-05-01-preview",
+                    "location": "[parameters('location')]",
+                    "properties": {
+                        "endIpAddress": "0.0.0.0",
+                        "startIpAddress": "0.0.0.0"
+                    },
+                    "dependsOn": [
+                        "[variables('serverName')]"
+                    ]
+                },
+                {
+                    "type": "databases",
+                    "kind": "v12.0,user,datawarehouse",
+                    "name": "[parameters('dataWarehouseName')]",
+                    "apiVersion": "2015-05-01-preview",
+                    "location": "[parameters('location')]",
+                    "properties": {
+                        "edition": "DataWarehouse",
+                        "status": "Online",
+                        "requestedServiceObjectiveName": "DW100c",
+                        "collation": "SQL_Latin1_General_CP1_CI_AS",
+                        "readScale": "Disabled",
+                        "zoneRedundant": false,
+                        "isUpgradeRequested": false
+                    },
+                    "dependsOn": [
+                        "[variables('serverName')]"
+                    ],
+                    "resources": [
+                        {
+                            "comments": "Transparent Data Encryption",
+                            "name": "current",
+                            "type": "transparentDataEncryption",
+                            "apiVersion": "2017-03-01-preview",
+                            "properties": {
+                                "status": "Enabled"
+                            },
+                            "dependsOn": [
+                                "[parameters('dataWarehouseName')]"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        
+        },
+        {
+            "type": "Microsoft.DataFactory/factories",
+            "apiVersion": "2018-06-01",
+            "name": "[variables('factoryName')]",
+            "location": "[parameters('location')]",
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+            ],
+            
+            "resources": [
+                {
+                    "name": "[concat(variables('factoryName'), '/fromRemoteIRI')]",
+                    "type": "Microsoft.DataFactory/factories/linkedServices",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "annotations": [],
+                        "type": "AzureBlobStorage",
+                        "typeProperties": {
+                            "connectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=irimsoos2;AccountKey=',parameters('iriStorageAccountKey'))]"
+                        }
+                    },
+                    "dependsOn": [
+                        "[variables('factoryName')]"
+                    ]
+                },
+                {
+                    "name": "[concat(variables('factoryName'), '/IRIDemoSynapse')]",
+                    "type": "Microsoft.DataFactory/factories/linkedServices",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "annotations": [],
+                        "type": "AzureSqlDW",
+                        "typeProperties": {
+                            "connectionString": "[concat('Server=tcp:',variables('serverName'),'.database.windows.net,1433;Initial Catalog=',parameters('dataWarehouseName'),';Persist Security Info=False;User ID=',parameters('sqlAdministratorLogin'),';Password=',parameters('sqlAdministratorLoginPassword'),';MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;')]"
+                        }
+                    },
+                    "dependsOn": [
+                        "[variables('factoryName')]"
+                    ]
+                },
+                {
+                    "name": "[concat(variables('factoryName'), '/localStagingLinkedService')]",
+                    "type": "Microsoft.DataFactory/factories/linkedServices",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "annotations": [],
+                        "type": "AzureBlobStorage",
+                        "typeProperties": {
+                            "connectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',concat(listKeys(variables('storageAccountId'),'2015-05-01-preview').key1))]"
+                        }
+                    },
+                    "dependsOn": [
+                        "[variables('factoryName')]"
+                    ]
+                },
+                {
+                    "name": "[concat(variables('factoryName'), '/frompublicNytimes')]",
+                    "type": "Microsoft.DataFactory/factories/linkedServices",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "annotations": [],
+                        "type": "AzureBlobStorage",
+                        "typeProperties": {
+                            "connectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=covidtrackingnytimes;AccountKey=',parameters('newyorkTimesStorageAccountKey'))]"
+                        }
+                    },
+                    "dependsOn": [
+                        "[variables('factoryName')]"
+                    ]
+                },
+                {
+                    "name": "[concat(variables('factoryName'), '/IRIDimLoader')]",
+                    "type": "Microsoft.DataFactory/factories/pipelines",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "activities": [
+                            {
+                                "name": "LoadProductDimToSynapse",
+                                "type": "ExecuteDataFlow",
+                                "dependsOn": [
+                                    {
+                                        "activity": "InitializeSynapse",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 0,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "dataflow": {
+                                        "referenceName": "LoadProductDimToSynapse",
+                                        "type": "DataFlowReference",
+                                        "parameters": {},
+                                        "datasetParameters": {
+                                            "cupsplates": {},
+                                            "foilswraps": {},
+                                            "foodtrashbags": {},
+                                            "LoadCupsPlatesDimToSynapse": {},
+                                            "LoadFoilsWrapsDimToSynapse": {},
+                                            "LoadFoodTrashbagsDimToSynapse": {}
+                                        }
+                                    },
+                                    "staging": {
+                                        "linkedService": {
+                                            "referenceName": "localStagingLinkedService",
+                                            "type": "LinkedServiceReference"
+                                        },
+                                        "folderPath": "staging"
+                                    },
+                                    "compute": {
+                                        "coreCount": 8,
+                                        "computeType": "General"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "LoadGeographyDimToSynapse",
+                                "type": "ExecuteDataFlow",
+                                "dependsOn": [
+                                    {
+                                        "activity": "InitializeSynapse",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 0,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "dataflow": {
+                                        "referenceName": "LoadGeographyDimToSynapse",
+                                        "type": "DataFlowReference",
+                                        "parameters": {},
+                                        "datasetParameters": {
+                                            "countytostate": {},
+                                            "LoadCountyStateDimTosynapse": {}
+                                        }
+                                    },
+                                    "staging": {
+                                        "linkedService": {
+                                            "referenceName": "localStagingLinkedService",
+                                            "type": "LinkedServiceReference"
+                                        },
+                                        "folderPath": "staging"
+                                    },
+                                    "compute": {
+                                        "coreCount": 8,
+                                        "computeType": "General"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "InitializeSynapse",
+                                "description": "Create Master key\nMake New Schema",
+                                "type": "Lookup",
+                                "dependsOn": [],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 0,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "SqlDWSource",
+                                        "sqlReaderQuery": "IF (select Count(*) from sys.symmetric_keys where name like '%DatabaseMasterKey%') = 0\nBEGIN\n  CREATE master key;\n   SELECT 1;\nEND\nELSE\nBEGIN\n    SELECT 1;\nEND\n\n\nIF NOT EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'iri' )\nBEGIN\n    EXEC('CREATE SCHEMA [iri] AUTHORIZATION [dbo]');\n    SELECT 1 \nEND\nELSE\nBEGIN\n    SELECT 1;\nEND\n",
+                                        "queryTimeout": "02:00:00"
+                                    },
+                                    "dataset": {
+                                        "referenceName": "dbInitDataset",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                }
+                            }
+                        ],
+                        "folder": {
+                            "name": "IRIDataLoader"
+                        },
+                        "annotations": []
+                    },
+                    "dependsOn": [
+                        "[variables('factoryName')]",
+                        "[concat(variables('factoryId'), '/dataflows/LoadProductDimToSynapse')]",
+                        "[concat(variables('factoryId'), '/linkedServices/localStagingLinkedService')]",
+                        "[concat(variables('factoryId'), '/dataflows/LoadGeographyDimToSynapse')]",
+                        "[concat(variables('factoryId'), '/datasets/dbInitDataset')]"
+                    ]
+                },
+                {
+                    "name": "[concat(variables('factoryName'), '/IRIFactLoader')]",
+                    "type": "Microsoft.DataFactory/factories/pipelines",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "activities": [
+                            {
+                                "name": "LoadProductByCountyFactToSynapse",
+                                "type": "ExecuteDataFlow",
+                                "dependsOn": [
+                                    {
+                                        "activity": "InitializeSynapse",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 0,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "dataflow": {
+                                        "referenceName": "LoadProductFactToSynapse",
+                                        "type": "DataFlowReference",
+                                        "parameters": {},
+                                        "datasetParameters": {
+                                            "cupsplates": {},
+                                            "foilswraps": {},
+                                            "foodtrashbags": {},
+                                            "LoadCupsPlatesFactToSynapse": {},
+                                            "LoadFoilsWrapsFactToSynapse": {},
+                                            "LoadFoodTrashbagsDimToSynapse": {}
+                                        }
+                                    },
+                                    "staging": {
+                                        "linkedService": {
+                                            "referenceName": "localStagingLinkedService",
+                                            "type": "LinkedServiceReference"
+                                        },
+                                        "folderPath": "staging"
+                                    },
+                                    "compute": {
+                                        "coreCount": 8,
+                                        "computeType": "General"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "InitializeSynapse",
+                                "description": "Create Master key\nMake New Schema",
+                                "type": "Lookup",
+                                "dependsOn": [],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 0,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "SqlDWSource",
+                                        "sqlReaderQuery": "IF (select Count(*) from sys.symmetric_keys where name like '%DatabaseMasterKey%') = 0\nBEGIN\n  CREATE master key;\n   SELECT 1;\nEND\nELSE\nBEGIN\n    SELECT 1;\nEND\n\n\nIF NOT EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'iri' )\nBEGIN\n    EXEC('CREATE SCHEMA [iri] AUTHORIZATION [dbo]');\n    SELECT 1 \nEND\nELSE\nBEGIN\n    SELECT 1;\nEND\n",
+                                        "queryTimeout": "02:00:00"
+                                    },
+                                    "dataset": {
+                                        "referenceName": "dbInitDataset",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                }
+                            },
+                            {
+                                "name": "ViewsCreation",
+                                "type": "Lookup",
+                                "dependsOn": [
+                                    {
+                                        "activity": "LoadProductByCountyFactToSynapse",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 0,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "SqlDWSource",
+                                        "sqlReaderQuery": "\n\nDROP VIEW IF EXISTS iri.cp_view;\n\nEXEC('Create VIEW iri.cp_view\nAS\nSELECT cp.Date, cp.County, cp.Product_Category, cp.Product_brand, cp.In_Stock_Rate, cp.Agg_Weight,\n       csd.state,\n       cpd.Major_Brand, cpd.Manufacturer, cpd.Parent_Company, cpd.Sub_Category, cpd.Aisle, cpd.Department\nFROM iri.cups_plates_by_county_fact cp\nLEFT JOIN iri.county_state_dim csd ON cp.County=csd.County\nLEFT JOIN iri.cups_plates_dim cpd ON cp.Product_Brand=cpd.Brand;');\n\nDROP VIEW IF EXISTS iri.fw_view;\n\nEXEC('CREATE VIEW iri.fw_view\nAS\nSELECT fw.Date, fw.County, fw.Product_Category, fw.Product_brand, fw.In_Stock_Rate, fw.Agg_Weight,\n       csd.state,\n       fwd.Major_Brand, fwd.Manufacturer, fwd.Parent_Company, fwd.Sub_Category, fwd.Aisle, fwd.Department\nFROM iri.foils_wraps_by_county_fact fw\nLEFT JOIN iri.county_state_dim csd ON fw.County=csd.County\nLEFT JOIN iri.foils_wraps_dim fwd ON fw.Product_Brand=fwd.Brand');\n\nDROP VIEW IF EXISTS iri.ft_view;\n\nEXEC('CREATE VIEW iri.ft_view\nAS\nSELECT ft.Date, ft.County, ft.Product_Category, ft.Product_brand, ft.In_Stock_Rate, ft.Agg_Weight,\n       csd.state,\n       ftd.Major_Brand, ftd.Manufacturer, ftd.Parent_Company, ftd.Sub_Category, ftd.Aisle, ftd.Department\nFROM iri.food_trashbag_by_county_fact ft\nLEFT JOIN iri.county_state_dim csd ON ft.County=csd.County\nLEFT JOIN iri.food_trashbags_dim ftd ON ft.Product_Brand=ftd.Brand');\n\nselect 1",
+                                        "queryTimeout": "02:00:00"
+                                    },
+                                    "dataset": {
+                                        "referenceName": "dbInitDataset",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                }
+                            }
+                        ],
+                        "folder": {
+                            "name": "IRIDataLoader"
+                        },
+                        "annotations": []
+                    },
+                    "dependsOn": [
+                        "[variables('factoryName')]",
+                        "[concat(variables('factoryId'), '/dataflows/LoadProductFactToSynapse')]",
+                        "[concat(variables('factoryId'), '/linkedServices/localStagingLinkedService')]",
+                        "[concat(variables('factoryId'), '/datasets/dbInitDataset')]"
+                    ]
+                },
+                {
+                    "name": "[concat(variables('factoryName'), '/NyTimeLoader')]",
+                    "type": "Microsoft.DataFactory/factories/pipelines",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "activities": [
+                            {
+                                "name": "InitializeSynapse",
+                                "description": "Create Master key\nMake New Schema",
+                                "type": "Lookup",
+                                "dependsOn": [],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 0,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "SqlDWSource",
+                                        "sqlReaderQuery": "IF (select Count(*) from sys.symmetric_keys where name like '%DatabaseMasterKey%') = 0\nBEGIN\n  CREATE master key;\n   SELECT 1;\nEND\nELSE\nBEGIN\n    SELECT 1;\nEND\n\n\nIF NOT EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'iri' )\nBEGIN\n    EXEC('CREATE SCHEMA [iri] AUTHORIZATION [dbo]');\n    SELECT 1 \nEND\nELSE\nBEGIN\n    SELECT 1;\nEND\n",
+                                        "queryTimeout": "02:00:00"
+                                    },
+                                    "dataset": {
+                                        "referenceName": "dbInitDataset",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                }
+                            },
+                            {
+                                "name": "LoadNyTimesToSynapse",
+                                "type": "ExecuteDataFlow",
+                                "dependsOn": [
+                                    {
+                                        "activity": "InitializeSynapse",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 0,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "dataflow": {
+                                        "referenceName": "LoadNyTimesToSynapse",
+                                        "type": "DataFlowReference",
+                                        "parameters": {},
+                                        "datasetParameters": {
+                                            "nyTimes": {},
+                                            "statetoCode": {},
+                                            "LoadNyTimeToSynapse": {}
+                                        }
+                                    },
+                                    "staging": {
+                                        "linkedService": {
+                                            "referenceName": "localStagingLinkedService",
+                                            "type": "LinkedServiceReference"
+                                        },
+                                        "folderPath": "staging"
+                                    },
+                                    "compute": {
+                                        "coreCount": 8,
+                                        "computeType": "General"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "viewsCreation",
+                                "type": "Lookup",
+                                "dependsOn": [
+                                    {
+                                        "activity": "LoadNyTimesToSynapse",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 0,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "SqlDWSource",
+                                        "sqlReaderQuery": "select 1",
+                                        "queryTimeout": "02:00:00"
+                                    },
+                                    "dataset": {
+                                        "referenceName": "dbInitDataset",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                }
+                            }
+                        ],
+                        "folder": {
+                            "name": "NyTimesDataLoader"
+                        },
+                        "annotations": []
+                    },
+                    "dependsOn": [
+                        "[variables('factoryName')]",
+                        "[concat(variables('factoryId'), '/datasets/dbInitDataset')]",
+                        "[concat(variables('factoryId'), '/dataflows/LoadNyTimesToSynapse')]",
+                        "[concat(variables('factoryId'), '/linkedServices/localStagingLinkedService')]"
+                    ]
+                },
+                {
+                    "name": "[concat(variables('factoryName'), '/AllDataLoader')]",
+                    "type": "Microsoft.DataFactory/factories/pipelines",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "activities": [
+                            {
+                                "name": "Execute IRI Dimension Loader",
+                                "type": "ExecutePipeline",
+                                "dependsOn": [],
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "pipeline": {
+                                        "referenceName": "IRIDimLoader",
+                                        "type": "PipelineReference"
+                                    },
+                                    "waitOnCompletion": true,
+                                    "parameters": {}
+                                }
+                            },
+                            {
+                                "name": "Execute IRI Fact Loader",
+                                "type": "ExecutePipeline",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Execute IRI Dimension Loader",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "pipeline": {
+                                        "referenceName": "IRIFactLoader",
+                                        "type": "PipelineReference"
+                                    },
+                                    "waitOnCompletion": true,
+                                    "parameters": {}
+                                }
+                            },
+                            {
+                                "name": "Execute NyTimes Loader",
+                                "type": "ExecutePipeline",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Execute IRI Fact Loader",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "pipeline": {
+                                        "referenceName": "NyTimeLoader",
+                                        "type": "PipelineReference"
+                                    },
+                                    "waitOnCompletion": false,
+                                    "parameters": {}
+                                }
+                            }
+                        ],
+                        "annotations": []
+                    },
+                    "dependsOn": [
+                        "[variables('factoryName')]",
+                        "[concat(variables('factoryId'), '/pipelines/IRIDimLoader')]",
+                        "[concat(variables('factoryId'), '/pipelines/IRIFactLoader')]",
+                        "[concat(variables('factoryId'), '/pipelines/NyTimeLoader')]"
+                    ]
+                },
+                {
+                    "name": "[concat(variables('factoryName'), '/LoadGeographyDimToSynapse')]",
+                    "type": "Microsoft.DataFactory/factories/dataflows",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "folder": {
+                            "name": "DimDataFlows"
+                        },
+                        "type": "MappingDataFlow",
+                        "typeProperties": {
+                            "sources": [
+                                {
+                                    "dataset": {
+                                        "referenceName": "CountyStateDimDataset",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "countytostate"
+                                }
+                            ],
+                            "sinks": [
+                                {
+                                    "dataset": {
+                                        "referenceName": "IRISynapseCountyStateDim",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "LoadCountyStateDimTosynapse"
+                                }
+                            ],
+                            "transformations": [],
+                            "script": "source(output(\n\t\tCounty as string,\n\t\tState as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true) ~> countytostate\ncountytostate sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tstaged: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> LoadCountyStateDimTosynapse"
+                        }
+                    },
+                    "dependsOn": [
+                        "[variables('factoryName')]",
+                        "[concat(variables('factoryId'), '/datasets/CountyStateDimDataset')]",
+                        "[concat(variables('factoryId'), '/datasets/IRISynapseCountyStateDim')]"
+                    ]
+                },
+                {
+                    "name": "[concat(variables('factoryName'), '/LoadProductDimToSynapse')]",
+                    "type": "Microsoft.DataFactory/factories/dataflows",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "folder": {
+                            "name": "DimDataFlows"
+                        },
+                        "type": "MappingDataFlow",
+                        "typeProperties": {
+                            "sources": [
+                                {
+                                    "dataset": {
+                                        "referenceName": "CupsPlatesDimDataset",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "cupsplates"
+                                },
+                                {
+                                    "dataset": {
+                                        "referenceName": "FoilsWrapsDimDataset",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "foilswraps"
+                                },
+                                {
+                                    "dataset": {
+                                        "referenceName": "FoodTrashbagsDimDataset",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "foodtrashbags"
+                                }
+                            ],
+                            "sinks": [
+                                {
+                                    "dataset": {
+                                        "referenceName": "IRISynapseCupsPlateDim",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "LoadCupsPlatesDimToSynapse"
+                                },
+                                {
+                                    "dataset": {
+                                        "referenceName": "IRISynapseFoilsWrapsDim",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "LoadFoilsWrapsDimToSynapse"
+                                },
+                                {
+                                    "dataset": {
+                                        "referenceName": "IRISynapseFoodTrashBagsDim",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "LoadFoodTrashbagsDimToSynapse"
+                                }
+                            ],
+                            "transformations": [
+                                {
+                                    "name": "ReplaceSpaceWithUnderScoreFW"
+                                },
+                                {
+                                    "name": "ReplaceSpaceWithUnderScoreFT"
+                                },
+                                {
+                                    "name": "ReplaceSpaceWithUnderScoreCP"
+                                },
+                                {
+                                    "name": "CPDistinctRows"
+                                },
+                                {
+                                    "name": "FWDistinctRows"
+                                },
+                                {
+                                    "name": "FTBDistinctRows"
+                                }
+                            ],
+                            "script": "source(output(\n\t\tBrand as string,\n\t\t{Major Brand} as string,\n\t\tManufacturer as string,\n\t\t{Parent Company} as string,\n\t\t{Sub Category} as string,\n\t\tCategory as string,\n\t\tAisle as string,\n\t\tDepartment as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true) ~> cupsplates\nsource(output(\n\t\tBrand as string,\n\t\t{Major Brand} as string,\n\t\tManufacturer as string,\n\t\t{Parent Company} as string,\n\t\t{Sub Category} as string,\n\t\tCategory as string,\n\t\tAisle as string,\n\t\tDepartment as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> foilswraps\nsource(output(\n\t\tBrand as string,\n\t\t{Major Brand} as string,\n\t\tManufacturer as string,\n\t\t{Parent Company} as string,\n\t\t{Sub Category} as string,\n\t\tCategory as string,\n\t\tAisle as string,\n\t\tDepartment as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> foodtrashbags\nfoilswraps select(mapColumn(\n\t\teach(patternMatch(`.*`),\n\t\t\tregexReplace($$,' ','_') = $$)\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ReplaceSpaceWithUnderScoreFW\nfoodtrashbags select(mapColumn(\n\t\teach(patternMatch(`.*`),\n\t\t\tregexReplace($$,' ','_') = $$)\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ReplaceSpaceWithUnderScoreFT\ncupsplates select(mapColumn(\n\t\teach(patternMatch(`.*`),\n\t\t\tregexReplace($$,' ','_') = $$)\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ReplaceSpaceWithUnderScoreCP\nReplaceSpaceWithUnderScoreCP aggregate(groupBy(Category,\n\t\tBrand),\n\tMajor_Brand = first(Major_Brand),\n\t\tManufacturer = first(Manufacturer),\n\t\tParent_Company =  first(Parent_Company),\n\t\tSub_Category = first(Sub_Category),\n\t\tAisle = first(Aisle),\n\t\tDepartment = first(Department)) ~> CPDistinctRows\nReplaceSpaceWithUnderScoreFW aggregate(groupBy(Brand,\n\t\tCategory),\n\tMajor_Brand = first(Major_Brand),\n\t\tManufacturer = first(Manufacturer),\n\t\tParent_Company = first(Parent_Company),\n\t\tSub_Category = first(Sub_Category),\n\t\tAisle = first(Aisle),\n\t\tDepartment = first(Department)) ~> FWDistinctRows\nReplaceSpaceWithUnderScoreFT aggregate(groupBy(Brand,\n\t\tCategory),\n\tMajor_Brand = first(Major_Brand),\n\t\tManufacturer = first(Manufacturer),\n\t\tParent_Company = first(Parent_Company),\n\t\tSub_Category = first(Sub_Category),\n\t\tAisle = first(Aisle),\n\t\tDepartment = first(Department)) ~> FTBDistinctRows\nCPDistinctRows sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tstaged: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> LoadCupsPlatesDimToSynapse\nFWDistinctRows sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tstaged: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> LoadFoilsWrapsDimToSynapse\nFTBDistinctRows sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tstaged: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> LoadFoodTrashbagsDimToSynapse"
+                        }
+                    },
+                    "dependsOn": [
+                        "[variables('factoryName')]",
+                        "[concat(variables('factoryId'), '/datasets/CupsPlatesDimDataset')]",
+                        "[concat(variables('factoryId'), '/datasets/FoilsWrapsDimDataset')]",
+                        "[concat(variables('factoryId'), '/datasets/FoodTrashbagsDimDataset')]",
+                        "[concat(variables('factoryId'), '/datasets/IRISynapseCupsPlateDim')]",
+                        "[concat(variables('factoryId'), '/datasets/IRISynapseFoilsWrapsDim')]",
+                        "[concat(variables('factoryId'), '/datasets/IRISynapseFoodTrashBagsDim')]"
+                    ]
+                },
+                {
+                    "name": "[concat(variables('factoryName'), '/LoadProductFactToSynapse')]",
+                    "type": "Microsoft.DataFactory/factories/dataflows",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "folder": {
+                            "name": "FactDataFLows"
+                        },
+                        "type": "MappingDataFlow",
+                        "typeProperties": {
+                            "sources": [
+                                {
+                                    "dataset": {
+                                        "referenceName": "CupsPlatesByCountyFactDataset",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "cupsplates"
+                                },
+                                {
+                                    "dataset": {
+                                        "referenceName": "FoilsWrapsByCountyFactDataset",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "foilswraps"
+                                },
+                                {
+                                    "dataset": {
+                                        "referenceName": "FoodTrashbagsByCountyFactDataset",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "foodtrashbags"
+                                }
+                            ],
+                            "sinks": [
+                                {
+                                    "dataset": {
+                                        "referenceName": "IRISynapseCupsPlatesByCountyFact",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "LoadCupsPlatesFactToSynapse"
+                                },
+                                {
+                                    "dataset": {
+                                        "referenceName": "IRISynapseFoilsWrapsByCountyFact",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "LoadFoilsWrapsFactToSynapse"
+                                },
+                                {
+                                    "dataset": {
+                                        "referenceName": "IRISynapseFoodTashBagBYCountryFact",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "LoadFoodTrashbagsDimToSynapse"
+                                }
+                            ],
+                            "transformations": [
+                                {
+                                    "name": "ReplaceSpaceWithUnderScoreFW"
+                                },
+                                {
+                                    "name": "ReplaceSpaceWithUnderScoreFT"
+                                },
+                                {
+                                    "name": "ReplaceSpaceWithUnderScoreCP"
+                                },
+                                {
+                                    "name": "CPDistinctRows"
+                                },
+                                {
+                                    "name": "FWDistinctRows"
+                                },
+                                {
+                                    "name": "FTBDistinctRows"
+                                }
+                            ],
+                            "script": "source(output(\n\t\tDate as date,\n\t\tCounty as string,\n\t\t{Product Category} as string,\n\t\t{Product Brand} as string,\n\t\t{In Stock Rate} as double,\n\t\t{Agg Weight} as double\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\twildcardPaths:['by_country/cups_plates*.csv']) ~> cupsplates\nsource(output(\n\t\tDate as date,\n\t\tCounty as string,\n\t\t{Product Category} as string,\n\t\t{Product Brand} as string,\n\t\t{In Stock Rate} as double,\n\t\t{Agg Weight} as double\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\twildcardPaths:['by_country/foils_wraps*.csv']) ~> foilswraps\nsource(output(\n\t\tDate as date,\n\t\tCounty as string,\n\t\t{Product Category} as string,\n\t\t{Product Brand} as string,\n\t\t{In Stock Rate} as double,\n\t\t{Agg Weight} as double\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\twildcardPaths:['by_country/food_trash_bags*.csv']) ~> foodtrashbags\nfoilswraps select(mapColumn(\n\t\teach(patternMatch(`.*`),\n\t\t\tregexReplace($$,' ','_') = $$)\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ReplaceSpaceWithUnderScoreFW\nfoodtrashbags select(mapColumn(\n\t\teach(patternMatch(`.*`),\n\t\t\tregexReplace($$,' ','_') = $$)\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ReplaceSpaceWithUnderScoreFT\ncupsplates select(mapColumn(\n\t\teach(patternMatch(`.*`),\n\t\t\tregexReplace($$,' ','_') = $$)\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ReplaceSpaceWithUnderScoreCP\nReplaceSpaceWithUnderScoreCP aggregate(groupBy(Date,\n\t\tCounty,\n\t\tProduct_Category,\n\t\tProduct_Brand),\n\tIn_Stock_Rate = first(In_Stock_Rate),\n\t\tAgg_Weight = first(Agg_Weight)) ~> CPDistinctRows\nReplaceSpaceWithUnderScoreFW aggregate(groupBy(Date,\n\t\tCounty,\n\t\tProduct_Category,\n\t\tProduct_Brand),\n\tIn_Stock_Rate = first(In_Stock_Rate),\n\t\tAgg_Weight = first(Agg_Weight)) ~> FWDistinctRows\nReplaceSpaceWithUnderScoreFT aggregate(groupBy(Date,\n\t\tCounty,\n\t\tProduct_Category,\n\t\tProduct_Brand),\n\tIn_Stock_Rate = first(In_Stock_Rate),\n\t\tAgg_Weight = first(Agg_Weight)) ~> FTBDistinctRows\nCPDistinctRows sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tstaged: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> LoadCupsPlatesFactToSynapse\nFWDistinctRows sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tstaged: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> LoadFoilsWrapsFactToSynapse\nFTBDistinctRows sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tstaged: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> LoadFoodTrashbagsDimToSynapse"
+                        }
+                    },
+                    "dependsOn": [
+                        "[variables('factoryName')]",
+                        "[concat(variables('factoryId'), '/datasets/CupsPlatesByCountyFactDataset')]",
+                        "[concat(variables('factoryId'), '/datasets/FoilsWrapsByCountyFactDataset')]",
+                        "[concat(variables('factoryId'), '/datasets/FoodTrashbagsByCountyFactDataset')]",
+                        "[concat(variables('factoryId'), '/datasets/IRISynapseCupsPlatesByCountyFact')]",
+                        "[concat(variables('factoryId'), '/datasets/IRISynapseFoilsWrapsByCountyFact')]",
+                        "[concat(variables('factoryId'), '/datasets/IRISynapseFoodTashBagBYCountryFact')]"
+                    ]
+                },
+                {
+                    "name": "[concat(variables('factoryName'), '/LoadNyTimesToSynapse')]",
+                    "type": "Microsoft.DataFactory/factories/dataflows",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "folder": {
+                            "name": "NytimesDataFlow"
+                        },
+                        "type": "MappingDataFlow",
+                        "typeProperties": {
+                            "sources": [
+                                {
+                                    "dataset": {
+                                        "referenceName": "nyTimesDataset",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "nyTimes"
+                                },
+                                {
+                                    "dataset": {
+                                        "referenceName": "stateCodeDataset",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "statetoCode"
+                                }
+                            ],
+                            "sinks": [
+                                {
+                                    "dataset": {
+                                        "referenceName": "SynapsenyTimes",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "LoadNyTimeToSynapse"
+                                }
+                            ],
+                            "transformations": [
+                                {
+                                    "name": "AppendStatecodeToCounty"
+                                },
+                                {
+                                    "name": "AddCodeColumn"
+                                },
+                                {
+                                    "name": "RemoveAbbreviationColumn"
+                                }
+                            ],
+                            "script": "source(output(\n\t\tLoad_date as date,\n\t\tLoad_time as string,\n\t\tRecord_Date as date,\n\t\tCounty as string,\n\t\tState as string,\n\t\tFips as integer,\n\t\tCases as short,\n\t\tDeaths as short,\n\t\tIso_country as string,\n\t\tDeath_rate as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true) ~> nyTimes\nsource(output(\n\t\tState as string,\n\t\tAbbreviation as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false) ~> statetoCode\nAddCodeColumn derive(County = concat(upper(County), '  ', Abbreviation)) ~> AppendStatecodeToCounty\nnyTimes, statetoCode join(nyTimes@State == statetoCode@State,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> AddCodeColumn\nAppendStatecodeToCounty select(mapColumn(\n\t\tLoad_date,\n\t\tLoad_time,\n\t\tRecord_Date,\n\t\tCounty,\n\t\tState = nyTimes@State,\n\t\tFips,\n\t\tCases,\n\t\tDeaths,\n\t\tIso_country,\n\t\tDeath_rate,\n\t\tState = statetoCode@State\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> RemoveAbbreviationColumn\nRemoveAbbreviationColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tstaged: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> LoadNyTimeToSynapse"
+                        }
+                    },
+                    "dependsOn": [
+                        "[variables('factoryName')]",
+                        "[concat(variables('factoryId'), '/datasets/nyTimesDataset')]",
+                        "[concat(variables('factoryId'), '/datasets/stateCodeDataset')]",
+                        "[concat(variables('factoryId'), '/datasets/SynapsenyTimes')]"
+                    ]
+                },
+                {
+                    "name": "[concat(variables('factoryName'), '/IRISynapseCupsPlateDim')]",
+                    "type": "Microsoft.DataFactory/factories/datasets",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "linkedServiceName": {
+                            "referenceName": "IRIDemoSynapse",
+                            "type": "LinkedServiceReference"
+                        },
+                        "folder": {
+                            "name": "DimDatasets"
+                        },
+                        "annotations": [],
+                        "type": "AzureSqlDWTable",
+                        "schema": [],
+                        "typeProperties": {
+                            "schema": "iri",
+                            "table": "cups_plates_dim"
+                        }
+                    },
+                    "dependsOn": [
+                        "[variables('factoryName')]",
+                        "[concat(variables('factoryId'), '/linkedServices/IRIDemoSynapse')]"
+                    ]
+                },
+                {
+                    "name": "[concat(variables('factoryName'), '/IRISynapseFoilsWrapsDim')]",
+                    "type": "Microsoft.DataFactory/factories/datasets",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "linkedServiceName": {
+                            "referenceName": "IRIDemoSynapse",
+                            "type": "LinkedServiceReference"
+                        },
+                        "folder": {
+                            "name": "DimDatasets"
+                        },
+                        "annotations": [],
+                        "type": "AzureSqlDWTable",
+                        "schema": [],
+                        "typeProperties": {
+                            "schema": "iri",
+                            "table": "foils_wraps_dim"
+                        }
+                    },
+                    "dependsOn": [
+                        "[variables('factoryName')]",
+                        "[concat(variables('factoryId'), '/linkedServices/IRIDemoSynapse')]"
+                    ]
+                },
+                {
+                    "name": "[concat(variables('factoryName'), '/FoilsWrapsDimDataset')]",
+                    "type": "Microsoft.DataFactory/factories/datasets",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "linkedServiceName": {
+                            "referenceName": "fromRemoteIRI",
+                            "type": "LinkedServiceReference"
+                        },
+                        "folder": {
+                            "name": "DimDatasets"
+                        },
+                        "annotations": [],
+                        "type": "DelimitedText",
+                        "typeProperties": {
+                            "location": {
+                                "type": "AzureBlobStorageLocation",
+                                "fileName": "foils_wraps.csv",
+                                "folderPath": "product_dim",
+                                "container": "irimscovoos"
+                            },
+                            "columnDelimiter": ",",
+                            "escapeChar": "\\",
+                            "firstRowAsHeader": true,
+                            "quoteChar": "\""
+                        },
+                        "schema": []
+                    },
+                    "dependsOn": [
+                        "[variables('factoryName')]",
+                        "[concat(variables('factoryId'), '/linkedServices/fromRemoteIRI')]"
+                    ]
+                },
+                {
+                    "name": "[concat(variables('factoryName'), '/IRISynapseFoodTrashBagsDim')]",
+                    "type": "Microsoft.DataFactory/factories/datasets",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "linkedServiceName": {
+                            "referenceName": "IRIDemoSynapse",
+                            "type": "LinkedServiceReference"
+                        },
+                        "folder": {
+                            "name": "DimDatasets"
+                        },
+                        "annotations": [],
+                        "type": "AzureSqlDWTable",
+                        "schema": [],
+                        "typeProperties": {
+                            "schema": "iri",
+                            "table": "food_trashbags_dim"
+                        }
+                    },
+                    "dependsOn": [
+                        "[variables('factoryName')]",
+                        "[concat(variables('factoryId'), '/linkedServices/IRIDemoSynapse')]"
+                    ]
+                },
+                {
+                    "name": "[concat(variables('factoryName'), '/FoodTrashbagsDimDataset')]",
+                    "type": "Microsoft.DataFactory/factories/datasets",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "linkedServiceName": {
+                            "referenceName": "fromRemoteIRI",
+                            "type": "LinkedServiceReference"
+                        },
+                        "folder": {
+                            "name": "DimDatasets"
+                        },
+                        "annotations": [],
+                        "type": "DelimitedText",
+                        "typeProperties": {
+                            "location": {
+                                "type": "AzureBlobStorageLocation",
+                                "fileName": "food_trash_bags.csv",
+                                "folderPath": "product_dim",
+                                "container": "irimscovoos"
+                            },
+                            "columnDelimiter": ",",
+                            "escapeChar": "\\",
+                            "firstRowAsHeader": true,
+                            "quoteChar": "\""
+                        },
+                        "schema": []
+                    },
+                    "dependsOn": [
+                        "[variables('factoryName')]",
+                        "[concat(variables('factoryId'), '/linkedServices/fromRemoteIRI')]"
+                    ]
+                },
+                {
+                    "name": "[concat(variables('factoryName'), '/IRISynapseCountyStateDim')]",
+                    "type": "Microsoft.DataFactory/factories/datasets",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "linkedServiceName": {
+                            "referenceName": "IRIDemoSynapse",
+                            "type": "LinkedServiceReference"
+                        },
+                        "folder": {
+                            "name": "DimDatasets"
+                        },
+                        "annotations": [],
+                        "type": "AzureSqlDWTable",
+                        "schema": [],
+                        "typeProperties": {
+                            "schema": "iri",
+                            "table": "county_state_dim"
+                        }
+                    },
+                    "dependsOn": [
+                        "[variables('factoryName')]",
+                        "[concat(variables('factoryId'), '/linkedServices/IRIDemoSynapse')]"
+                    ]
+                },
+                {
+                    "name": "[concat(variables('factoryName'), '/CountyStateDimDataset')]",
+                    "type": "Microsoft.DataFactory/factories/datasets",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "linkedServiceName": {
+                            "referenceName": "fromRemoteIRI",
+                            "type": "LinkedServiceReference"
+                        },
+                        "folder": {
+                            "name": "DimDatasets"
+                        },
+                        "annotations": [],
+                        "type": "DelimitedText",
+                        "typeProperties": {
+                            "location": {
+                                "type": "AzureBlobStorageLocation",
+                                "fileName": "county_to_state.csv",
+                                "folderPath": "geography_dim",
+                                "container": "irimscovoos"
+                            },
+                            "columnDelimiter": ",",
+                            "escapeChar": "\\",
+                            "firstRowAsHeader": true,
+                            "quoteChar": "\""
+                        },
+                        "schema": [
+                            {
+                                "type": "String"
+                            },
+                            {
+                                "type": "String"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[variables('factoryName')]",
+                        "[concat(variables('factoryId'), '/linkedServices/fromRemoteIRI')]"
+                    ]
+                },
+                {
+                    "name": "[concat(variables('factoryName'), '/CupsPlatesDimDataset')]",
+                    "type": "Microsoft.DataFactory/factories/datasets",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "linkedServiceName": {
+                            "referenceName": "fromRemoteIRI",
+                            "type": "LinkedServiceReference"
+                        },
+                        "folder": {
+                            "name": "DimDatasets"
+                        },
+                        "annotations": [],
+                        "type": "DelimitedText",
+                        "typeProperties": {
+                            "location": {
+                                "type": "AzureBlobStorageLocation",
+                                "fileName": "cups_plates.csv",
+                                "folderPath": "product_dim",
+                                "container": "irimscovoos"
+                            },
+                            "columnDelimiter": ",",
+                            "escapeChar": "\\",
+                            "firstRowAsHeader": true,
+                            "quoteChar": "\""
+                        },
+                        "schema": [
+                            {
+                                "type": "String"
+                            },
+                            {
+                                "type": "String"
+                            },
+                            {
+                                "type": "String"
+                            },
+                            {
+                                "type": "String"
+                            },
+                            {
+                                "type": "String"
+                            },
+                            {
+                                "type": "String"
+                            },
+                            {
+                                "type": "String"
+                            },
+                            {
+                                "type": "String"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[variables('factoryName')]",
+                        "[concat(variables('factoryId'), '/linkedServices/fromRemoteIRI')]"
+                    ]
+                },
+                {
+                    "name": "[concat(variables('factoryName'), '/CupsPlatesByCountyFactDataset')]",
+                    "type": "Microsoft.DataFactory/factories/datasets",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "linkedServiceName": {
+                            "referenceName": "fromRemoteIRI",
+                            "type": "LinkedServiceReference"
+                        },
+                        "folder": {
+                            "name": "FactDatasets"
+                        },
+                        "annotations": [],
+                        "type": "DelimitedText",
+                        "typeProperties": {
+                            "location": {
+                                "type": "AzureBlobStorageLocation",
+                                "fileName": "cups_plates*.csv",
+                                "folderPath": "by_country",
+                                "container": "irimscovoos"
+                            },
+                            "columnDelimiter": ",",
+                            "escapeChar": "\\",
+                            "firstRowAsHeader": true,
+                            "quoteChar": "\""
+                        },
+                        "schema": [
+                            {
+                                "name": "Date",
+                                "type": "String"
+                            },
+                            {
+                                "name": "County",
+                                "type": "String"
+                            },
+                            {
+                                "name": "Product Category",
+                                "type": "String"
+                            },
+                            {
+                                "name": "Product Brand",
+                                "type": "String"
+                            },
+                            {
+                                "name": "In Stock Rate",
+                                "type": "String"
+                            },
+                            {
+                                "name": "Agg Weight",
+                                "type": "String"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[variables('factoryName')]",
+                        "[concat(variables('factoryId'), '/linkedServices/fromRemoteIRI')]"
+                    ]
+                },
+                {
+                    "name": "[concat(variables('factoryName'), '/IRISynapseFoilsWrapsByCountyFact')]",
+                    "type": "Microsoft.DataFactory/factories/datasets",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "linkedServiceName": {
+                            "referenceName": "IRIDemoSynapse",
+                            "type": "LinkedServiceReference"
+                        },
+                        "folder": {
+                            "name": "FactDatasets"
+                        },
+                        "annotations": [],
+                        "type": "AzureSqlDWTable",
+                        "schema": [],
+                        "typeProperties": {
+                            "schema": "iri",
+                            "table": "foils_wraps_by_county_fact"
+                        }
+                    },
+                    "dependsOn": [
+                        "[variables('factoryName')]",
+                        "[concat(variables('factoryId'), '/linkedServices/IRIDemoSynapse')]"
+                    ]
+                },
+                {
+                    "name": "[concat(variables('factoryName'), '/IRISynapseCupsPlatesByCountyFact')]",
+                    "type": "Microsoft.DataFactory/factories/datasets",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "linkedServiceName": {
+                            "referenceName": "IRIDemoSynapse",
+                            "type": "LinkedServiceReference"
+                        },
+                        "folder": {
+                            "name": "FactDatasets"
+                        },
+                        "annotations": [],
+                        "type": "AzureSqlDWTable",
+                        "schema": [],
+                        "typeProperties": {
+                            "schema": "iri",
+                            "table": "cups_plates_by_county_fact"
+                        }
+                    },
+                    "dependsOn": [
+                        "[variables('factoryName')]",
+                        "[concat(variables('factoryId'), '/linkedServices/IRIDemoSynapse')]"
+                    ]
+                },
+                {
+                    "name": "[concat(variables('factoryName'), '/FoilsWrapsByCountyFactDataset')]",
+                    "type": "Microsoft.DataFactory/factories/datasets",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "linkedServiceName": {
+                            "referenceName": "fromRemoteIRI",
+                            "type": "LinkedServiceReference"
+                        },
+                        "folder": {
+                            "name": "FactDatasets"
+                        },
+                        "annotations": [],
+                        "type": "DelimitedText",
+                        "typeProperties": {
+                            "location": {
+                                "type": "AzureBlobStorageLocation",
+                                "folderPath": "by_country",
+                                "container": "irimscovoos"
+                            },
+                            "columnDelimiter": ",",
+                            "escapeChar": "\\",
+                            "firstRowAsHeader": true,
+                            "quoteChar": "\""
+                        },
+                        "schema": [
+                            {
+                                "name": "Date",
+                                "type": "String"
+                            },
+                            {
+                                "name": "County",
+                                "type": "String"
+                            },
+                            {
+                                "name": "Product Category",
+                                "type": "String"
+                            },
+                            {
+                                "name": "Product Brand",
+                                "type": "String"
+                            },
+                            {
+                                "name": "In Stock Rate",
+                                "type": "String"
+                            },
+                            {
+                                "name": "Agg Weight",
+                                "type": "String"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[variables('factoryName')]",
+                        "[concat(variables('factoryId'), '/linkedServices/fromRemoteIRI')]"
+                    ]
+                },
+                {
+                    "name": "[concat(variables('factoryName'), '/FoodTrashbagsByCountyFactDataset')]",
+                    "type": "Microsoft.DataFactory/factories/datasets",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "linkedServiceName": {
+                            "referenceName": "fromRemoteIRI",
+                            "type": "LinkedServiceReference"
+                        },
+                        "folder": {
+                            "name": "FactDatasets"
+                        },
+                        "annotations": [],
+                        "type": "DelimitedText",
+                        "typeProperties": {
+                            "location": {
+                                "type": "AzureBlobStorageLocation",
+                                "folderPath": "by_country",
+                                "container": "irimscovoos"
+                            },
+                            "columnDelimiter": ",",
+                            "escapeChar": "\\",
+                            "firstRowAsHeader": true,
+                            "quoteChar": "\""
+                        },
+                        "schema": [
+                            {
+                                "name": "Date",
+                                "type": "String"
+                            },
+                            {
+                                "name": "County",
+                                "type": "String"
+                            },
+                            {
+                                "name": "Product Category",
+                                "type": "String"
+                            },
+                            {
+                                "name": "Product Brand",
+                                "type": "String"
+                            },
+                            {
+                                "name": "In Stock Rate",
+                                "type": "String"
+                            },
+                            {
+                                "name": "Agg Weight",
+                                "type": "String"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[variables('factoryName')]",
+                        "[concat(variables('factoryId'), '/linkedServices/fromRemoteIRI')]"
+                    ]
+                },
+                {
+                    "name": "[concat(variables('factoryName'), '/IRISynapseFoodTashBagBYCountryFact')]",
+                    "type": "Microsoft.DataFactory/factories/datasets",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "linkedServiceName": {
+                            "referenceName": "IRIDemoSynapse",
+                            "type": "LinkedServiceReference"
+                        },
+                        "folder": {
+                            "name": "FactDatasets"
+                        },
+                        "annotations": [],
+                        "type": "AzureSqlDWTable",
+                        "schema": [],
+                        "typeProperties": {
+                            "schema": "iri",
+                            "table": "food_trashbag_by_county_fact"
+                        }
+                    },
+                    "dependsOn": [
+                        "[variables('factoryName')]",
+                        "[concat(variables('factoryId'), '/linkedServices/IRIDemoSynapse')]"
+                    ]
+                },
+                {
+                    "name": "[concat(variables('factoryName'), '/dbInitDataset')]",
+                    "type": "Microsoft.DataFactory/factories/datasets",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "linkedServiceName": {
+                            "referenceName": "IRIDemoSynapse",
+                            "type": "LinkedServiceReference"
+                        },
+                        "annotations": [],
+                        "type": "AzureSqlDWTable",
+                        "schema": [],
+                        "typeProperties": {}
+                    },
+                    "dependsOn": [
+                        "[variables('factoryName')]",
+                        "[concat(variables('factoryId'), '/linkedServices/IRIDemoSynapse')]"
+                    ]
+                },
+                {
+                    "name": "[concat(variables('factoryName'), '/nyTimesDataset')]",
+                    "type": "Microsoft.DataFactory/factories/datasets",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "linkedServiceName": {
+                            "referenceName": "frompublicNytimes",
+                            "type": "LinkedServiceReference"
+                        },
+                        "folder": {
+                            "name": "NyTimesDataSet"
+                        },
+                        "annotations": [],
+                        "type": "DelimitedText",
+                        "typeProperties": {
+                            "location": {
+                                "type": "AzureBlobStorageLocation",
+                                "fileName": "covid_tracking.csv",
+                                "folderPath": "curated/covid-19/covid_tracking/latest",
+                                "container": "public"
+                            },
+                            "columnDelimiter": ",",
+                            "escapeChar": "\\",
+                            "firstRowAsHeader": true,
+                            "quoteChar": "\""
+                        },
+                        "schema": []
+                    },
+                    "dependsOn": [
+                        "[variables('factoryName')]",
+                        "[concat(variables('factoryId'), '/linkedServices/frompublicNytimes')]"
+                    ]
+                },
+                {
+                    "name": "[concat(variables('factoryName'), '/SynapsenyTimes')]",
+                    "type": "Microsoft.DataFactory/factories/datasets",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "linkedServiceName": {
+                            "referenceName": "IRIDemoSynapse",
+                            "type": "LinkedServiceReference"
+                        },
+                        "folder": {
+                            "name": "NyTimesDataSet"
+                        },
+                        "annotations": [],
+                        "type": "AzureSqlDWTable",
+                        "schema": [],
+                        "typeProperties": {
+                            "schema": "iri",
+                            "table": "ny_times"
+                        }
+                    },
+                    "dependsOn": [
+                        "[variables('factoryName')]",
+                        "[concat(variables('factoryId'), '/linkedServices/IRIDemoSynapse')]"
+                    ]
+                },
+                {
+                    "name": "[concat(variables('factoryName'), '/stateCodeDataset')]",
+                    "type": "Microsoft.DataFactory/factories/datasets",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "linkedServiceName": {
+                            "referenceName": "frompublicNytimes",
+                            "type": "LinkedServiceReference"
+                        },
+                        "annotations": [],
+                        "type": "DelimitedText",
+                        "typeProperties": {
+                            "location": {
+                                "type": "AzureBlobStorageLocation",
+                                "fileName": "states.csv",
+                                "container": "static"
+                            },
+                            "columnDelimiter": ",",
+                            "escapeChar": "\\",
+                            "firstRowAsHeader": true,
+                            "quoteChar": "\""
+                        },
+                        "schema": [
+                            {
+                                "name": "State",
+                                "type": "String"
+                            },
+                            {
+                                "name": "Abbreviation",
+                                "type": "String"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[variables('factoryName')]",
+                        "[concat(variables('factoryId'), '/linkedServices/frompublicNytimes')]"
+                    ]
+                }
+            
+        
+            ]
+        }
+    ]        
+}

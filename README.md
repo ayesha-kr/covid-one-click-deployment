@@ -20,6 +20,13 @@ Dataset | Descriptions | Link | Status
 ## 4. Data Flow deployment steps
   You can see that the repo has three sections public, customer and power BI. Go inside each of the directory to deploy that relavent section.  
 
-## 5. Contact us
+## 5 . CI/CD setup for Azure Data Factory
+
+We have provided an Azure pipelines yaml that can be used to set up CI/CD for Azure Data Factory. The pipeline is triggered when you publish changes in the Dev data factory (The one that is connected to Github). THe pipelines reads teh generated ARM templates from teh Dev Data factory and deploys it to Prod. 
+
+You can follow the instructions given in the following link to set up CI/CD using Azure Pipelines.
+![Azul_Data_Pipeline_CICD](./datasets/covid-19/definitive-healthcare/AzurePipelines-CICD/readme.md)
+
+## 6 . Contact us
 We hope that this blog is helpful for you. In case you have any questions, feel free to reach out to us at ayesha.khaliq@emumba.com, hamza.rashid@emumba.com.
 

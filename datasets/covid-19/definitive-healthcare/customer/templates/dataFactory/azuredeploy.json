@@ -440,7 +440,7 @@
                     ]
                 },
                 {
-                    "condition": "[equals(parameters('selectDataLoader'),'Synapse Database Warehouse')]",
+                    "condition": "[and(equals(parameters('selectDataLoader'),'Synapse Database Warehouse'),equals(parameters('selectCopyMethod'),'Copy Data Activity'))]",
                     "name": "[concat(parameters('dataFactoryName'), '/LoadIntoStagingTable')]",
                     "type": "Microsoft.DataFactory/factories/dataflows",
                     "apiVersion": "2018-06-01",
@@ -522,7 +522,7 @@
                     ]
                 },
                 {
-                    "condition": "[equals(parameters('selectDataLoader'),'Both')]",
+                    "condition": "[and(equals(parameters('selectDataLoader'),'Both'),equals(parameters('selectCopyMethod'),'Copy Data Activity'))]",
                     "name": "[concat(parameters('dataFactoryName'), '/LoadIntoStagingTable_SynapseWithSQL')]",
                     "type": "Microsoft.DataFactory/factories/dataflows",
                     "apiVersion": "2018-06-01",
@@ -712,6 +712,7 @@
                 },
 
                 {
+                    "condition": "[and(equals(parameters('selectDataLoader'),'Synapse Database Warehouse'),equals(parameters('selectCopyMethod'),'Copy Data Activity'))]",
                     "condition": "[equals(parameters('selectDataLoader'),'Synapse Database Warehouse')]",
                     "type": "Microsoft.DataFactory/factories/pipelines",
                     "apiVersion": "2018-06-01",
@@ -940,7 +941,7 @@
                     ]
                 },
                 {
-                    "condition": "[equals(parameters('selectDataLoader'),'Both')]",
+                    "condition": "[and(equals(parameters('selectDataLoader'),'Both'),equals(parameters('selectCopyMethod'),'Copy Data Activity'))]",
                     "name": "[concat(parameters('dataFactoryName'), '/SynapseAndSqlDataLoader')]",
                     "type": "Microsoft.DataFactory/factories/pipelines",
                     "apiVersion": "2018-06-01",
@@ -1469,7 +1470,7 @@
                     ]
                 },
                 {
-                    "condition": "[equals(parameters('selectDataLoader'),'Synapse Database Warehouse')]",
+                    "condition": "[and(equals(parameters('selectDataLoader'),'Synapse Database Warehouse'),equals(parameters('selectCopyMethod'),'Copy Data Activity'))]",
                     "name": "[concat(parameters('dataFactoryName'), '/SynapseDataLoaderPipelineTrigger')]",
                     "type": "Microsoft.DataFactory/factories/triggers",
                     "apiVersion": "2018-06-01",
@@ -1506,7 +1507,7 @@
                     }
                 },
                 {
-                    "condition": "[equals(parameters('selectDataLoader'),'Both')]",
+                    "condition": "[and(equals(parameters('selectDataLoader'),'Both'),equals(parameters('selectCopyMethod'),'Copy Data Activity'))]",
                     "name": "[concat(parameters('dataFactoryName'), '/SynapseAndSqlDataLoaderPipelineTrigger')]",
                     "type": "Microsoft.DataFactory/factories/triggers",
                     "apiVersion": "2018-06-01",
@@ -2051,9 +2052,13 @@
                         "sqlActivityAlertConfig"
                     ]
                 },
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                
+
+
+
+
+
+
                 {
                     "condition": "[and(equals(parameters('selectDataLoader'),'SQL Database'),equals(parameters('selectCopyMethod'),'Data Share'))]",
                     "name": "[concat(parameters('factoryName'), '/SqlDataLoaderWithDataShare')]",
@@ -2088,7 +2093,7 @@
                                 }
                             },
                             {
-                                "name": "LoadIntoStagingTable_SQL_from_DataShare",
+                                "name": "LoadIntoStagingTable_SQL",
                                 "type": "ExecuteDataFlow",
                                 "dependsOn": [
                                     {
@@ -2203,11 +2208,15 @@
                         "annotations": []
                     },
                     "dependsOn": [
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/ArmtemplateTestDatasetIn')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/source_dataset')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/SqlDbStagingSource')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/AzureSynapseAnalyticsStagingTableSource')]",
                         "[parameters('dataFactoryName')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/dataflows/LoadIntoStagingTable_SQL_from_DataShare')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/customerStorageLinkedService')]",
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/dataflows/LoadIntoOperationalTable_SQL')]"
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/source_linkedservice')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/dataflows/LoadIntoOperationalTable_SynapseWithSQL')]"
                     ]
                 },
                 {
@@ -2311,7 +2320,7 @@
                     "apiVersion": "2018-06-01",
                     "properties": {
                         "annotations": [],
-                        "runtimeState": "Stopped",
+                        "runtimeState": "Started",
                         "pipeline": {
                             "pipelineReference": {
                                 "referenceName": "SqlDataLoaderWithDataShare",
@@ -2336,7 +2345,593 @@
                         "[parameters('dataFactoryName')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/pipelines/SqlDataLoaderWithDataShare')]"
                     ]
+                },
+                
+
+
+
+
+
+
+
+
+                {
+                    "condition": "[and(equals(parameters('selectDataLoader'),'Synapse Database Warehouse'),equals(parameters('selectCopyMethod'),'Data Share'))]",
+                    "name": "[concat(parameters('factoryName'), '/SynapseDataLoaderWithDataShare')]",
+                    "type": "Microsoft.DataFactory/factories/pipelines",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "activities": [
+                            {
+                                "name": "Verify Master Key",
+                                "type": "Lookup",
+                                "dependsOn": [],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "SqlDWSource",
+                                        "sqlReaderQuery": "IF (select Count(*) from sys.symmetric_keys where name like '%DatabaseMasterKey%') = 0\n\nBEGIN\n\nCREATE master key;\n\nIF NOT EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC' )\n\n    EXEC('CREATE SCHEMA [definitive_HC] AUTHORIZATION [dbo]');\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\nIF NOT EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC' )\n\n    EXEC('CREATE SCHEMA [definitive_HC] AUTHORIZATION [dbo]');\n\nselect Count(*) from sys.symmetric_keys;\n\nEND\n",
+                                        "queryTimeout": "02:00:00",
+                                        "partitionOption": "None"
+                                    },
+                                    "dataset": {
+                                        "referenceName": "AzureSynapseAnalyticsStagingTableSource",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                }
+                            },
+                            {
+                                "name": "LoadIntoStagingTable",
+                                "type": "ExecuteDataFlow",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Verify Master Key",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "dataflow": {
+                                        "referenceName": "LoadIntoStagingTable_from_DataShare",
+                                        "type": "DataFlowReference",
+                                        "parameters": {},
+                                        "datasetParameters": {
+                                            "SourceCSV": {},
+                                            "SynapseStagingSink": {}
+                                        }
+                                    },
+                                    "staging": {
+                                        "linkedService": {
+                                            "referenceName": "customerStorageLinkedService",
+                                            "type": "LinkedServiceReference"
+                                        },
+                                        "folderPath": "staging"
+                                    },
+                                    "compute": {
+                                        "coreCount": 8,
+                                        "computeType": "General"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "LoadIntoOperationalTable",
+                                "type": "ExecuteDataFlow",
+                                "dependsOn": [
+                                    {
+                                        "activity": "LoadIntoStagingTable",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "dataflow": {
+                                        "referenceName": "LoadIntoOperationalTable",
+                                        "type": "DataFlowReference",
+                                        "parameters": {},
+                                        "datasetParameters": {
+                                            "sourceSynapseStagingTable": {},
+                                            "SynapseOperationalTable": {}
+                                        }
+                                    },
+                                    "staging": {
+                                        "linkedService": {
+                                            "referenceName": "customerStorageLinkedService",
+                                            "type": "LinkedServiceReference"
+                                        },
+                                        "folderPath": "staging"
+                                    },
+                                    "compute": {
+                                        "coreCount": 8,
+                                        "computeType": "General"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "Create Views in Synapse",
+                                "type": "Lookup",
+                                "dependsOn": [
+                                    {
+                                        "activity": "LoadIntoOperationalTable",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 0,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "SqlDWSource",
+                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'dhc_view')\n    EXEC('create view definitive_HC.dhc_view as select State_Name, Num_Staffed_Beds from definitive_HC.operationaldhc;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "queryTimeout": "00:10:00",
+                                        "partitionOption": "None"
+                                    },
+                                    "dataset": {
+                                        "referenceName": "SynapseOperationalTable_sink",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                }
+                            }
+                        ],
+                        "folder": {
+                            "name": "CovidDefinitiveHC"
+                        },
+                        "annotations": []
+                    },
+                    "dependsOn": [
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/dataflows/LoadIntoStagingTable_from_DataShare')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/dataflows/LoadIntoOperationalTable')]",
+                        "[parameters('dataFactoryName')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/ArmtemplateTestDatasetIn')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/source_dataset')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/AzureSynapseAnalyticsStagingTableSource')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/SynapseOperationalTable_sink')]"
+                    ]
+                },
+                {
+                    "condition": "[and(equals(parameters('selectDataLoader'),'Synapse Database Warehouse'),equals(parameters('selectCopyMethod'),'Data Share'))]",
+                    "name": "[concat(parameters('factoryName'), '/LoadIntoStagingTable_from_DataShare')]",
+                    "type": "Microsoft.DataFactory/factories/dataflows",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "folder": {
+                            "name": "CovidDefinitiveHC"
+                        },
+                        "type": "MappingDataFlow",
+                        "typeProperties": {
+                            "sources": [
+                                {
+                                    "dataset": {
+                                        "referenceName": "source_dataset",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "SourceCSV"
+                                }
+                            ],
+                            "sinks": [
+                                {
+                                    "dataset": {
+                                        "referenceName": "AzureSynapseAnalyticsStagingTableSink",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "SynapseStagingSink"
+                                }
+                            ],
+                            "transformations": [
+                                {
+                                    "name": "CleanData"
+                                }
+                            ],
+                            "script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\trowUrlColumn: 'filename',\n\tinferDriftedColumnTypes: true) ~> SourceCSV\nSourceCSV derive(each(match(type=='string'), $$ = trim(toString($$))),\n\t\teach(match(type=='integer'), $$ = toInteger($$)),\n\t\teach(match(type=='short'), $$ = toShort($$)),\n\t\teach(match(type=='double'), $$ = round(toDouble($$),3)),\n\t\teach(match(type=='decimal'), $$ = toDecimal($$))) ~> CleanData\nCleanData sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tstaged: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SynapseStagingSink"
+                        }
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/source_dataset')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/AzureSynapseAnalyticsStagingTableSink')]"
+                    ]
+                },
+                {
+                    "condition": "[and(equals(parameters('selectDataLoader'),'Synapse Database Warehouse'),equals(parameters('selectCopyMethod'),'Data Share'))]",
+                    "name": "[concat(parameters('factoryName'), '/SynapseDataLoaderWithDataSharePipelineTrigger')]",
+                    "type": "Microsoft.DataFactory/factories/triggers",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "annotations": [],
+                        "runtimeState": "Started",
+                        "pipeline": {
+                            "pipelineReference": {
+                                "referenceName": "SynapseDataLoaderWithDataShare",
+                                "type": "PipelineReference"
+                            },
+                            "parameters": {}
+                        },
+                        "type": "TumblingWindowTrigger",
+                        "typeProperties": {
+                            "frequency": "Minute",
+                            "interval": 15,
+                            "startTime": "[parameters('triggerStartTime')]",
+                            "delay": "00:00:00",
+                            "maxConcurrency": 1,
+                            "retryPolicy": {
+                                "count": 3,
+                                "intervalInSeconds": 30
+                            }
+                        }
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/pipelines/SynapseDataLoaderWithDataShare')]"
+                    ]
+                },
+                
+
+
+
+
+
+
+
+
+
+
+                
+                {
+                    "condition": "[and(equals(parameters('selectDataLoader'),'Both'),equals(parameters('selectCopyMethod'),'Data Share'))]",
+                    "name": "[concat(parameters('factoryName'), '/SynapseAndSqlDataLoaderWithDataShare')]",
+                    "type": "Microsoft.DataFactory/factories/pipelines",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "activities": [
+                            {
+                                "name": "Verify Master Key",
+                                "type": "Lookup",
+                                "dependsOn": [],
+                                "policy": {
+                                    "timeout": "0.00:10:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "SqlDWSource",
+                                        "sqlReaderQuery": "IF (select Count(*) from sys.symmetric_keys where name like '%DatabaseMasterKey%') = 0\n\nBEGIN\n\nCREATE master key;\n\nIF NOT EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC' )\n\n    EXEC('CREATE SCHEMA [definitive_HC] AUTHORIZATION [dbo]');\nselect Count(*) from sys.symmetric_keys;\n\n\nEND\n\nELSE \n\nBEGIN\nIF NOT EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC' )\n\n    EXEC('CREATE SCHEMA [definitive_HC] AUTHORIZATION [dbo]');\n\nselect Count(*) from sys.symmetric_keys;\n\nEND\n",
+                                        "queryTimeout": "00:05:00",
+                                        "partitionOption": "None"
+                                    },
+                                    "dataset": {
+                                        "referenceName": "AzureSynapseAnalyticsStagingTableSource",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                }
+                            },
+                            {
+                                "name": "Verify Schema in SQL DB",
+                                "type": "Lookup",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Verify Master Key",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "0.00:10:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "AzureSqlSource",
+                                        "sqlReaderQuery": "IF NOT EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC') \n\nBEGIN\n\n    EXEC('CREATE SCHEMA [definitive_HC] AUTHORIZATION [dbo]');\n\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "queryTimeout": "00:05:00",
+                                        "partitionOption": "None"
+                                    },
+                                    "dataset": {
+                                        "referenceName": "SqlDbStagingSource",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                }
+                            },
+                            {
+                                "name": "LoadIntoStagingTable_SynapseWithSQL",
+                                "type": "ExecuteDataFlow",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Verify Schema in SQL DB",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "0.00:30:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "dataflow": {
+                                        "referenceName": "LoadIntoStagingTable_SynapseWithSQL_from_DataShare",
+                                        "type": "DataFlowReference",
+                                        "parameters": {},
+                                        "datasetParameters": {
+                                            "SourceCSV": {},
+                                            "SynapseStagingSink": {},
+                                            "SQLStagingSink": {}
+                                        }
+                                    },
+                                    "staging": {
+                                        "linkedService": {
+                                            "referenceName": "customerStorageLinkedService",
+                                            "type": "LinkedServiceReference"
+                                        },
+                                        "folderPath": "staging"
+                                    },
+                                    "compute": {
+                                        "coreCount": 8,
+                                        "computeType": "General"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "LoadIntoOperationalTable_SynapseWithSQL",
+                                "type": "ExecuteDataFlow",
+                                "dependsOn": [
+                                    {
+                                        "activity": "LoadIntoStagingTable_SynapseWithSQL",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "dataflow": {
+                                        "referenceName": "LoadIntoOperationalTable_SynapseWithSQL",
+                                        "type": "DataFlowReference",
+                                        "parameters": {},
+                                        "datasetParameters": {
+                                            "sourceSynapseStagingTable": {},
+                                            "sourceSqlDbStaging": {},
+                                            "SynapseOperationalTable": {},
+                                            "SqlOperationalSink": {}
+                                        }
+                                    },
+                                    "staging": {
+                                        "linkedService": {
+                                            "referenceName": "customerStorageLinkedService",
+                                            "type": "LinkedServiceReference"
+                                        },
+                                        "folderPath": "staging"
+                                    },
+                                    "compute": {
+                                        "coreCount": 8,
+                                        "computeType": "General"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "Create Views in Synapse",
+                                "type": "Lookup",
+                                "dependsOn": [
+                                    {
+                                        "activity": "LoadIntoOperationalTable_SynapseWithSQL",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "0.00:10:00",
+                                    "retry": 0,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "SqlDWSource",
+                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'dhc_view')\n    EXEC('create view definitive_HC.dhc_view as select State_Name, Num_Staffed_Beds from definitive_HC.operationaldhc;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "queryTimeout": "00:10:00",
+                                        "partitionOption": "None"
+                                    },
+                                    "dataset": {
+                                        "referenceName": "AzureSynapseAnalyticsStagingTableSource",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                }
+                            },
+                            {
+                                "name": "Create Views in SQL DB",
+                                "type": "Lookup",
+                                "dependsOn": [
+                                    {
+                                        "activity": "LoadIntoOperationalTable_SynapseWithSQL",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "0.00:10:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "AzureSqlSource",
+                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'dhc_view')\n    EXEC('create view definitive_HC.dhc_view as select State_Name, Num_Staffed_Beds from definitive_HC.operationaldhc;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "queryTimeout": "00:05:00",
+                                        "partitionOption": "None"
+                                    },
+                                    "dataset": {
+                                        "referenceName": "SqlDbStagingSource",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                }
+                            }
+                        ],
+                        "folder": {
+                            "name": "CovidDefinitiveHC"
+                        },
+                        "annotations": []
+                    },
+                    "dependsOn": [
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/ArmtemplateTestDatasetIn')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/source_dataset')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/SqlDbStagingSource')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/AzureSynapseAnalyticsStagingTableSource')]",
+
+                        "[parameters('dataFactoryName')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/dataflows/LoadIntoStagingTable_SynapseWithSQL')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/customerStorageLinkedService')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/source_linkedservice')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/dataflows/LoadIntoOperationalTable_SynapseWithSQL')]"
+                    ]
+                },
+                {
+                    "condition": "[and(equals(parameters('selectDataLoader'),'Both'),equals(parameters('selectCopyMethod'),'Data Share'))]",
+                    "name": "[concat(parameters('factoryName'), '/LoadIntoStagingTable_SynapseWithSQL_from_DataShare')]",
+                    "type": "Microsoft.DataFactory/factories/dataflows",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "folder": {
+                            "name": "CovidDefinitiveHC"
+                        },
+                        "type": "MappingDataFlow",
+                        "typeProperties": {
+                            "sources": [
+                                {
+                                    "dataset": {
+                                        "referenceName": "source_dataset",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "SourceCSV"
+                                }
+                            ],
+                            "sinks": [
+                                {
+                                    "dataset": {
+                                        "referenceName": "AzureSynapseAnalyticsStagingTableSink",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "SynapseStagingSink"
+                                },
+                                {
+                                    "dataset": {
+                                        "referenceName": "SqlDbStagingSink",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "SQLStagingSink"
+                                }
+                            ],
+                            "transformations": [
+                                {
+                                    "name": "CleanData"
+                                }
+                            ],
+                            "script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\trowUrlColumn: 'filename',\n\tinferDriftedColumnTypes: true) ~> SourceCSV\nSourceCSV derive(each(match(type=='string'), $$ = trim(toString($$))),\n\t\teach(match(type=='short'), $$ = toShort($$)),\n\t\teach(match(type=='integer'), $$ = toInteger($$)),\n\t\teach(match(type=='double'), $$ = round(toDouble($$),3)),\n\t\teach(match(type=='decimal'), $$ = toDecimal($$))) ~> CleanData\nCleanData sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tstaged: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SynapseStagingSink\nCleanData sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SQLStagingSink"
+                        }
+                    },
+                    "dependsOn": [
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/source_dataset')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/AzureSynapseAnalyticsStagingTableSink')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/SqlDbStagingSink')]",
+                        "[parameters('dataFactoryName')]"
+                    ]
+                },
+                {
+                    "condition": "[and(equals(parameters('selectDataLoader'),'Both'),equals(parameters('selectCopyMethod'),'Data Share'))]",
+                    "name": "[concat(parameters('factoryName'), '/SynapseAndSqlDataLoaderWithDataSharePipelineTrigger')]",
+                    "type": "Microsoft.DataFactory/factories/triggers",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "annotations": [],
+                        "runtimeState": "Started",
+                        "pipeline": {
+                            "pipelineReference": {
+                                "referenceName": "SynapseAndSqlDataLoaderWithDataShare",
+                                "type": "PipelineReference"
+                            },
+                            "parameters": {}
+                        },
+                        "type": "TumblingWindowTrigger",
+                        "typeProperties": {
+                            "frequency": "Minute",
+                            "interval": 15,
+                            "startTime": "[parameters('triggerStartTime')]",
+                            "delay": "00:00:00",
+                            "maxConcurrency": 1,
+                            "retryPolicy": {
+                                "count": 3,
+                                "intervalInSeconds": 30
+                            }
+                        }
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/pipelines/SynapseAndSqlDataLoader')]"
+                    ]
                 }
+
             ]
         }
     ],

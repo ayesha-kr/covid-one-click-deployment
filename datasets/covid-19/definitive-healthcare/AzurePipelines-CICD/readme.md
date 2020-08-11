@@ -21,7 +21,7 @@ Note: If you wish to choose a github, please create an empty repo before proceed
 
 6. Click Apply to save the changes.
 
-Here we have successfully coonected the Azure Data factory to a Git Repo. this has saved all of the resoucres's json files in the branch we specified. 
+Here we have successfully connected the Azure Data factory to a Git Repo. this has saved all of the resoucres's json files in the branch we specified. 
 
 To be able to replicate the resources in this data factory we need the ARM templates that are generated when we publish the change sin data factory. When you click on publish, it takes the changes from the collaboration branch i.e master in this case, creates ARM templates and pushes them in the **adf_publish** branch.
 

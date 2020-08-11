@@ -185,6 +185,7 @@
                     ]
                 },
                 {
+                    "condition": "[equals(parameters('selectCopyMethod'),'Copy Data Activity')]",
                     "type": "Microsoft.DataFactory/factories/datasets",
                     "apiVersion": "2018-06-01",
                     "name": "[concat(parameters('dataFactoryName'), '/ArmtemplateTestDatasetIn')]",

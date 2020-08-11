@@ -2925,7 +2925,7 @@
                     },
                     "dependsOn": [
                         "[parameters('dataFactoryName')]",
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/pipelines/SynapseAndSqlDataLoader')]"
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/pipelines/SynapseAndSqlDataLoaderWithDataShare')]"
                     ]
                 }
 

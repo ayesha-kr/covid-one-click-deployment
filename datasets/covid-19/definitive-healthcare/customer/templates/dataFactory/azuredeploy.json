@@ -708,7 +708,6 @@
 
                 {
                     "condition": "[and(equals(parameters('selectDataLoader'),'Synapse Database Warehouse'),equals(parameters('selectCopyMethod'),'Copy Data Activity'))]",
-                    "condition": "[equals(parameters('selectDataLoader'),'Synapse Database Warehouse')]",
                     "type": "Microsoft.DataFactory/factories/pipelines",
                     "apiVersion": "2018-06-01",
                     "name": "[concat(parameters('dataFactoryName'), '/SynapseDataLoader')]",

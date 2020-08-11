@@ -90,7 +90,11 @@
                 "description": "Please specify comma separated email addresses on which you would like to receive the ADF pipeline alerts."
             }
         },
-        "webHookUri": {
+        "webHookUriPipeline": {
+            "type": "string"
+
+        },
+        "webHookUriActivity": {
             "type": "string"
 
         }
@@ -1592,7 +1596,32 @@
                         "webhookReceivers": [
                             {
                               "name": "msftTeamsNotify",
-                              "serviceUri": "[parameters('webHookUri')]"
+                              "serviceUri": "[parameters('webHookUriPipeline')]"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]"
+                    ]
+                },
+                {
+                    "type": "Microsoft.Insights/actionGroups",
+                    "apiVersion": "2018-03-01",
+                    "name": "NotificationActivityFailure",
+                    "location": "Global",
+                    "properties": {
+                        "groupShortName": "failureAlert",
+                        "enabled": true,
+                        "emailReceivers": [
+                            {
+                                "name": "notifEmail",
+                                "emailAddress": "[parameters('notificationEmail')]"
+                            }
+                        ],
+                        "webhookReceivers": [
+                            {
+                              "name": "msftTeamsNotify",
+                              "serviceUri": "[parameters('webHookUriActivity')]"
                             }
                         ]
                     },
@@ -1602,7 +1631,7 @@
                 },
                 {
                     "condition": "[equals(parameters('selectDataLoader'),'Synapse Database Warehouse')]",
-                    "name": "synapsePipelineAlertConfig",
+                    "name": "synapseFailedPipelineAlertConfig",
                     "type": "Microsoft.Insights/metricAlerts",
                     "location": "global",
                     "apiVersion": "2018-03-01",
@@ -1651,7 +1680,51 @@
                 },
                 {
                     "condition": "[equals(parameters('selectDataLoader'),'Synapse Database Warehouse')]",
-                    "name": "synapseActivityAlertConfig",
+                    "name": "synapseCancelledPipelineAlertConfig",
+                    "type": "Microsoft.Insights/metricAlerts",
+                    "location": "global",
+                    "apiVersion": "2018-03-01",
+                    "tags": {},
+                    "properties": {
+                        "description": "Metric alert for pipeline cancellation",
+                        "severity": "0",
+                        "enabled": "true",
+                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]" ],
+                        "evaluationFrequency": "PT1M",
+                        "windowSize": "PT1M",
+                        "criteria": {
+                            "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
+                            "allOf": [
+                                {
+                                    "name": "1st criterion",
+                                    "metricName": "PipelineCancelledRuns",
+                                    "dimensions": [
+                                        {
+                                            "name": "Name",
+                                            "operator": "Include",
+                                            "values": [ "SynapseDataLoader" ]
+                                        }
+                                    ],
+                                    "operator": "GreaterThanOrEqual",
+                                    "threshold": "1",
+                                    "timeAggregation": "Total"
+                                }
+                            ]
+                        },
+                        "actions": [
+                            {
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationPipelineFailure')]"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "NotificationPipelineFailure"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('selectDataLoader'),'Synapse Database Warehouse')]",
+                    "name": "synapseFailedActivityAlertConfig",
                     "type": "Microsoft.Insights/metricAlerts",
                     "location": "global",
                     "apiVersion": "2018-03-01",
@@ -1710,6 +1783,148 @@
                 },
                 {
                     "condition": "[equals(parameters('selectDataLoader'),'Synapse Database Warehouse')]",
+                    "name": "synapseCancelledActivityAlertConfig",
+                    "type": "Microsoft.Insights/metricAlerts",
+                    "location": "global",
+                    "apiVersion": "2018-03-01",
+                    "tags": {},
+                    "properties": {
+                        "description": "Metric alert for activity cancellation in a pipeline",
+                        "severity": "0",
+                        "enabled": "true",
+                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]" ],
+                        "evaluationFrequency": "PT1M",
+                        "windowSize": "PT1M",
+                        "criteria": {
+                            "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
+                            "allOf": [
+                                {
+                                    "name": "1st criterion",
+                                    "metricName": "ActivityCancelledRuns",
+                                    "dimensions": [
+                                        {
+                                            "name": "ActivityType",
+                                            "operator": "Include",
+                                            "values": [ "Copy", "Lookup", "ExecuteDataFlow" ]
+                                        },
+                                        {
+                                            "name": "Name",
+                                            "operator": "Include",
+                                            "values": [ "Copy latest data", "Verify Master Key", "LoadIntoStagingTable", "LoadIntoOperationalTable", "Create Views in Synapse" ]
+                                        },
+                                        {
+                                            "name": "PipelineName",
+                                            "operator": "Include",
+                                            "values": [ "SynapseDataLoader" ]
+                                        }
+                                    ],
+                                    "operator": "GreaterThanOrEqual",
+                                    "threshold": "1",
+                                    "timeAggregation": "Total"
+                                }
+                            ]
+                        },
+                        "actions": [
+                            {
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationActivityFailure')]"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "NotificationActivityFailure"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('selectDataLoader'),'Synapse Database Warehouse')]",
+                    "name": "synapseCancelledTriggerAlertConfig",
+                    "type": "Microsoft.Insights/metricAlerts",
+                    "location": "global",
+                    "apiVersion": "2018-03-01",
+                    "tags": {},
+                    "properties": {
+                        "description": "Metric alert for trigger run cancellation",
+                        "severity": "0",
+                        "enabled": "true",
+                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]" ],
+                        "evaluationFrequency": "PT1M",
+                        "windowSize": "PT1M",
+                        "criteria": {
+                            "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
+                            "allOf": [
+                                {
+                                    "name": "1st criterion",
+                                    "metricName": "TriggerCancelledRuns",
+                                    "dimensions": [
+                                        {
+                                            "name": "Name",
+                                            "operator": "Include",
+                                            "values": [ "SynapseDataLoader" ]
+                                        }
+                                    ],
+                                    "operator": "GreaterThanOrEqual",
+                                    "threshold": "1",
+                                    "timeAggregation": "Total"
+                                }
+                            ]
+                        },
+                        "actions": [
+                            {
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationPipelineFailure')]"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "NotificationPipelineFailure"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('selectDataLoader'),'Synapse Database Warehouse')]",
+                    "name": "synapseTriggerRunFailureAlertConfig",
+                    "type": "Microsoft.Insights/metricAlerts",
+                    "location": "global",
+                    "apiVersion": "2018-03-01",
+                    "tags": {},
+                    "properties": {
+                        "description": "Metric alert for trigger run failure",
+                        "severity": "0",
+                        "enabled": "true",
+                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]" ],
+                        "evaluationFrequency": "PT1M",
+                        "windowSize": "PT1M",
+                        "criteria": {
+                            "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
+                            "allOf": [
+                                {
+                                    "name": "1st criterion",
+                                    "metricName": "TriggerFailedRuns",
+                                    "dimensions": [
+                                        {
+                                            "name": "Name",
+                                            "operator": "Include",
+                                            "values": [ "SynapseDataLoader" ]
+                                        }
+                                    ],
+                                    "operator": "GreaterThanOrEqual",
+                                    "threshold": "1",
+                                    "timeAggregation": "Total"
+                                }
+                            ]
+                        },
+                        "actions": [
+                            {
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationPipelineFailure')]"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "NotificationPipelineFailure"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('selectDataLoader'),'Synapse Database Warehouse')]",
                     "type": "Microsoft.AlertsManagement/actionRules",
                     "apiVersion": "2019-05-05-preview",
                     "name": "suppressResolveNotificationSynapse",
@@ -1739,21 +1954,31 @@
                             "values": [
                                 "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/actionGroups/', 'NotificationPipelineFailure')]",
-                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'synapsePipelineAlertConfig')]",
-                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'synapseActivityAlertConfig')]"
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'synapseFailedPipelineAlertConfig')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'synapseFailedActivityAlertConfig')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'synapseCancelledPipelineAlertConfig')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'synapseCancelledActivityAlertConfig')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'synapseCancelledTriggerAlertConfig')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'synapseTriggerRunFailureAlertConfig')]"
+
                             ]
                         }
                     },
                     "dependsOn": [
                         "[parameters('dataFactoryName')]",
                         "NotificationPipelineFailure",
-                        "synapsePipelineAlertConfig",
-                        "synapseActivityAlertConfig"
+                        "synapseFailedPipelineAlertConfig",
+                        "synapseFailedActivityAlertConfig",
+                        "synapseCancelledPipelineAlertConfig",
+                        "synapseCancelledActivityAlertConfig",
+                        "synapseCancelledTriggerAlertConfig",
+                        "synapseTriggerRunFailureAlertConfig"
+                        
                     ]
                 },
                 {
                     "condition": "[equals(parameters('selectDataLoader'),'Both')]",
-                    "name": "sqlAndSynapsePipelineAlertConfig",
+                    "name": "sqlAndsynapseFailedPipelineAlertConfig",
                     "type": "Microsoft.Insights/metricAlerts",
                     "location": "global",
                     "apiVersion": "2018-03-01",
@@ -1802,7 +2027,51 @@
                 },
                 {
                     "condition": "[equals(parameters('selectDataLoader'),'Both')]",
-                    "name": "sqlAndSynapseActivityAlertConfig",
+                    "name": "sqlAndsynapseCancelledPipelineAlertConfig",
+                    "type": "Microsoft.Insights/metricAlerts",
+                    "location": "global",
+                    "apiVersion": "2018-03-01",
+                    "tags": {},
+                    "properties": {
+                        "description": "Metric alert for pipeline cancellation",
+                        "severity": "0",
+                        "enabled": "true",
+                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]" ],
+                        "evaluationFrequency": "PT1M",
+                        "windowSize": "PT1M",
+                        "criteria": {
+                            "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
+                            "allOf": [
+                                {
+                                    "name": "1st criterion",
+                                    "metricName": "PipelineCancelledRuns",
+                                    "dimensions": [
+                                        {
+                                            "name": "Name",
+                                            "operator": "Include",
+                                            "values": [ "SynapseAndSqlDataLoader" ]
+                                        }
+                                    ],
+                                    "operator": "GreaterThanOrEqual",
+                                    "threshold": "1",
+                                    "timeAggregation": "Total"
+                                }
+                            ]
+                        },
+                        "actions": [
+                            {
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationPipelineFailure')]"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "NotificationPipelineFailure"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('selectDataLoader'),'Both')]",
+                    "name": "sqlAndsynapseFailedActivityAlertConfig",
                     "type": "Microsoft.Insights/metricAlerts",
                     "location": "global",
                     "apiVersion": "2018-03-01",
@@ -1829,7 +2098,7 @@
                                         {
                                             "name": "Name",
                                             "operator": "Include",
-                                            "values": [ "Copy latest data", "Verify Master Key", "LoadIntoStagingTable_SynapseWithSQL", "LoadIntoOperationalTable_SynapseWithSQL" ]
+                                            "values": [ "Copy latest data", "Verify Master Key", "Verify Schema in SQL DB", "LoadIntoStagingTable_SynapseWithSQL", "LoadIntoOperationalTable_SynapseWithSQL", "Create Views in Synapse" ]
                                         },
                                         {
                                             "name": "PipelineName",
@@ -1845,6 +2114,148 @@
                                     "operator": "GreaterThanOrEqual",
                                     "threshold": "0.10",
                                     "timeAggregation": "Average"
+                                }
+                            ]
+                        },
+                        "actions": [
+                            {
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationActivityFailure')]"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "NotificationActivityFailure"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('selectDataLoader'),'Both')]",
+                    "name": "sqlAndsynapseCancelledActivityAlertConfig",
+                    "type": "Microsoft.Insights/metricAlerts",
+                    "location": "global",
+                    "apiVersion": "2018-03-01",
+                    "tags": {},
+                    "properties": {
+                        "description": "Metric alert for activity cancellation",
+                        "severity": "0",
+                        "enabled": "true",
+                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]" ],
+                        "evaluationFrequency": "PT1M",
+                        "windowSize": "PT1M",
+                        "criteria": {
+                            "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
+                            "allOf": [
+                                {
+                                    "name": "1st criterion",
+                                    "metricName": "ActivityCancelledRuns",
+                                    "dimensions": [
+                                        {
+                                            "name": "ActivityType",
+                                            "operator": "Include",
+                                            "values": [ "Copy", "Lookup", "ExecuteDataFlow" ]
+                                        },
+                                        {
+                                            "name": "Name",
+                                            "operator": "Include",
+                                            "values": [ "Copy latest data", "Verify Master Key", "Verify Schema in SQL DB", "LoadIntoStagingTable_SynapseWithSQL", "LoadIntoOperationalTable_SynapseWithSQL", "Create Views in Synapse" ]
+                                        },
+                                        {
+                                            "name": "PipelineName",
+                                            "operator": "Include",
+                                            "values": [ "SynapseAndSqlDataLoader" ]
+                                        }
+                                    ],
+                                    "operator": "GreaterThanOrEqual",
+                                    "threshold": "1",
+                                    "timeAggregation": "Total"
+                                }
+                            ]
+                        },
+                        "actions": [
+                            {
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationActivityFailure')]"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "NotificationActivityFailure"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('selectDataLoader'),'Both')]",
+                    "name": "sqlAndsynapseCancelledTriggerAlertConfig",
+                    "type": "Microsoft.Insights/metricAlerts",
+                    "location": "global",
+                    "apiVersion": "2018-03-01",
+                    "tags": {},
+                    "properties": {
+                        "description": "Metric alert for trigger cancellation",
+                        "severity": "0",
+                        "enabled": "true",
+                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]" ],
+                        "evaluationFrequency": "PT1M",
+                        "windowSize": "PT1M",
+                        "criteria": {
+                            "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
+                            "allOf": [
+                                {
+                                    "name": "1st criterion",
+                                    "metricName": "TriggerCancelledRuns",
+                                    "dimensions": [
+                                        {
+                                            "name": "Name",
+                                            "operator": "Include",
+                                            "values": [ "SynapseAndSqlDataLoader" ]
+                                        }
+                                    ],
+                                    "operator": "GreaterThanOrEqual",
+                                    "threshold": "1",
+                                    "timeAggregation": "Total"
+                                }
+                            ]
+                        },
+                        "actions": [
+                            {
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationPipelineFailure')]"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "NotificationPipelineFailure"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('selectDataLoader'),'Both')]",
+                    "name": "sqlAndsynapseTriggerRunFailedAlertConfig",
+                    "type": "Microsoft.Insights/metricAlerts",
+                    "location": "global",
+                    "apiVersion": "2018-03-01",
+                    "tags": {},
+                    "properties": {
+                        "description": "Metric alert for pipeline trigger run fail",
+                        "severity": "0",
+                        "enabled": "true",
+                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]" ],
+                        "evaluationFrequency": "PT1M",
+                        "windowSize": "PT1M",
+                        "criteria": {
+                            "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
+                            "allOf": [
+                                {
+                                    "name": "1st criterion",
+                                    "metricName": "TriggerFailedRuns",
+                                    "dimensions": [
+                                        {
+                                            "name": "Name",
+                                            "operator": "Include",
+                                            "values": [ "SynapseAndSqlDataLoader" ]
+                                        }
+                                    ],
+                                    "operator": "GreaterThanOrEqual",
+                                    "threshold": "1",
+                                    "timeAggregation": "Total"
                                 }
                             ]
                         },
@@ -1890,21 +2301,29 @@
                             "values": [
                                 "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/actionGroups/', 'NotificationPipelineFailure')]",
-                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlAndSynapsePipelineAlertConfig')]",
-                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlAndSynapseActivityAlertConfig')]"
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlAndsynapseFailedPipelineAlertConfig')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlAndsynapseFailedActivityAlertConfig')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlAndsynapseCancelledPipelineAlertConfig')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlAndsynapseCancelledActivityAlertConfig')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlAndsynapseCancelledTriggerAlertConfig')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlAndsynapseTriggerRunFailedAlertConfig')]"
                             ]
                         }
                     },
                     "dependsOn": [
                         "[parameters('dataFactoryName')]",
                         "NotificationPipelineFailure",
-                        "sqlAndSynapsePipelineAlertConfig",
-                        "sqlAndSynapseActivityAlertConfig"
+                        "sqlAndsynapseFailedPipelineAlertConfig",
+                        "sqlAndsynapseFailedActivityAlertConfig",
+                        "sqlAndsynapseCancelledPipelineAlertConfig",
+                        "sqlAndsynapseCancelledActivityAlertConfig",
+                        "sqlAndsynapseCancelledTriggerAlertConfig",
+                        "sqlAndsynapseTriggerRunFailedAlertConfig"
                     ]
                 },
                 {
                     "condition": "[equals(parameters('selectDataLoader'),'SQL Database')]",
-                    "name": "sqlPipelineAlertConfig",
+                    "name": "sqlFailedPipelineAlertConfig",
                     "type": "Microsoft.Insights/metricAlerts",
                     "location": "global",
                     "apiVersion": "2018-03-01",
@@ -1953,7 +2372,51 @@
                 },
                 {
                     "condition": "[equals(parameters('selectDataLoader'),'SQL Database')]",
-                    "name": "sqlActivityAlertConfig",
+                    "name": "sqlCancelledPipelineAlertConfig",
+                    "type": "Microsoft.Insights/metricAlerts",
+                    "location": "global",
+                    "apiVersion": "2018-03-01",
+                    "tags": {},
+                    "properties": {
+                        "description": "Metric alert for pipeline cancellation",
+                        "severity": "0",
+                        "enabled": "true",
+                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]" ],
+                        "evaluationFrequency": "PT1M",
+                        "windowSize": "PT1M",
+                        "criteria": {
+                            "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
+                            "allOf": [
+                                {
+                                    "name": "1st criterion",
+                                    "metricName": "PipelineCancelledRuns",
+                                    "dimensions": [
+                                        {
+                                            "name": "Name",
+                                            "operator": "Include",
+                                            "values": [ "SqlDataLoader" ]
+                                        }
+                                    ],
+                                    "operator": "GreaterThanOrEqual",
+                                    "threshold": "1",
+                                    "timeAggregation": "Total"
+                                }
+                            ]
+                        },
+                        "actions": [
+                            {
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationPipelineFailure')]"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "NotificationPipelineFailure"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('selectDataLoader'),'SQL Database')]",
+                    "name": "sqlFailedActivityAlertConfig",
                     "type": "Microsoft.Insights/metricAlerts",
                     "location": "global",
                     "apiVersion": "2018-03-01",
@@ -1980,7 +2443,7 @@
                                         {
                                             "name": "Name",
                                             "operator": "Include",
-                                            "values": [ "Copy latest data", "LoadIntoStagingTable_SQL", "LoadIntoOperationalTable_SQL" ]
+                                            "values": [ "Copy latest data", "LoadIntoStagingTable_SQL", "LoadIntoOperationalTable_SQL", "Verify Schema in SQL DB", "Create Views in Synapse" ]
                                         },
                                         {
                                             "name": "PipelineName",
@@ -1996,6 +2459,148 @@
                                     "operator": "GreaterThanOrEqual",
                                     "threshold": "0.10",
                                     "timeAggregation": "Average"
+                                }
+                            ]
+                        },
+                        "actions": [
+                            {
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationActivityFailure')]"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "NotificationActivityFailure"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('selectDataLoader'),'SQL Database')]",
+                    "name": "sqlCancelledActivityAlertConfig",
+                    "type": "Microsoft.Insights/metricAlerts",
+                    "location": "global",
+                    "apiVersion": "2018-03-01",
+                    "tags": {},
+                    "properties": {
+                        "description": "Metric alert for activity cancellation in a pipeline",
+                        "severity": "0",
+                        "enabled": "true",
+                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]" ],
+                        "evaluationFrequency": "PT1M",
+                        "windowSize": "PT1M",
+                        "criteria": {
+                            "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
+                            "allOf": [
+                                {
+                                    "name": "1st criterion",
+                                    "metricName": "ActivityCancelledRuns",
+                                    "dimensions": [
+                                        {
+                                            "name": "ActivityType",
+                                            "operator": "Include",
+                                            "values": [ "Copy", "Lookup", "ExecuteDataFlow" ]
+                                        },
+                                        {
+                                            "name": "Name",
+                                            "operator": "Include",
+                                            "values": [ "Copy latest data", "LoadIntoStagingTable_SQL", "LoadIntoOperationalTable_SQL", "Verify Schema in SQL DB", "Create Views in Synapse" ]
+                                        },
+                                        {
+                                            "name": "PipelineName",
+                                            "operator": "Include",
+                                            "values": [ "SqlDataLoader" ]
+                                        }
+                                    ],
+                                    "operator": "GreaterThanOrEqual",
+                                    "threshold": "1",
+                                    "timeAggregation": "Total"
+                                }
+                            ]
+                        },
+                        "actions": [
+                            {
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationActivityFailure')]"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "NotificationActivityFailure"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('selectDataLoader'),'SQL Database')]",
+                    "name": "sqlCancelledTriggerAlertConfig",
+                    "type": "Microsoft.Insights/metricAlerts",
+                    "location": "global",
+                    "apiVersion": "2018-03-01",
+                    "tags": {},
+                    "properties": {
+                        "description": "Metric alert for pipeline trigger cancellation",
+                        "severity": "0",
+                        "enabled": "true",
+                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]" ],
+                        "evaluationFrequency": "PT1M",
+                        "windowSize": "PT1M",
+                        "criteria": {
+                            "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
+                            "allOf": [
+                                {
+                                    "name": "1st criterion",
+                                    "metricName": "TriggerCancelledRuns",
+                                    "dimensions": [
+                                        {
+                                            "name": "Name",
+                                            "operator": "Include",
+                                            "values": [ "SqlDataLoader" ]
+                                        }
+                                    ],
+                                    "operator": "GreaterThanOrEqual",
+                                    "threshold": "1",
+                                    "timeAggregation": "Total"
+                                }
+                            ]
+                        },
+                        "actions": [
+                            {
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationPipelineFailure')]"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "NotificationPipelineFailure"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('selectDataLoader'),'SQL Database')]",
+                    "name": "sqlTriggerRunFailedAlertConfig",
+                    "type": "Microsoft.Insights/metricAlerts",
+                    "location": "global",
+                    "apiVersion": "2018-03-01",
+                    "tags": {},
+                    "properties": {
+                        "description": "Metric alert for pipeline trigger run failed",
+                        "severity": "0",
+                        "enabled": "true",
+                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]" ],
+                        "evaluationFrequency": "PT1M",
+                        "windowSize": "PT1M",
+                        "criteria": {
+                            "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
+                            "allOf": [
+                                {
+                                    "name": "1st criterion",
+                                    "metricName": "TriggerFailedRuns",
+                                    "dimensions": [
+                                        {
+                                            "name": "Name",
+                                            "operator": "Include",
+                                            "values": [ "SqlDataLoader" ]
+                                        }
+                                    ],
+                                    "operator": "GreaterThanOrEqual",
+                                    "threshold": "1",
+                                    "timeAggregation": "Total"
                                 }
                             ]
                         },
@@ -2041,16 +2646,24 @@
                             "values": [
                                 "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/actionGroups/', 'NotificationPipelineFailure')]",
-                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlPipelineAlertConfig')]",
-                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlActivityAlertConfig')]"
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlFailedPipelineAlertConfig')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlFailedActivityAlertConfig')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlCancelledPipelineAlertConfig')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlCancelledActivityAlertConfig')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlCancelledTriggerAlertConfig')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlTriggerRunFailedAlertConfig')]"
                             ]
                         }
                     },
                     "dependsOn": [
                         "[parameters('dataFactoryName')]",
                         "NotificationPipelineFailure",
-                        "sqlPipelineAlertConfig",
-                        "sqlActivityAlertConfig"
+                        "sqlFailedPipelineAlertConfig",
+                        "sqlFailedActivityAlertConfig",
+                        "sqlCancelledPipelineAlertConfig",
+                        "sqlCancelledActivityAlertConfig",
+                        "sqlCancelledTriggerAlertConfig",
+                        "sqlTriggerRunFailedAlertConfig"
                     ]
                 },
                 

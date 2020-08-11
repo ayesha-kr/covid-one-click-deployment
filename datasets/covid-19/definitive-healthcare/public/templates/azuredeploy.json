@@ -17,7 +17,7 @@
             }
         },
         "location": {
-            "defaultValue": "East US",
+            "defaultValue": "[resourceGroup().location]",
             "type": "string",
             "metadata": {
                 "description": "Location of the data factory. Currently, only East US, East US 2, and West Europe are supported. "
@@ -33,7 +33,6 @@
                 "description": "Please specify if you want to write curated data into SQL database."
             },
             "defaultValue": "No"
-            
         },
         "serverName": {
             "type": "string",
@@ -67,6 +66,25 @@
             "type": "string",
             "defaultValue": "[utcNow('u')]"
         },
+        "notificationEmail": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Please specify comma separated email addresses on which you would like to receive the ADF pipeline alerts."
+            }
+        },
+        "enableMicrosoftTeamsNotification": {
+            "defaultValue": "Yes",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "type": "string"
+        },
+        "logicAppName": {
+            "defaultValue": "TeamsNotify",
+            "type": "String"
+        },
         "dataShareAccountName": {
             "type": "String",
             "defaultValue": "demo_public_datashare",
@@ -93,6 +111,7 @@
         "factoryName": "[concat(parameters('factoryName'), uniquestring(resourceGroup().id))]",
         "storageAccountName": "[concat(parameters('storageAccountName'), uniquestring(resourceGroup().id))]",
         "serverName": "[concat(parameters('serverName'), uniquestring(resourceGroup().id))]",
+        "webHookUri": "https://null",
         "dataShareAccountName": "[concat(parameters('dataShareAccountName'), uniquestring(resourceGroup().id))]"
     },
     "resources": [
@@ -172,7 +191,79 @@
             }
         },
         {
-            "name": "dataFactoryTemplate",
+            "condition": "[equals(parameters('enableMicrosoftTeamsNotification'),'Yes')]",
+            "name": "logicAppTemplate",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/customer/templates/logicApp/azuredeploy.json"
+                },
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "logicAppName": {
+                        "value": "[parameters('logicAppName')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[equals(parameters('enableMicrosoftTeamsNotification'),'Yes')]",
+            "name": "dataFactoryTemplateWithTeamsNotif",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments','sqlServerTemplate')]",
+                "[resourceId('Microsoft.Resources/deployments','logicAppTemplate')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/public/templates/dataFactory/azuredeploy.json"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[variables('factoryName')]"
+                    },
+                    "storageAccountName": {
+                        "value": "[variables('storageAccountName')]"
+                    },
+                    "doYouWantToWriteCuratedDataToSQLDatabase": {
+                        "value": "[parameters('doYouWantToWriteCuratedDataToSQLDatabase')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "sqlAdministratorLogin": {
+                        "value": "[parameters('sqlAdministratorLogin')]"
+                    },
+                    "sqlAdministratorLoginPassword": {
+                        "value": "[parameters('sqlAdministratorLoginPassword')]"
+                    },
+                    "databaseName": {
+                        "value": "[parameters('databaseName')]"
+                    },
+                    "serverName": {
+                        "value": "[variables('serverName')]"
+                    },
+                    "currentTime": {
+                        "value": "[parameters('currentTime')]"
+                    },
+                    "notificationEmail": {
+                        "value": "[parameters('notificationEmail')]"
+                    },
+                    "webHookUri": {
+                        "value": "[if(equals(parameters('enableMicrosoftTeamsNotification'),'Yes'), reference('logicAppTemplate','2018-05-01').outputs.WebHookURI.value, 'http://example.com')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[equals(parameters('enableMicrosoftTeamsNotification'),'No')]",
+            "name": "dataFactoryTemplateWithoutTeamsNotif",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2018-05-01",
             "dependsOn": [
@@ -210,6 +301,12 @@
                     },
                     "currentTime": {
                         "value": "[parameters('currentTime')]"
+                    },
+                    "notificationEmail": {
+                        "value": "[parameters('notificationEmail')]"
+                    },
+                    "webHookUri": {
+                        "value": "http://example.com"
                     }
                 }
             }

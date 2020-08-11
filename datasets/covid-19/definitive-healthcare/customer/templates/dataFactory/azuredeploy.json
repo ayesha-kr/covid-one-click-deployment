@@ -86,11 +86,15 @@
         },
         "notificationEmail": {
             "type": "string",
-            "defaultValue": "",
             "metadata": {
                 "description": "Please specify comma separated email addresses on which you would like to receive the ADF pipeline alerts."
             }
+        },
+        "webHookUri": {
+            "type": "string"
+
         }
+
     },
     "variables": {
     },
@@ -188,7 +192,7 @@
                     "condition": "[equals(parameters('selectCopyMethod'),'Copy Data Activity')]",
                     "type": "Microsoft.DataFactory/factories/datasets",
                     "apiVersion": "2018-06-01",
-                    "name": "[concat(parameters('dataFactoryName'), '/ArmtemplateTestDatasetIn')]",
+                    "name": "[concat(parameters('dataFactoryName'), '/DhcInputDataset')]",
 
                     "dependsOn": [
                         "[parameters('dataFactoryName')]",
@@ -203,26 +207,21 @@
                             "type": "LinkedServiceReference"
                         },
                         "annotations": [],
-                        "type": "DelimitedText",
+                        "type": "Binary",
                         "typeProperties": {
                             "location": {
                                 "type": "AzureBlobStorageLocation",
                                 "fileName": "covid_tracking.csv",
                                 "folderPath": "curated/covid-19/covid_tracking/latest",
                                 "container": "public"
-                            },
-                            "columnDelimiter": ",",
-                            "escapeChar": "\\",
-                            "firstRowAsHeader": true,
-                            "quoteChar": "\""
-                        },
-                        "schema": []
+                            }
+                        }
                     }
                 },
                 {
                     "type": "Microsoft.DataFactory/factories/datasets",
                     "apiVersion": "2018-06-01",
-                    "name": "[concat(parameters('dataFactoryName'), '/ArmtemplateTestDatasetOutSource')]",
+                    "name": "[concat(parameters('dataFactoryName'), '/DhcOutputDatasetSource')]",
                     "dependsOn": [
                         "[parameters('dataFactoryName')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/customerStorageLinkedService')]"
@@ -236,26 +235,21 @@
                             "type": "LinkedServiceReference"
                         },
                         "annotations": [],
-                        "type": "DelimitedText",
+                        "type": "Binary",
                         "typeProperties": {
                             "location": {
                                 "type": "AzureBlobStorageLocation",
                                 "folderPath": "output",
                                 "container": "staging"
-                            },
-                            "columnDelimiter": ",",
-                            "escapeChar": "\\",
-                            "firstRowAsHeader": true,
-                            "quoteChar": "\""
-                        },
-                        "schema": []
+                            }
+                        }
                     }
                 },
                 {
                     "condition": "[equals(parameters('selectCopyMethod'),'Copy Data Activity')]",
                     "type": "Microsoft.DataFactory/factories/datasets",
                     "apiVersion": "2018-06-01",
-                    "name": "[concat(parameters('dataFactoryName'), '/ArmtemplateTestDatasetOutSink')]",
+                    "name": "[concat(parameters('dataFactoryName'), '/DhcOutputDatasetSink')]",
                     "dependsOn": [
                         "[parameters('dataFactoryName')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/customerStorageLinkedService')]"
@@ -454,7 +448,7 @@
                             "sources": [
                                 {
                                     "dataset": {
-                                        "referenceName": "ArmtemplateTestDatasetOutSource",
+                                        "referenceName": "DhcOutputDatasetSource",
                                         "type": "DatasetReference"
                                     },
                                     "name": "SourceCSV"
@@ -479,7 +473,7 @@
                     },
                     "dependsOn": [
                         "[parameters('dataFactoryName')]",
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/ArmtemplateTestDatasetOutSource')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/DhcOutputDatasetSource')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/AzureSynapseAnalyticsStagingTableSink')]"
                     ]
                 },
@@ -536,7 +530,7 @@
                             "sources": [
                                 {
                                     "dataset": {
-                                        "referenceName": "ArmtemplateTestDatasetOutSource",
+                                        "referenceName": "DhcOutputDatasetSource",
                                         "type": "DatasetReference"
                                     },
                                     "name": "SourceCSV"
@@ -567,7 +561,7 @@
                         }
                     },
                     "dependsOn": [
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/ArmtemplateTestDatasetOutSource')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/DhcOutputDatasetSource')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/AzureSynapseAnalyticsStagingTableSink')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/SqlDbStagingSink')]",
                         "[parameters('dataFactoryName')]"
@@ -617,7 +611,7 @@
                                 }
                             ],
                             "transformations": [],
-                            "script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table',\n\tstaged: false) ~> sourceSynapseStagingTable\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> sourceSqlDbStaging\nsourceSynapseStagingTable sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tt:true,\n\tformat: 'table',\n\tstaged: true,\n\tpostSQLs:['\\n'],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SynapseOperationalTable\nsourceSqlDbStaging sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SqlOperationalSink"
+                            "script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table',\n\tstaged: false) ~> sourceSynapseStagingTable\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> sourceSqlDbStaging\nsourceSynapseStagingTable sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tstaged: true,\n\tpostSQLs:['\\n'],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tt: true) ~> SynapseOperationalTable\nsourceSqlDbStaging sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SqlOperationalSink"
                         }
                     },
                     "dependsOn": [
@@ -642,7 +636,7 @@
                             "sources": [
                                 {
                                     "dataset": {
-                                        "referenceName": "ArmtemplateTestDatasetOutSource",
+                                        "referenceName": "DhcOutputDatasetSource",
                                         "type": "DatasetReference"
                                     },
                                     "name": "SourceCSV"
@@ -666,7 +660,7 @@
                         }
                     },
                     "dependsOn": [
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/ArmtemplateTestDatasetOutSource')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/DhcOutputDatasetSource')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/AzureSynapseAnalyticsStagingTableSink')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/SqlDbStagingSink')]",
                         "[parameters('dataFactoryName')]"
@@ -769,13 +763,13 @@
                                 },
                                 "inputs": [
                                     {
-                                        "referenceName": "ArmtemplateTestDatasetIn",
+                                        "referenceName": "DhcInputDataset",
                                         "type": "DatasetReference"
                                     }
                                 ],
                                 "outputs": [
                                     {
-                                        "referenceName": "ArmtemplateTestDatasetOutSink",
+                                        "referenceName": "DhcOutputDatasetSink",
                                         "type": "DatasetReference"
                                     }
                                 ]
@@ -935,8 +929,8 @@
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/dataflows/LoadIntoStagingTable')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/dataflows/LoadIntoOperationalTable')]",
                         "[parameters('dataFactoryName')]",
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/ArmtemplateTestDatasetIn')]",
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/ArmtemplateTestDatasetOutSink')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/DhcInputDataset')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/DhcOutputDatasetSink')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/AzureSynapseAnalyticsStagingTableSource')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/SynapseOperationalTable_sink')]"
                     ]
@@ -997,14 +991,14 @@
                                 },
                                 "inputs": [
                                     {
-                                        "referenceName": "ArmtemplateTestDatasetIn",
+                                        "referenceName": "DhcInputDataset",
                                         "type": "DatasetReference",
                                         "parameters": {}
                                     }
                                 ],
                                 "outputs": [
                                     {
-                                        "referenceName": "ArmtemplateTestDatasetOutSink",
+                                        "referenceName": "DhcOutputDatasetSink",
                                         "type": "DatasetReference",
                                         "parameters": {}
                                     }
@@ -1227,8 +1221,8 @@
                         "annotations": []
                     },
                     "dependsOn": [
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/ArmtemplateTestDatasetIn')]",
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/ArmtemplateTestDatasetOutSink')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/DhcInputDataset')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/DhcOutputDatasetSink')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/SqlDbStagingSource')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/AzureSynapseAnalyticsStagingTableSource')]",
 
@@ -1294,14 +1288,14 @@
                                 },
                                 "inputs": [
                                     {
-                                        "referenceName": "ArmtemplateTestDatasetIn",
+                                        "referenceName": "DhcInputDataset",
                                         "type": "DatasetReference",
                                         "parameters": {}
                                     }
                                 ],
                                 "outputs": [
                                     {
-                                        "referenceName": "ArmtemplateTestDatasetOutSink",
+                                        "referenceName": "DhcOutputDatasetSink",
                                         "type": "DatasetReference",
                                         "parameters": {}
                                     }
@@ -1462,8 +1456,8 @@
                         "annotations": []
                     },
                     "dependsOn": [
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/ArmtemplateTestDatasetIn')]",
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/ArmtemplateTestDatasetOutSink')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/DhcInputDataset')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/DhcOutputDatasetSink')]",
                         "[parameters('dataFactoryName')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/dataflows/LoadIntoStagingTable_SQL')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/customerStorageLinkedService')]",
@@ -1495,8 +1489,8 @@
                         ],
                         "type": "TumblingWindowTrigger",
                         "typeProperties": {
-                            "frequency": "Minute",
-                            "interval": 15,
+                            "frequency": "Hours",
+                            "interval": 24,
                             "startTime": "[parameters('triggerStartTime')]",
                             "delay": "00:00:00",
                             "maxConcurrency": 1,
@@ -1532,8 +1526,8 @@
                         ],
                         "type": "TumblingWindowTrigger",
                         "typeProperties": {
-                            "frequency": "Minute",
-                            "interval": 15,
+                            "frequency": "Hours",
+                            "interval": 24,
                             "startTime": "[parameters('triggerStartTime')]",
                             "delay": "00:00:00",
                             "maxConcurrency": 1,
@@ -1569,8 +1563,8 @@
                         ],
                         "type": "TumblingWindowTrigger",
                         "typeProperties": {
-                            "frequency": "Minute",
-                            "interval": 15,
+                            "frequency": "Hours",
+                            "interval": 24,
                             "startTime": "[parameters('triggerStartTime')]",
                             "delay": "00:00:00",
                             "maxConcurrency": 1,
@@ -1584,7 +1578,7 @@
                 {
                     "type": "Microsoft.Insights/actionGroups",
                     "apiVersion": "2018-03-01",
-                    "name": "EmailNotificationPipelineFailure",
+                    "name": "NotificationPipelineFailure",
                     "location": "Global",
                     "properties": {
                         "groupShortName": "failureAlert",
@@ -1593,6 +1587,12 @@
                             {
                                 "name": "notifEmail",
                                 "emailAddress": "[parameters('notificationEmail')]"
+                            }
+                        ],
+                        "webhookReceivers": [
+                            {
+                              "name": "msftTeamsNotify",
+                              "serviceUri": "[parameters('webHookUri')]"
                             }
                         ]
                     },
@@ -1640,13 +1640,13 @@
                         },
                         "actions": [
                             {
-                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','EmailNotificationPipelineFailure')]"
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationPipelineFailure')]"
                             }
                         ]
                     },
                     "dependsOn": [
                         "[parameters('dataFactoryName')]",
-                        "EmailNotificationPipelineFailure"
+                        "NotificationPipelineFailure"
                     ]
                 },
                 {
@@ -1699,13 +1699,13 @@
                         },
                         "actions": [
                             {
-                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','EmailNotificationPipelineFailure')]"
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationPipelineFailure')]"
                             }
                         ]
                     },
                     "dependsOn": [
                         "[parameters('dataFactoryName')]",
-                        "EmailNotificationPipelineFailure"
+                        "NotificationPipelineFailure"
                     ]
                 },
                 {
@@ -1738,7 +1738,7 @@
                             "scopeType": "Resource",
                             "values": [
                                 "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]",
-                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/actionGroups/', 'EmailNotificationPipelineFailure')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/actionGroups/', 'NotificationPipelineFailure')]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'synapsePipelineAlertConfig')]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'synapseActivityAlertConfig')]"
                             ]
@@ -1746,7 +1746,7 @@
                     },
                     "dependsOn": [
                         "[parameters('dataFactoryName')]",
-                        "EmailNotificationPipelineFailure",
+                        "NotificationPipelineFailure",
                         "synapsePipelineAlertConfig",
                         "synapseActivityAlertConfig"
                     ]
@@ -1791,13 +1791,13 @@
                         },
                         "actions": [
                             {
-                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','EmailNotificationPipelineFailure')]"
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationPipelineFailure')]"
                             }
                         ]
                     },
                     "dependsOn": [
                         "[parameters('dataFactoryName')]",
-                        "EmailNotificationPipelineFailure"
+                        "NotificationPipelineFailure"
                     ]
                 },
                 {
@@ -1850,13 +1850,13 @@
                         },
                         "actions": [
                             {
-                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','EmailNotificationPipelineFailure')]"
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationPipelineFailure')]"
                             }
                         ]
                     },
                     "dependsOn": [
                         "[parameters('dataFactoryName')]",
-                        "EmailNotificationPipelineFailure"
+                        "NotificationPipelineFailure"
                     ]
                 },
                 {
@@ -1889,7 +1889,7 @@
                             "scopeType": "Resource",
                             "values": [
                                 "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]",
-                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/actionGroups/', 'EmailNotificationPipelineFailure')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/actionGroups/', 'NotificationPipelineFailure')]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlAndSynapsePipelineAlertConfig')]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlAndSynapseActivityAlertConfig')]"
                             ]
@@ -1897,7 +1897,7 @@
                     },
                     "dependsOn": [
                         "[parameters('dataFactoryName')]",
-                        "EmailNotificationPipelineFailure",
+                        "NotificationPipelineFailure",
                         "sqlAndSynapsePipelineAlertConfig",
                         "sqlAndSynapseActivityAlertConfig"
                     ]
@@ -1942,13 +1942,13 @@
                         },
                         "actions": [
                             {
-                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','EmailNotificationPipelineFailure')]"
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationPipelineFailure')]"
                             }
                         ]
                     },
                     "dependsOn": [
                         "[parameters('dataFactoryName')]",
-                        "EmailNotificationPipelineFailure"
+                        "NotificationPipelineFailure"
                     ]
                 },
                 {
@@ -1975,7 +1975,7 @@
                                         {
                                             "name": "ActivityType",
                                             "operator": "Include",
-                                            "values": [ "Copy", "ExecuteDataFlow" ]
+                                            "values": [ "Copy", "Lookup", "ExecuteDataFlow" ]
                                         },
                                         {
                                             "name": "Name",
@@ -2001,13 +2001,13 @@
                         },
                         "actions": [
                             {
-                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','EmailNotificationPipelineFailure')]"
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationPipelineFailure')]"
                             }
                         ]
                     },
                     "dependsOn": [
                         "[parameters('dataFactoryName')]",
-                        "EmailNotificationPipelineFailure"
+                        "NotificationPipelineFailure"
                     ]
                 },
                 {
@@ -2040,7 +2040,7 @@
                             "scopeType": "Resource",
                             "values": [
                                 "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]",
-                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/actionGroups/', 'EmailNotificationPipelineFailure')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/actionGroups/', 'NotificationPipelineFailure')]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlPipelineAlertConfig')]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlActivityAlertConfig')]"
                             ]
@@ -2048,7 +2048,7 @@
                     },
                     "dependsOn": [
                         "[parameters('dataFactoryName')]",
-                        "EmailNotificationPipelineFailure",
+                        "NotificationPipelineFailure",
                         "sqlPipelineAlertConfig",
                         "sqlActivityAlertConfig"
                     ]

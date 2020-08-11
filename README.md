@@ -24,7 +24,8 @@ Dataset | Descriptions | Link | Status
 
 We have provided an Azure pipelines yaml that can be used to set up CI/CD for Azure Data Factory. The pipeline is triggered when you publish changes in the Dev data factory (The one that is connected to Github). THe pipelines reads teh generated ARM templates from teh Dev Data factory and deploys it to Prod. 
 
-You can follow the instructions given in the following link to set up CI/CD using Azure Pipelines.
+You can follow the instructions given in the following link to set up CI/CD using Azure Pipelines:-
+
 ![Azure Data Factory CICD](./datasets/covid-19/definitive-healthcare/AzurePipelines-CICD/readme.md)
 
 ## 6. Connect Azure Boards with the Github Repo
@@ -35,7 +36,7 @@ By connecting your Azure Boards project with GitHub.com repositories, you suppor
 
 When you make the connection from Azure Boards, the list of GitHub repositories correspond to ones that you allow Azure Boards to access. You can limit which repositories Azure Boards can access overall, and limit what a particular project can access or split the management of work across different Azure Boards projects.
 
-![Azure boards](https://github.com/marketplace/azure-boards)
+Please follow the instructions given in the following link to connect Azure Boards to Github:-
 
 ![Connect Azure Boards to Github](https://docs.microsoft.com/en-us/azure/devops/boards/github/connect-to-github?view=azure-devops)
 

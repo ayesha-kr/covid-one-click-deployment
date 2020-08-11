@@ -20,13 +20,25 @@ Dataset | Descriptions | Link | Status
 ## 4. Data Flow deployment steps
   You can see that the repo has three sections public, customer and power BI. Go inside each of the directory to deploy that relavent section.  
 
-## 5 . CI/CD setup for Azure Data Factory
+## 5. CI/CD setup for Azure Data Factory
 
 We have provided an Azure pipelines yaml that can be used to set up CI/CD for Azure Data Factory. The pipeline is triggered when you publish changes in the Dev data factory (The one that is connected to Github). THe pipelines reads teh generated ARM templates from teh Dev Data factory and deploys it to Prod. 
 
 You can follow the instructions given in the following link to set up CI/CD using Azure Pipelines.
-![Azul_Data_Pipeline_CICD](./datasets/covid-19/definitive-healthcare/AzurePipelines-CICD/readme.md)
+![Azure Data Factory CICD](./datasets/covid-19/definitive-healthcare/AzurePipelines-CICD/readme.md)
 
-## 6 . Contact us
-We hope that this blog is helpful for you. In case you have any questions, feel free to reach out to us at ayesha.khaliq@emumba.com, hamza.rashid@emumba.com.
+## 6. Connect Azure Boards with the Github Repo
+
+Boost your team's productivity with Boards, Backlogs, and Sprints for even the most complex project. Simply connect your GitHub repo to Azure Boards and start linking commits and PRs to work items.
+
+By connecting your Azure Boards project with GitHub.com repositories, you support linking between GitHub commits and pull requests to work items. You can use GitHub for software development while using Azure Boards to plan and track your work.
+
+When you make the connection from Azure Boards, the list of GitHub repositories correspond to ones that you allow Azure Boards to access. You can limit which repositories Azure Boards can access overall, and limit what a particular project can access or split the management of work across different Azure Boards projects.
+
+![Azure boards](https://github.com/marketplace/azure-boards)
+
+![Connect Azure Boards to Github](https://docs.microsoft.com/en-us/azure/devops/boards/github/connect-to-github?view=azure-devops)
+
+## 7. Contact us
+We hope that this blog is helpful for you. In case you have any questions, feel free to reach out to us at ayesha.khaliq@emumba.com OR hamza.rashid@emumba.com.
 

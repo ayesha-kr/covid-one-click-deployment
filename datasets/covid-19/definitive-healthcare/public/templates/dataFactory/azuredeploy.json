@@ -63,8 +63,13 @@
                 "description": "Please specify comma separated email addresses on which you would like to receive the ADF pipeline alerts."
             }
         },
-        "webHookUri": {
+        "webHookUriPipeline": {
             "type": "string"
+
+        },
+        "webHookUriActivity": {
+            "type": "string"
+
         }
     },
     "variables": {
@@ -2574,7 +2579,7 @@
                         "webhookReceivers": [
                             {
                                 "name": "msftTeamsNotify",
-                                "serviceUri": "[parameters('webHookUri')]"
+                                "serviceUri": "[parameters('webHookUriPipeline')]"
                             }
                         ]
                     },
@@ -2599,7 +2604,7 @@
                         "webhookReceivers": [
                             {
                                 "name": "msftTeamsNotify",
-                                "serviceUri": "[parameters('webHookUri')]"
+                                "serviceUri": "[parameters('webHookUriActivity')]"
                             }
                         ]
                     },

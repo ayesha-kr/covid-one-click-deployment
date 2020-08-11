@@ -4,8 +4,6 @@
  
 1. Open Azure Data Factory that you want to use the developement environment.
 
-![Getting Started](./img.jpg)
-
 2. Click on **Author & Monitor**, this will open the data factory UI's Home.
 
 3. Now go to **Manage** from the menu on the Left side, then click on  **Git Configuration** -> **Set Up Code Repository**. This will show a UI blade with a dropdown listing the supported repository types. As of today it only supports **Github** and **Azure DevOps Git**.

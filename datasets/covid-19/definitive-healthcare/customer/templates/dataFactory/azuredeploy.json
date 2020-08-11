@@ -77,7 +77,7 @@
                 "Copy Data Activity"
             ],
             "metadata": {
-                "description": "Specify if you want to write the data into SQL database."
+                "description": "Specify if you want to copy data from data share."
             }
         },
         "triggerStartTime": {

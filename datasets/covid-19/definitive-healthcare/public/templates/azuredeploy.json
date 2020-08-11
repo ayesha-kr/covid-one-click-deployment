@@ -98,13 +98,6 @@
             "metadata": {
                 "description": "Name can only contain alphanumeric characters, hyphen and underscore"
             }
-        },
-        "datasetName": {
-            "type": "String",
-            "defaultValue": "demo_public_dataset",
-            "metadata": {
-                "description": "Dataset name can only contain number, letters, - and _"
-            }
         }
     },
     "variables": {

@@ -26,7 +26,7 @@ We have provided an Azure pipelines yaml that can be used to set up CI/CD for Az
 
 You can follow the instructions given in the following link to set up CI/CD using Azure Pipelines:-
 
-![Azure Data Factory CICD](./datasets/covid-19/definitive-healthcare/AzurePipelines-CICD/readme.md)
+[Azure Data Factory CICD](./datasets/covid-19/definitive-healthcare/AzurePipelines-CICD/readme.md)
 
 ## 6. Connect Azure Boards with the Github Repo
 
@@ -38,7 +38,7 @@ When you make the connection from Azure Boards, the list of GitHub repositories 
 
 Please follow the instructions given in the following link to connect Azure Boards to Github:-
 
-![Connect Azure Boards to Github](https://docs.microsoft.com/en-us/azure/devops/boards/github/connect-to-github?view=azure-devops)
+[Connect Azure Boards to Github](https://docs.microsoft.com/en-us/azure/devops/boards/github/connect-to-github?view=azure-devops)
 
 ## 7. Contact us
 We hope that this blog is helpful for you. In case you have any questions, feel free to reach out to us at ayesha.khaliq@emumba.com OR hamza.rashid@emumba.com.

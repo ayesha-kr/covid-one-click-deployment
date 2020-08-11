@@ -125,8 +125,18 @@
             "metadata": {
                 "description": "Specify if you want to write the data into SQL database."
             }
+          },
+        "selectCopyMethod": {
+            "type": "string",
+            "allowedValues": [
+                "Data Share",
+                "Copy Data Activity"
+            ],
+            "metadata": {
+                "description": "Specify if you want to write the data into SQL database."
+            }
         },
-        "notificationEmail": {
+          "notificationEmail": {
             "type": "string",
             "defaultValue": "",
             "metadata": {
@@ -304,6 +314,9 @@
                     "selectDataLoader": {
                         "value": "[parameters('selectDataLoader')]"
                     },
+                    "selectCopyMethod": {
+                        "value": "[parameters('selectCopyMethod')]"
+                    },
                     "notificationEmail": {
                         "value": "[parameters('notificationEmail')]"
                     },
@@ -362,6 +375,9 @@
                     },
                     "notificationEmail": {
                         "value": "[parameters('notificationEmail')]"
+                    },
+                    "selectCopyMethod": {
+                        "value": "[parameters('selectCopyMethod')]"
                     },
                     "webHookUri": {
                         "value": "http://example.com"

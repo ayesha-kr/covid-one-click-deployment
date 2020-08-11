@@ -307,8 +307,11 @@
                     "notificationEmail": {
                         "value": "[parameters('notificationEmail')]"
                     },
-                    "webHookUri": {
-                        "value": "[if(equals(parameters('enableMicrosoftTeamsNotification'),'Yes'), reference('logicAppTemplate','2018-05-01').outputs.WebHookURI.value, 'http://example.com')]"
+                    "webHookUriPipeline": {
+                        "value": "[if(equals(parameters('enableMicrosoftTeamsNotification'),'Yes'), reference('logicAppTemplate','2018-05-01').outputs.WebHookURIPipeline.value, 'http://example.com')]"
+                    },
+                    "webHookUriActivity": {
+                        "value": "[if(equals(parameters('enableMicrosoftTeamsNotification'),'Yes'), reference('logicAppTemplate','2018-05-01').outputs.WebHookURIActivity.value, 'http://example.com')]"
                     }
                 }
             }

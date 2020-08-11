@@ -366,7 +366,10 @@
                     "notificationEmail": {
                         "value": "[parameters('notificationEmail')]"
                     },
-                    "webHookUri": {
+                    "webHookUriPipeline": {
+                        "value": "http://example.com"
+                    },
+                    "webHookUriActivity": {
                         "value": "http://example.com"
                     }
                 }

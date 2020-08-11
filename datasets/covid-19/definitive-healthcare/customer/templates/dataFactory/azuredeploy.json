@@ -240,14 +240,19 @@
                             "type": "LinkedServiceReference"
                         },
                         "annotations": [],
-                        "type": "Binary",
+                        "type": "DelimitedText",
                         "typeProperties": {
                             "location": {
                                 "type": "AzureBlobStorageLocation",
                                 "folderPath": "output",
                                 "container": "staging"
-                            }
-                        }
+                            },
+                            "columnDelimiter": ",",
+                            "escapeChar": "\\",
+                            "firstRowAsHeader": true,
+                            "quoteChar": "\""
+                        },
+                        "schema": []
                     }
                 },
                 {
@@ -268,19 +273,14 @@
                             "type": "LinkedServiceReference"
                         },
                         "annotations": [],
-                        "type": "DelimitedText",
+                        "type": "Binary",
                         "typeProperties": {
                             "location": {
                                 "type": "AzureBlobStorageLocation",
                                 "folderPath": "output",
                                 "container": "staging"
-                            },
-                            "columnDelimiter": ",",
-                            "escapeChar": "\\",
-                            "firstRowAsHeader": true,
-                            "quoteChar": "\""
-                        },
-                        "schema": []
+                            }
+                        }
                     }
                 },
                 {
@@ -512,7 +512,7 @@
                                 }
                             ],
                             "transformations": [],
-                            "script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table',\n\tstaged: false) ~> sourceSynapseStagingTable\nsourceSynapseStagingTable sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tstaged: true,\n\tpostSQLs:['\\n'],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SynapseOperationalTable"
+                            "script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table',\n\tstaged: false) ~> sourceSynapseStagingTable\nsourceSynapseStagingTable sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tstaged: true,\n\tpostSQLs:['\\n'],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SynapseOperationalTable"
                         }
                     },
                     "dependsOn": [
@@ -701,7 +701,7 @@
                                 }
                             ],
                             "transformations": [],
-                            "script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> sourceSqlDbStaging\nsourceSqlDbStaging sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SqlOperationalSink"
+                            "script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> sourceSqlDbStaging\nsourceSqlDbStaging sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SqlOperationalSink"
                         }
                     },
                     "dependsOn": [

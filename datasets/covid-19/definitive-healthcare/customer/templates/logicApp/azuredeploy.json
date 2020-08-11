@@ -473,11 +473,11 @@
     "outputs": {
         "WebHookURIPipeline": {
           "type": "string",
-          "value": "[listCallbackURL(resourceId('Microsoft.Logic/workflows/triggers', parameters('logicAppNamePipeline'), 'manual'), '2019-05-01').value]"
+          "value": "[listCallbackURL(resourceId('Microsoft.Logic/workflows/triggers', variables('logicAppNamePipeline'), 'manual'), '2019-05-01').value]"
         },
         "WebHookURIActivity": {
             "type": "string",
-            "value": "[listCallbackURL(resourceId('Microsoft.Logic/workflows/triggers', parameters('logicAppNameActivity'), 'manual'), '2019-05-01').value]"
+            "value": "[listCallbackURL(resourceId('Microsoft.Logic/workflows/triggers', variables('logicAppNameActivity'), 'manual'), '2019-05-01').value]"
           }
       }
 }

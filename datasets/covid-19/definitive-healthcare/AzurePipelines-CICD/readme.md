@@ -204,7 +204,7 @@ steps:
     templateLocation: 'Linked artifact'
     csmFile: '$(build.artifactstagingdirectory)\adf_publish\ARMTemplateForFactory.json'
     csmParametersFile: '$(build.artifactstagingdirectory)\adf_publish\ARMTemplateParametersForFactory.json'
-    overrideParameters: '-factoryName "df-$(ProductName)-$(Environment)" -AzureSqlDatabase_connectionString "$(sql-conn-string)" -customerStorageLinkedService_connectionString "$(customer-sa-conn-string)" -publicStorageLinkedService_sasUri "$(public-sa-sas-uri)" -RestServiceurl_properties_typeProperties_url "$(rest-url)"'
+    overrideParameters: '-factoryName "$(ProductName)-$(Environment)" -AzureSqlDatabase_connectionString "$(sql-conn-string)" -customerStorageLinkedService_connectionString "$(customer-sa-conn-string)" -publicStorageLinkedService_sasUri "$(public-sa-sas-uri)" -RestServiceurl_properties_typeProperties_url "$(rest-url)"'
     deploymentMode: 'Incremental'
   displayName: Deploy ADF Pipelines
   enabled: true
@@ -238,8 +238,8 @@ steps:
 2. Environment // Name of the environment
 3. ProductName // Name of the service, in this case it will be the name of the data factory
 4. public-sa-sas-uri // SAS URI of the public storage account
-5. rest-url // URL for the 
-6. sql-conn-string // 
+5. rest-url // URL for the CSV dataset source. (Leave value as blank if not required)
+6. sql-conn-string // Connection string for SQL Database
 ```
 ![create vars](./images/create-vars.png)
 
@@ -272,4 +272,53 @@ steps:
 
 9. Save and run the pipeline.
 
-Thats it. 
+## Adding another environment to the above pipeline
+
+
+- For adding an extra stage simply repeat the steps 4 and 5 given in the azure-pipeline.yml file and update the following fields:
+
+-  Here make sure that you create a new variable for each enviroment that you want to create/add in this pipeline. 
+    e.g ProdProductName
+    This should be created in the variables group and also the following snippet should be updated to use the newly created variable.
+
+*Note: You may update the value of **resourceGroupName** if the expression provided in this template does not match the naem of the resource group taht you want to create the resources in.*
+
+```
+# Step 6: Deploy a blank Azure Data Factory instance using ARM templates
+- task: AzureResourceManagerTemplateDeployment@3
+  inputs:
+    deploymentScope: 'Resource Group'
+    azureResourceManagerConnection: ''
+    subscriptionId: ''
+    action: 'Create Or Update Resource Group'
+    resourceGroupName: '$(ProdProductName)-$(Environment)'
+    location: 'West Europe'
+    templateLocation: 'Linked artifact'
+    csmFile: '$(build.artifactstagingdirectory)\arm\template.json'
+    csmParametersFile: '$(build.artifactstagingdirectory)\arm\parameters.json'
+    overrideParameters: '-name "$(ProdProductName)-$(Environment)"'
+    deploymentMode: 'Incremental'
+  displayName: Deploy ADF Service
+  enabled: true
+
+# Step 7: Deploy Azure Data Factory Objects like pipelines, dataflows using ARM templates that ADF generate during each publish event
+- task: AzureResourceManagerTemplateDeployment@3
+  inputs:
+    deploymentScope: 'Resource Group'
+    azureResourceManagerConnection: ''
+    subscriptionId: ''
+    action: 'Create Or Update Resource Group'
+    resourceGroupName: '$(ProdProductName)-$(Environment)'
+    location: 'West Europe'
+    templateLocation: 'Linked artifact'
+    csmFile: '$(build.artifactstagingdirectory)\adf_publish\ARMTemplateForFactory.json'
+    csmParametersFile: '$(build.artifactstagingdirectory)\adf_publish\ARMTemplateParametersForFactory.json'
+    overrideParameters: '-factoryName "$(ProdProductName)-$(Environment)" -AzureSqlDatabase_connectionString "$(sql-conn-string)" -customerStorageLinkedService_connectionString "$(customer-sa-conn-string)" -publicStorageLinkedService_sasUri "$(public-sa-sas-uri)" -RestServiceurl_properties_typeProperties_url "$(rest-url)"'
+    deploymentMode: 'Incremental'
+  displayName: Deploy ADF Pipelines
+  enabled: true
+```
+
+
+Add the above snipped in the previously created Azure pipeline to add another environment to which the resources are deployed.
+

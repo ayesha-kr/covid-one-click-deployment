@@ -3,6 +3,7 @@
 ## Step 1: Connect your Dev Azure Data factory with Github
  
 1. Open Azure Data Factory that you want to use the developement environment.
+
 ![Getting Started](./img.jpg)
 
 2. Click on **Author & Monitor**, this will open the data factory UI's Home.
@@ -241,13 +242,13 @@ steps:
 5. rest-url // URL for the CSV dataset source. (Leave value as blank if not required)
 6. sql-conn-string // Connection string for SQL Database
 ```
-![create vars](./images/create-vars.png)
+![Create vars](./images/create-vars.png)
 
 6. To create a new pipeline navigate to Pipelines -> Pipelines and click on **New Pipeline**.
 
-![new pipeline](./images/open-pipeline.png)
+[Open pipeline](./images/open-pipelines.png)
 
-![new pipeline](./images/new-pipeline.png)
+[New pipeline](./images/new-pipeline.png)
 
 7. Setup Pipeline
 

@@ -3,7 +3,6 @@
 ## Step 1: Connect your Dev Azure Data factory with Github
  
 1. Open Azure Data Factory that you want to use the developement environment.
-![Getting Started](./img.jpg)
 
 2. Click on **Author & Monitor**, this will open the data factory UI's Home.
 
@@ -22,7 +21,7 @@ Note: If you wish to choose a github, please create an empty repo before proceed
 
 6. Click Apply to save the changes.
 
-Here we have successfully coonected the Azure Data factory to a Git Repo. this has saved all of the resoucres's json files in the branch we specified. 
+Here we have successfully connected the Azure Data factory to a Git Repo. this has saved all of the resoucres's json files in the branch we specified. 
 
 To be able to replicate the resources in this data factory we need the ARM templates that are generated when we publish the change sin data factory. When you click on publish, it takes the changes from the collaboration branch i.e master in this case, creates ARM templates and pushes them in the **adf_publish** branch.
 
@@ -241,13 +240,13 @@ steps:
 5. rest-url // URL for the CSV dataset source. (Leave value as blank if not required)
 6. sql-conn-string // Connection string for SQL Database
 ```
-![create vars](./images/create-vars.png)
+![Create vars](./images/create-vars.png)
 
 6. To create a new pipeline navigate to Pipelines -> Pipelines and click on **New Pipeline**.
 
-![new pipeline](./images/open-pipeline.png)
+[Open pipeline](./images/open-pipelines.png)
 
-![new pipeline](./images/new-pipeline.png)
+[New pipeline](./images/new-pipeline.png)
 
 7. Setup Pipeline
 

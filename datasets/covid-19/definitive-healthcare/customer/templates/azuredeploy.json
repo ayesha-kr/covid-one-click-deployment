@@ -125,8 +125,18 @@
             "metadata": {
                 "description": "Specify if you want to write the data into SQL database."
             }
+          },
+        "selectCopyMethod": {
+            "type": "string",
+            "allowedValues": [
+                "Data Share",
+                "Copy Data Activity"
+            ],
+            "metadata": {
+                "description": "Specify if you want to write the data into SQL database."
+            }
         },
-        "notificationEmail": {
+          "notificationEmail": {
             "type": "string",
             "defaultValue": "",
             "metadata": {
@@ -304,11 +314,17 @@
                     "selectDataLoader": {
                         "value": "[parameters('selectDataLoader')]"
                     },
+                    "selectCopyMethod": {
+                        "value": "[parameters('selectCopyMethod')]"
+                    },
                     "notificationEmail": {
                         "value": "[parameters('notificationEmail')]"
                     },
-                    "webHookUri": {
-                        "value": "[if(equals(parameters('enableMicrosoftTeamsNotification'),'Yes'), reference('logicAppTemplate','2018-05-01').outputs.WebHookURI.value, 'http://example.com')]"
+                    "webHookUriPipeline": {
+                        "value": "[if(equals(parameters('enableMicrosoftTeamsNotification'),'Yes'), reference('logicAppTemplate','2018-05-01').outputs.WebHookURIPipeline.value, 'http://example.com')]"
+                    },
+                    "webHookUriActivity": {
+                        "value": "[if(equals(parameters('enableMicrosoftTeamsNotification'),'Yes'), reference('logicAppTemplate','2018-05-01').outputs.WebHookURIActivity.value, 'http://example.com')]"
                     }
                 }
             }
@@ -363,7 +379,16 @@
                     "notificationEmail": {
                         "value": "[parameters('notificationEmail')]"
                     },
-                    "webHookUri": {
+
+                    "selectCopyMethod": {
+                        "value": "[parameters('selectCopyMethod')]"
+                    },
+                  
+                    "webHookUriPipeline": {
+                        "value": "http://example.com"
+                    },
+                    "webHookUriActivity": {
+
                         "value": "http://example.com"
                     }
                 }

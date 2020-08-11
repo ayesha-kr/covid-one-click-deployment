@@ -98,13 +98,6 @@
             "metadata": {
                 "description": "Name can only contain alphanumeric characters, hyphen and underscore"
             }
-        },
-        "datasetName": {
-            "type": "String",
-            "defaultValue": "demo_public_dataset",
-            "metadata": {
-                "description": "Dataset name can only contain number, letters, - and _"
-            }
         }
     },
     "variables": {
@@ -255,8 +248,11 @@
                     "notificationEmail": {
                         "value": "[parameters('notificationEmail')]"
                     },
-                    "webHookUri": {
-                        "value": "[if(equals(parameters('enableMicrosoftTeamsNotification'),'Yes'), reference('logicAppTemplate','2018-05-01').outputs.WebHookURI.value, 'http://example.com')]"
+                    "webHookUriPipeline": {
+                        "value": "[if(equals(parameters('enableMicrosoftTeamsNotification'),'Yes'), reference('logicAppTemplate','2018-05-01').outputs.WebHookURIPipeline.value, 'http://example.com')]"
+                    },
+                    "webHookUriActivity": {
+                        "value": "[if(equals(parameters('enableMicrosoftTeamsNotification'),'Yes'), reference('logicAppTemplate','2018-05-01').outputs.WebHookURIActivity.value, 'http://example.com')]"
                     }
                 }
             }
@@ -305,7 +301,10 @@
                     "notificationEmail": {
                         "value": "[parameters('notificationEmail')]"
                     },
-                    "webHookUri": {
+                    "webHookUriPipeline": {
+                        "value": "http://example.com"
+                    },
+                    "webHookUriActivity": {
                         "value": "http://example.com"
                     }
                 }
@@ -316,7 +315,8 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2018-05-01",
             "dependsOn": [
-                "[resourceId('Microsoft.Resources/deployments','dataShareTemplate')]"            ],
+                "[resourceId('Microsoft.Resources/deployments','dataShareTemplate')]"
+            ],
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {

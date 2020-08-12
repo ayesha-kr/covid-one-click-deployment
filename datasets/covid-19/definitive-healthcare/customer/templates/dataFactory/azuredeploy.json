@@ -2943,8 +2943,8 @@
                         },
                         "type": "TumblingWindowTrigger",
                         "typeProperties": {
-                            "frequency": "Minute",
-                            "interval": 15,
+                            "frequency": "Hours",
+                            "interval": 24,
                             "startTime": "[parameters('triggerStartTime')]",
                             "delay": "00:00:00",
                             "maxConcurrency": 1,
@@ -3193,8 +3193,8 @@
                         },
                         "type": "TumblingWindowTrigger",
                         "typeProperties": {
-                            "frequency": "Minute",
-                            "interval": 15,
+                            "frequency": "Hours",
+                            "interval": 24,
                             "startTime": "[parameters('triggerStartTime')]",
                             "delay": "00:00:00",
                             "maxConcurrency": 1,
@@ -3526,8 +3526,8 @@
                         },
                         "type": "TumblingWindowTrigger",
                         "typeProperties": {
-                            "frequency": "Minute",
-                            "interval": 15,
+                            "frequency": "Hours",
+                            "interval": 24,
                             "startTime": "[parameters('triggerStartTime')]",
                             "delay": "00:00:00",
                             "maxConcurrency": 1,

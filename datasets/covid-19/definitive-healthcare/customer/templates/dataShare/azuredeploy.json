@@ -10,11 +10,22 @@
         },
         "location": {
             "type": "String"
+        },
+        "deployAndUseDataShare": {
+            "type": "string",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "metadata": {
+                "description": "Please specify if you want to deploy Datashare."
+            }
         }
     },
     "variables": {},
     "resources": [
         {
+            "condition": "[equals(parameters('deployAndUseDataShare'),'Yes')]",
             "type": "Microsoft.DataShare/accounts",
             "apiVersion": "2019-11-01",
             "name": "[parameters('dataShareAccountName')]",

@@ -17,7 +17,7 @@
             }
         },
         "location": {
-            "defaultValue": "[resourceGroup().location]",
+            "defaultValue": "eastus",
             "type": "string",
             "metadata": {
                 "description": "Location of the data factory. Currently, only East US, East US 2, and West Europe are supported. "
@@ -99,12 +99,16 @@
                 "description": "Name can only contain alphanumeric characters, hyphen and underscore"
             }
         },
-        "datasetName": {
-            "type": "String",
-            "defaultValue": "demo_public_dataset",
+        "deployAndUseDataShare": {
+            "type": "string",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
             "metadata": {
-                "description": "Dataset name can only contain number, letters, - and _"
-            }
+                "description": "Please specify if you want to deploy Datashare."
+            },
+            "defaultValue": "No"
         }
     },
     "variables": {
@@ -122,7 +126,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/dev-zahid/datasets/covid-19/definitive-healthcare/public/templates/storageAccount/azuredeploy.json"
+                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/public/templates/storageAccount/azuredeploy.json"
                 },
                 "parameters": {
                     "storageAccountName": {
@@ -144,7 +148,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/dev-zahid/datasets/covid-19/definitive-healthcare/public/templates/dataShare/azuredeploy.json"
+                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/public/templates/dataShare/azuredeploy.json"
                 },
                 "parameters": {
                     "dataShareAccountName": {
@@ -152,6 +156,9 @@
                     },
                     "location": {
                         "value": "[parameters('location')]"
+                    },
+                    "deployAndUseDataShare": {
+                        "value": "[parameters('deployAndUseDataShare')]"
                     }
                 }
             }
@@ -166,7 +173,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/dev-zahid/datasets/covid-19/definitive-healthcare/public/templates/sqlServer/azuredeploy.json"
+                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/public/templates/sqlServer/azuredeploy.json"
                 },
                 "parameters": {
                     "doYouWantToWriteCuratedDataToSQLDatabase": {
@@ -198,7 +205,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/dev-zahid/datasets/covid-19/definitive-healthcare/customer/templates/logicApp/azuredeploy.json"
+                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/customer/templates/logicApp/azuredeploy.json"
                 },
                 "parameters": {
                     "location": {
@@ -222,7 +229,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/dev-zahid/datasets/covid-19/definitive-healthcare/public/templates/dataFactory/azuredeploy.json"
+                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/public/templates/dataFactory/azuredeploy.json"
                 },
                 "parameters": {
                     "factoryName": {
@@ -275,7 +282,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/dev-zahid/datasets/covid-19/definitive-healthcare/public/templates/dataFactory/azuredeploy.json"
+                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/public/templates/dataFactory/azuredeploy.json"
                 },
                 "parameters": {
                     "factoryName": {
@@ -322,12 +329,12 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2018-05-01",
             "dependsOn": [
-                "[resourceId('Microsoft.Resources/deployments','dataFactoryTemplate')]"
+                "[resourceId('Microsoft.Resources/deployments','dataShareTemplate')]"
             ],
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/dev-zahid/datasets/covid-19/definitive-healthcare/public/templates/share/azuredeploy.json"
+                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/public/templates/share/azuredeploy.json"
                 },
                 "parameters": {
                     "dataShareAccountName": {
@@ -338,6 +345,9 @@
                     },
                     "shareName": {
                         "value": "[parameters('shareName')]"
+                    },
+                    "deployAndUseDataShare": {
+                        "value": "[parameters('deployAndUseDataShare')]"
                     }
                 }
             }

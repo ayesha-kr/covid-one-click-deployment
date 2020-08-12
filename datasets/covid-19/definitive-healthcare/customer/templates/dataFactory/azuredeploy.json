@@ -77,7 +77,7 @@
                 "No"
             ],
             "metadata": {
-                "description": "Specify if you want to copy data from data share."
+                "description": "Specify if you want to deploy data share."
             }
         },
         "triggerStartTime": {

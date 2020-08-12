@@ -98,6 +98,16 @@
             "metadata": {
                 "description": "Name can only contain alphanumeric characters, hyphen and underscore"
             }
+        },
+        "deployAndUseDataShare": {
+            "type": "string",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "metadata": {
+                "description": "Please specify if you want to deploy Datashare."
+            }
         }
     },
     "variables": {
@@ -145,6 +155,9 @@
                     },
                     "location": {
                         "value": "[parameters('location')]"
+                    },
+                    "deployAndUseDataShare": {
+                        "value": "[parameters('deployAndUseDataShare')]"
                     }
                 }
             }
@@ -331,6 +344,9 @@
                     },
                     "shareName": {
                         "value": "[parameters('shareName')]"
+                    },
+                    "deployAndUseDataShare": {
+                        "value": "[parameters('deployAndUseDataShare')]"
                     }
                 }
             }

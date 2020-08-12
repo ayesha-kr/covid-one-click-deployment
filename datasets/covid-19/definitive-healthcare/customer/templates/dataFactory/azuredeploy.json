@@ -1491,16 +1491,13 @@
                                 }
                             }
                         ],
-                        "type": "TumblingWindowTrigger",
+                        "type": "ScheduleTrigger",
                         "typeProperties": {
-                            "frequency": "Hour",
-                            "interval": 24,
-                            "startTime": "[parameters('triggerStartTime')]",
-                            "delay": "00:00:00",
-                            "maxConcurrency": 1,
-                            "retryPolicy": {
-                                "count": 3,
-                                "intervalInSeconds": 30
+                            "recurrence": {
+                                "frequency": "Hour",
+                                "interval": 24,
+                                "startTime": "[parameters('triggerStartTime')]",
+                                "timeZone": "UTC"
                             }
                         }
                     }
@@ -1528,16 +1525,13 @@
                                 }
                             }
                         ],
-                        "type": "TumblingWindowTrigger",
+                        "type": "ScheduleTrigger",
                         "typeProperties": {
-                            "frequency": "Hour",
-                            "interval": 24,
-                            "startTime": "[parameters('triggerStartTime')]",
-                            "delay": "00:00:00",
-                            "maxConcurrency": 1,
-                            "retryPolicy": {
-                                "count": 3,
-                                "intervalInSeconds": 30
+                            "recurrence": {
+                                "frequency": "Hour",
+                                "interval": 24,
+                                "startTime": "[parameters('triggerStartTime')]",
+                                "timeZone": "UTC"
                             }
                         }
                     }
@@ -1565,16 +1559,13 @@
                                 }
                             }
                         ],
-                        "type": "TumblingWindowTrigger",
+                        "type": "ScheduleTrigger",
                         "typeProperties": {
-                            "frequency": "Hour",
-                            "interval": 24,
-                            "startTime": "[parameters('triggerStartTime')]",
-                            "delay": "00:00:00",
-                            "maxConcurrency": 1,
-                            "retryPolicy": {
-                                "count": 3,
-                                "intervalInSeconds": 30
+                            "recurrence": {
+                                "frequency": "Hour",
+                                "interval": 24,
+                                "startTime": "[parameters('triggerStartTime')]",
+                                "timeZone": "UTC"
                             }
                         }
                     }
@@ -2941,16 +2932,13 @@
                             },
                             "parameters": {}
                         },
-                        "type": "TumblingWindowTrigger",
+                        "type": "ScheduleTrigger",
                         "typeProperties": {
-                            "frequency": "Hour",
-                            "interval": 24,
-                            "startTime": "[parameters('triggerStartTime')]",
-                            "delay": "00:00:00",
-                            "maxConcurrency": 1,
-                            "retryPolicy": {
-                                "count": 3,
-                                "intervalInSeconds": 30
+                            "recurrence": {
+                                "frequency": "Hour",
+                                "interval": 24,
+                                "startTime": "[parameters('triggerStartTime')]",
+                                "timeZone": "UTC"
                             }
                         }
                     },
@@ -3191,16 +3179,13 @@
                             },
                             "parameters": {}
                         },
-                        "type": "TumblingWindowTrigger",
+                        "type": "ScheduleTrigger",
                         "typeProperties": {
-                            "frequency": "Hour",
-                            "interval": 24,
-                            "startTime": "[parameters('triggerStartTime')]",
-                            "delay": "00:00:00",
-                            "maxConcurrency": 1,
-                            "retryPolicy": {
-                                "count": 3,
-                                "intervalInSeconds": 30
+                            "recurrence": {
+                                "frequency": "Hour",
+                                "interval": 24,
+                                "startTime": "[parameters('triggerStartTime')]",
+                                "timeZone": "UTC"
                             }
                         }
                     },
@@ -3524,16 +3509,13 @@
                             },
                             "parameters": {}
                         },
-                        "type": "TumblingWindowTrigger",
+                        "type": "ScheduleTrigger",
                         "typeProperties": {
-                            "frequency": "Hour",
-                            "interval": 24,
-                            "startTime": "[parameters('triggerStartTime')]",
-                            "delay": "00:00:00",
-                            "maxConcurrency": 1,
-                            "retryPolicy": {
-                                "count": 3,
-                                "intervalInSeconds": 30
+                            "recurrence": {
+                                "frequency": "Hour",
+                                "interval": 24,
+                                "startTime": "[parameters('triggerStartTime')]",
+                                "timeZone": "UTC"
                             }
                         }
                     },

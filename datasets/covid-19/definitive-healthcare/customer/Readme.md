@@ -33,7 +33,13 @@ After deployment, to access the newly created SQL server from your client IP, co
 ![Firewall Rule](https://github.com/osamaemumba/arm-template-button-with-condition/blob/master/firewallRule.gif)
 
 
+
+
+
+
 # Setup and Configure Alerts for Azure Data Factory
+
+
 
 ## Step 1: Deploy the templates
 
@@ -52,6 +58,9 @@ After deployment, to access the newly created SQL server from your client IP, co
 
 
 If you have selected Microsoft Teams notification, then your Logic app needs to be authenticated to your "Microsoft Teams" account for it to be able to send notifications.
+
+
+
 ## Step 2: Authenticating Microsoft Teams account with Azure Logic App
 
 1. First navigate to the resource group that containes your deployment and find the resource titled **"msftTeamsConnectionAuth"**. Click on it and navigate to its **"Edit API connection"** option from the sidebar. 

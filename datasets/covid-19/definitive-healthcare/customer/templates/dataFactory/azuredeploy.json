@@ -1493,7 +1493,7 @@
                         ],
                         "type": "TumblingWindowTrigger",
                         "typeProperties": {
-                            "frequency": "Hours",
+                            "frequency": "Hour",
                             "interval": 24,
                             "startTime": "[parameters('triggerStartTime')]",
                             "delay": "00:00:00",
@@ -1530,7 +1530,7 @@
                         ],
                         "type": "TumblingWindowTrigger",
                         "typeProperties": {
-                            "frequency": "Hours",
+                            "frequency": "Hour",
                             "interval": 24,
                             "startTime": "[parameters('triggerStartTime')]",
                             "delay": "00:00:00",
@@ -1567,7 +1567,7 @@
                         ],
                         "type": "TumblingWindowTrigger",
                         "typeProperties": {
-                            "frequency": "Hours",
+                            "frequency": "Hour",
                             "interval": 24,
                             "startTime": "[parameters('triggerStartTime')]",
                             "delay": "00:00:00",
@@ -2943,7 +2943,7 @@
                         },
                         "type": "TumblingWindowTrigger",
                         "typeProperties": {
-                            "frequency": "Hours",
+                            "frequency": "Hour",
                             "interval": 24,
                             "startTime": "[parameters('triggerStartTime')]",
                             "delay": "00:00:00",
@@ -3193,7 +3193,7 @@
                         },
                         "type": "TumblingWindowTrigger",
                         "typeProperties": {
-                            "frequency": "Hours",
+                            "frequency": "Hour",
                             "interval": 24,
                             "startTime": "[parameters('triggerStartTime')]",
                             "delay": "00:00:00",
@@ -3526,7 +3526,7 @@
                         },
                         "type": "TumblingWindowTrigger",
                         "typeProperties": {
-                            "frequency": "Hours",
+                            "frequency": "Hour",
                             "interval": 24,
                             "startTime": "[parameters('triggerStartTime')]",
                             "delay": "00:00:00",

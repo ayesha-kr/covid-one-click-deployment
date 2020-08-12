@@ -26,7 +26,8 @@
             "defaultValue": "covidtrackingdefinitive"
         },
         "sasURI": {
-            "type": "string"
+            "type": "string",
+            "defaultValue": "Specify the sasURI of public blob storage"
         },
         "containerName1": {
             "defaultValue": "public",

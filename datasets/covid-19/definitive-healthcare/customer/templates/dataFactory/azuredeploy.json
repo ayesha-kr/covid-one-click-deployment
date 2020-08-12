@@ -917,7 +917,7 @@
                                 "typeProperties": {
                                     "source": {
                                         "type": "SqlDWSource",
-                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'dhc_view')\n    EXEC('create view definitive_HC.dhc_view as select State_Name, Num_Staffed_Beds from definitive_HC.operationaldhc;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'dhc_view')\n    EXEC('create view definitive_HC.dhc_view as select Hospital_Type, Hq_State, Hq_Zip_Code, County_Name, State_Name, Num_Licensed_Beds, Num_Staffed_Beds, Num_Icu_Beds, Adult_Icu_Beds, Pedi_Icu_Beds, Bed_Utilization, Potential_Increase_In_Bed_Capac, Avg_Ventilator_Usage from definitive_HC.operationaldhc;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
                                         "queryTimeout": "00:10:00"
                                     },
                                     "dataset": {
@@ -1181,7 +1181,7 @@
                                 "typeProperties": {
                                     "source": {
                                         "type": "SqlDWSource",
-                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'dhc_view')\n    EXEC('create view definitive_HC.dhc_view as select State_Name, Num_Staffed_Beds from definitive_HC.operationaldhc;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'dhc_view')\n    EXEC('create view definitive_HC.dhc_view as select Hospital_Type, Hq_State, Hq_Zip_Code, County_Name, State_Name, Num_Licensed_Beds, Num_Staffed_Beds, Num_Icu_Beds, Adult_Icu_Beds, Pedi_Icu_Beds, Bed_Utilization, Potential_Increase_In_Bed_Capac, Avg_Ventilator_Usage from definitive_HC.operationaldhc;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
                                         "queryTimeout": "00:10:00"
                                     },
                                     "dataset": {
@@ -1212,7 +1212,7 @@
                                 "typeProperties": {
                                     "source": {
                                         "type": "AzureSqlSource",
-                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'dhc_view')\n    EXEC('create view definitive_HC.dhc_view as select State_Name, Num_Staffed_Beds from definitive_HC.operationaldhc;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'dhc_view')\n    EXEC('create view definitive_HC.dhc_view as select Hospital_Type, Hq_State, Hq_Zip_Code, County_Name, State_Name, Num_Licensed_Beds, Num_Staffed_Beds, Num_Icu_Beds, Adult_Icu_Beds, Pedi_Icu_Beds, Bed_Utilization, Potential_Increase_In_Bed_Capac, Avg_Ventilator_Usage from definitive_HC.operationaldhc;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
                                         "queryTimeout": "00:05:00"
                                     },
                                     "dataset": {
@@ -1447,7 +1447,7 @@
                                 "typeProperties": {
                                     "source": {
                                         "type": "AzureSqlSource",
-                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'dhc_view')\n    EXEC('create view definitive_HC.dhc_view as select State_Name, Num_Staffed_Beds from definitive_HC.operationaldhc;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'dhc_view')\n    EXEC('create view definitive_HC.dhc_view as select Hospital_Type, Hq_State, Hq_Zip_Code, County_Name, State_Name, Num_Licensed_Beds, Num_Staffed_Beds, Num_Icu_Beds, Adult_Icu_Beds, Pedi_Icu_Beds, Bed_Utilization, Potential_Increase_In_Bed_Capac, Avg_Ventilator_Usage from definitive_HC.operationaldhc;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
                                         "queryTimeout": "00:10:00"
                                     },
                                     "dataset": {
@@ -2795,7 +2795,7 @@
                                 "typeProperties": {
                                     "source": {
                                         "type": "AzureSqlSource",
-                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'dhc_view')\n    EXEC('create view definitive_HC.dhc_view as select State_Name, Num_Staffed_Beds from definitive_HC.operationaldhc;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'dhc_view')\n    EXEC('create view definitive_HC.dhc_view as select Hospital_Type, Hq_State, Hq_Zip_Code, County_Name, State_Name, Num_Licensed_Beds, Num_Staffed_Beds, Num_Icu_Beds, Adult_Icu_Beds, Pedi_Icu_Beds, Bed_Utilization, Potential_Increase_In_Bed_Capac, Avg_Ventilator_Usage from definitive_HC.operationaldhc;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
                                         "queryTimeout": "00:10:00",
                                         "partitionOption": "None"
                                     },
@@ -3095,7 +3095,7 @@
                                 "typeProperties": {
                                     "source": {
                                         "type": "SqlDWSource",
-                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'dhc_view')\n    EXEC('create view definitive_HC.dhc_view as select State_Name, Num_Staffed_Beds from definitive_HC.operationaldhc;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'dhc_view')\n    EXEC('create view definitive_HC.dhc_view as select Hospital_Type, Hq_State, Hq_Zip_Code, County_Name, State_Name, Num_Licensed_Beds, Num_Staffed_Beds, Num_Icu_Beds, Adult_Icu_Beds, Pedi_Icu_Beds, Bed_Utilization, Potential_Increase_In_Bed_Capac, Avg_Ventilator_Usage from definitive_HC.operationaldhc;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
                                         "queryTimeout": "00:10:00",
                                         "partitionOption": "None"
                                     },
@@ -3381,7 +3381,7 @@
                                 "typeProperties": {
                                     "source": {
                                         "type": "SqlDWSource",
-                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'dhc_view')\n    EXEC('create view definitive_HC.dhc_view as select State_Name, Num_Staffed_Beds from definitive_HC.operationaldhc;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'dhc_view')\n    EXEC('create view definitive_HC.dhc_view as select Hospital_Type, Hq_State, Hq_Zip_Code, County_Name, State_Name, Num_Licensed_Beds, Num_Staffed_Beds, Num_Icu_Beds, Adult_Icu_Beds, Pedi_Icu_Beds, Bed_Utilization, Potential_Increase_In_Bed_Capac, Avg_Ventilator_Usage from definitive_HC.operationaldhc;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
                                         "queryTimeout": "00:10:00",
                                         "partitionOption": "None"
                                     },
@@ -3414,7 +3414,7 @@
                                 "typeProperties": {
                                     "source": {
                                         "type": "AzureSqlSource",
-                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'dhc_view')\n    EXEC('create view definitive_HC.dhc_view as select State_Name, Num_Staffed_Beds from definitive_HC.operationaldhc;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'dhc_view')\n    EXEC('create view definitive_HC.dhc_view as select Hospital_Type, Hq_State, Hq_Zip_Code, County_Name, State_Name, Num_Licensed_Beds, Num_Staffed_Beds, Num_Icu_Beds, Adult_Icu_Beds, Pedi_Icu_Beds, Bed_Utilization, Potential_Increase_In_Bed_Capac, Avg_Ventilator_Usage from definitive_HC.operationaldhc;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
                                         "queryTimeout": "00:05:00",
                                         "partitionOption": "None"
                                     },

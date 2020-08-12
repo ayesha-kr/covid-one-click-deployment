@@ -735,35 +735,22 @@
                                 "userProperties": [],
                                 "typeProperties": {
                                     "source": {
-                                        "type": "DelimitedTextSource",
+                                        "type": "BinarySource",
                                         "storeSettings": {
                                             "type": "AzureBlobStorageReadSettings",
                                             "recursive": true
                                         },
                                         "formatSettings": {
-                                            "type": "DelimitedTextReadSettings"
+                                            "type": "BinaryReadSettings"
                                         }
                                     },
                                     "sink": {
-                                        "type": "DelimitedTextSink",
+                                        "type": "BinarySink",
                                         "storeSettings": {
                                             "type": "AzureBlobStorageWriteSettings"
-                                        },
-                                        "formatSettings": {
-                                            "type": "DelimitedTextWriteSettings",
-                                            "quoteAllText": true,
-                                            "fileExtension": ".txt"
                                         }
                                     },
-                                    "enableStaging": false,
-                                    "translator": {
-                                        "type": "TabularTranslator",
-                                        "typeConversion": true,
-                                        "typeConversionSettings": {
-                                            "allowDataTruncation": true,
-                                            "treatBooleanAsNumber": false
-                                        }
-                                    }
+                                    "enableStaging": false
                                 },
                                 "inputs": [
                                     {
@@ -963,48 +950,33 @@
                                 "userProperties": [],
                                 "typeProperties": {
                                     "source": {
-                                        "type": "DelimitedTextSource",
+                                        "type": "BinarySource",
                                         "storeSettings": {
                                             "type": "AzureBlobStorageReadSettings",
                                             "recursive": true
                                         },
                                         "formatSettings": {
-                                            "type": "DelimitedTextReadSettings"
+                                            "type": "BinaryReadSettings"
                                         }
                                     },
                                     "sink": {
-                                        "type": "DelimitedTextSink",
+                                        "type": "BinarySink",
                                         "storeSettings": {
                                             "type": "AzureBlobStorageWriteSettings"
-                                        },
-                                        "formatSettings": {
-                                            "type": "DelimitedTextWriteSettings",
-                                            "quoteAllText": true,
-                                            "fileExtension": ".txt"
                                         }
                                     },
-                                    "enableStaging": false,
-                                    "translator": {
-                                        "type": "TabularTranslator",
-                                        "typeConversion": true,
-                                        "typeConversionSettings": {
-                                            "allowDataTruncation": true,
-                                            "treatBooleanAsNumber": false
-                                        }
-                                    }
+                                    "enableStaging": false
                                 },
                                 "inputs": [
                                     {
                                         "referenceName": "DhcInputDataset",
-                                        "type": "DatasetReference",
-                                        "parameters": {}
+                                        "type": "DatasetReference"
                                     }
                                 ],
                                 "outputs": [
                                     {
                                         "referenceName": "DhcOutputDatasetSink",
-                                        "type": "DatasetReference",
-                                        "parameters": {}
+                                        "type": "DatasetReference"
                                     }
                                 ]
                             },
@@ -1260,48 +1232,33 @@
                                 "userProperties": [],
                                 "typeProperties": {
                                     "source": {
-                                        "type": "DelimitedTextSource",
+                                        "type": "BinarySource",
                                         "storeSettings": {
                                             "type": "AzureBlobStorageReadSettings",
                                             "recursive": true
                                         },
                                         "formatSettings": {
-                                            "type": "DelimitedTextReadSettings"
+                                            "type": "BinaryReadSettings"
                                         }
                                     },
                                     "sink": {
-                                        "type": "DelimitedTextSink",
+                                        "type": "BinarySink",
                                         "storeSettings": {
                                             "type": "AzureBlobStorageWriteSettings"
-                                        },
-                                        "formatSettings": {
-                                            "type": "DelimitedTextWriteSettings",
-                                            "quoteAllText": true,
-                                            "fileExtension": ".txt"
                                         }
                                     },
-                                    "enableStaging": false,
-                                    "translator": {
-                                        "type": "TabularTranslator",
-                                        "typeConversion": true,
-                                        "typeConversionSettings": {
-                                            "allowDataTruncation": true,
-                                            "treatBooleanAsNumber": false
-                                        }
-                                    }
+                                    "enableStaging": false
                                 },
                                 "inputs": [
                                     {
                                         "referenceName": "DhcInputDataset",
-                                        "type": "DatasetReference",
-                                        "parameters": {}
+                                        "type": "DatasetReference"
                                     }
                                 ],
                                 "outputs": [
                                     {
                                         "referenceName": "DhcOutputDatasetSink",
-                                        "type": "DatasetReference",
-                                        "parameters": {}
+                                        "type": "DatasetReference"
                                     }
                                 ]
                             },
@@ -1586,8 +1543,8 @@
                         ],
                         "webhookReceivers": [
                             {
-                              "name": "msftTeamsNotify",
-                              "serviceUri": "[parameters('webHookUriPipeline')]"
+                                "name": "msftTeamsNotify",
+                                "serviceUri": "[parameters('webHookUriPipeline')]"
                             }
                         ]
                     },
@@ -1611,8 +1568,8 @@
                         ],
                         "webhookReceivers": [
                             {
-                              "name": "msftTeamsNotify",
-                              "serviceUri": "[parameters('webHookUriActivity')]"
+                                "name": "msftTeamsNotify",
+                                "serviceUri": "[parameters('webHookUriActivity')]"
                             }
                         ]
                     },
@@ -1964,7 +1921,7 @@
                         "synapseCancelledActivityAlertConfig",
                         "synapseCancelledTriggerAlertConfig",
                         "synapseTriggerRunFailureAlertConfig"
-                        
+
                     ]
                 },
                 {
@@ -2657,7 +2614,7 @@
                         "sqlTriggerRunFailedAlertConfig"
                     ]
                 },
-                
+
 
 
 
@@ -2947,7 +2904,7 @@
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/pipelines/SqlDataLoaderWithDataShare')]"
                     ]
                 },
-                
+
 
 
 
@@ -3194,7 +3151,6 @@
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/pipelines/SynapseDataLoaderWithDataShare')]"
                     ]
                 },
-                
 
 
 
@@ -3205,7 +3161,8 @@
 
 
 
-                
+
+
                 {
                     "condition": "[and(equals(parameters('selectDataLoader'),'Both'),equals(parameters('deployAndUseDataShare'),'Yes'))]",
                     "name": "[concat(parameters('dataFactoryName'), '/SynapseAndSqlDataLoaderWithDataShare')]",

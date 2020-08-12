@@ -1,6 +1,6 @@
 ## Table Of Contents:
-### Deploy Data Factory with optional SQL Server and SQL Database
-### Setup and Configure Alerts for Azure Data Factory
+#### Deploy Data Factory with optional SQL Server and SQL Database
+#### Setup and Configure Alerts for Azure Data Factory
 
 
 ## Deploy Data Factory with optional SQL Server and SQL Database

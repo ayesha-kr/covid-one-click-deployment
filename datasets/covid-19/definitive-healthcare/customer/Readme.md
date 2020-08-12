@@ -40,13 +40,14 @@ After deployment, to access the newly created SQL server from your client IP, co
 1. Open git repository for the project and click on **Deploy to Azure**, this will open up a new window.
 
 2. Select your default Azure account(the one you want to deploy Data factory into), and it will take you to parameters dashboard.
+![dashboard](./images/dashboard.png)
 
 3. Select **"Enable Microsoft Teams Notification"** to yes if you want to send alerts to Microsoft teams too, other select no if you want Email alerts only.
-
+![teams](./images/teams.png)
 4. Enter your email address in the field titled **Notification Email** to send alerts notification to that email. You cant enter more than one email at the deployment time, but you can add them later on once the deployment is completed. The method for which will be elaborated below.
-
+![notif](./images/notif.png)
 5. Click on **Purchase** once you are satisfied with all the parameters and wait for the deployment to end.
-
+![deploy](./images/deploy.png)
  Now once the deployment is complete, you will have alerts setup in data factory. There will be different features like send alerts to Microsoft Teams(via Logic App) etc depending on the options you selected at the deploy time.
 
 
@@ -55,13 +56,13 @@ If you have selected Microsoft Teams notification, then your Logic app needs to 
 ## Step 2: Authenticating Microsoft Teams account with Azure Logic App
 
 1. First navigate to the resource group that containes your deployment and find the resource titled **"msftTeamsConnectionAuth"**. Click on it and navigate to its **"Edit API connection"** option from the sidebar. 
-
+![connection](./images/connection.png)
 2. In the window there will be a button titled **"Authorize"**, click on it and it will open up Microsoft sign in page. Enter the teams account credentials and it will authorize you to your teams account.
 
 3. Click on **"Save"** to save the authorization information and navigate to resource group.
-
+![save](./images/save.png)
 4. Now click on the deployed logic app, the default name of which is **"TeamsNotify"**. Click on the option **"Logic app designer"** from the side bar under heading **"Development tools"**. This will open a visual editor, if there was problem connecting to teams then it will display connection error. In that case, refer back to step 1. Next if the connection is successful you will see a box labeled **"Post a message (V3)"**, click on that. Next to select **"Team"** and **"Channel"**, click on the cross button at the right side of these two field to open up drop down menu for available Team and Channel in Teams account. If you cant see your "Team" and "Channel", goto step 1, there might be problem with authentication.
-
+![designer](./images/designer.png)
 5. Finally click on save and your logic app setup is completed.
 
 With this our setup of Alerts is complete.
@@ -74,10 +75,10 @@ Next we elaborate on how to add multiple emails in the action group.
 Follow these steps to add multiple emails to recieve alerts on.
 
 1. First type "Alerts" in the Azure search bar. Click on "Alerts" and it will take you to main alerts dashboard.
-
+![alerts](./images/alerts.png)
 2. In the top buttons, there is a button **"Manage actions"**, click on that.
-
+![actions](./images/actions.png)
 3. Once in the manage actions pane, there will be list of all the action groups. Select you action group.
-
+![group](./images/group.png)
 4. Finally at the bottom in section **Notifications**, there is already an email created which is the default email you entered at the deployment time. Here you can add as many emails as you want to send alert notifications.
-
+![emails](./images/emails.png)

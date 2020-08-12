@@ -107,7 +107,8 @@
             ],
             "metadata": {
                 "description": "Please specify if you want to deploy Datashare."
-            }
+            },
+            "defaultValue": "No"
         }
     },
     "variables": {

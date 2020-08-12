@@ -161,6 +161,17 @@
             "metadata": {
                 "description": "Data share account name should have length of 1 - 77, and cannot contain <>%&:\\?/#*$^();,.|-+={}[]!~@"
             }
+        },
+        "deployAndUseDataShare": {
+            "type": "string",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "metadata": {
+                "description": "Please specify if you want to deploy Datashare."
+            },
+            "defaultValue": "No"
         }
     },
     "variables": {
@@ -410,6 +421,9 @@
                     },
                     "location": {
                         "value": "[parameters('location')]"
+                    },
+                    "deployAndUseDataShare": {
+                        "value": "[parameters('deployAndUseDataShare')]"
                     }
                 }
             }

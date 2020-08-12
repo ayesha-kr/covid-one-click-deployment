@@ -2519,7 +2519,7 @@
                         "type": "ScheduleTrigger",
                         "typeProperties": {
                             "recurrence": {
-                                "frequency": "Hours",
+                                "frequency": "hour",
                                 "interval": 24,
                                 "startTime": "[parameters('currentTime')]",
                                 "timeZone": "UTC"
@@ -2550,7 +2550,7 @@
                         "type": "ScheduleTrigger",
                         "typeProperties": {
                             "recurrence": {
-                                "frequency": "Hours",
+                                "frequency": "hour",
                                 "interval": 24,
                                 "startTime": "[parameters('currentTime')]",
                                 "timeZone": "UTC"

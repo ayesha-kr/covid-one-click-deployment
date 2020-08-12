@@ -70,14 +70,14 @@
                 "description": "Specify if you want to write the data into SQL database."
             }
         },
-        "selectCopyMethod": {
+        "deployAndUseDataShare": {
             "type": "string",
             "allowedValues": [
-                "Data Share",
-                "Copy Data Activity"
+                "Yes",
+                "No"
             ],
             "metadata": {
-                "description": "Specify if you want to copy data from data share."
+                "description": "Specify if you want to deploy data share."
             }
         },
         "triggerStartTime": {
@@ -193,7 +193,7 @@
                     ]
                 },
                 {
-                    "condition": "[equals(parameters('selectCopyMethod'),'Copy Data Activity')]",
+                    "condition": "[equals(parameters('deployAndUseDataShare'),'No')]",
                     "type": "Microsoft.DataFactory/factories/datasets",
                     "apiVersion": "2018-06-01",
                     "name": "[concat(parameters('dataFactoryName'), '/DhcInputDataset')]",
@@ -223,7 +223,7 @@
                     }
                 },
                 {
-                    "condition": "[equals(parameters('selectCopyMethod'),'Copy Data Activity')]",
+                    "condition": "[equals(parameters('deployAndUseDataShare'),'No')]",
                     "type": "Microsoft.DataFactory/factories/datasets",
                     "apiVersion": "2018-06-01",
                     "name": "[concat(parameters('dataFactoryName'), '/DhcOutputDatasetSource')]",
@@ -256,7 +256,7 @@
                     }
                 },
                 {
-                    "condition": "[equals(parameters('selectCopyMethod'),'Copy Data Activity')]",
+                    "condition": "[equals(parameters('deployAndUseDataShare'),'No')]",
                     "type": "Microsoft.DataFactory/factories/datasets",
                     "apiVersion": "2018-06-01",
                     "name": "[concat(parameters('dataFactoryName'), '/DhcOutputDatasetSink')]",
@@ -440,7 +440,7 @@
                     ]
                 },
                 {
-                    "condition": "[and(equals(parameters('selectDataLoader'),'Synapse Database Warehouse'),equals(parameters('selectCopyMethod'),'Copy Data Activity'))]",
+                    "condition": "[and(equals(parameters('selectDataLoader'),'Synapse Database Warehouse'),equals(parameters('deployAndUseDataShare'),'No'))]",
                     "name": "[concat(parameters('dataFactoryName'), '/LoadIntoStagingTable')]",
                     "type": "Microsoft.DataFactory/factories/dataflows",
                     "apiVersion": "2018-06-01",
@@ -522,7 +522,7 @@
                     ]
                 },
                 {
-                    "condition": "[and(equals(parameters('selectDataLoader'),'Both'),equals(parameters('selectCopyMethod'),'Copy Data Activity'))]",
+                    "condition": "[and(equals(parameters('selectDataLoader'),'Both'),equals(parameters('deployAndUseDataShare'),'No'))]",
                     "name": "[concat(parameters('dataFactoryName'), '/LoadIntoStagingTable_SynapseWithSQL')]",
                     "type": "Microsoft.DataFactory/factories/dataflows",
                     "apiVersion": "2018-06-01",
@@ -628,7 +628,7 @@
                     ]
                 },
                 {
-                    "condition": "[and(equals(parameters('selectDataLoader'),'SQL Database'),equals(parameters('selectCopyMethod'),'Copy Data Activity'))]",
+                    "condition": "[and(equals(parameters('selectDataLoader'),'SQL Database'),equals(parameters('deployAndUseDataShare'),'No'))]",
                     "name": "[concat(parameters('dataFactoryName'), '/LoadIntoStagingTable_SQL')]",
                     "type": "Microsoft.DataFactory/factories/dataflows",
                     "apiVersion": "2018-06-01",
@@ -712,7 +712,7 @@
                 },
 
                 {
-                    "condition": "[and(equals(parameters('selectDataLoader'),'Synapse Database Warehouse'),equals(parameters('selectCopyMethod'),'Copy Data Activity'))]",
+                    "condition": "[and(equals(parameters('selectDataLoader'),'Synapse Database Warehouse'),equals(parameters('deployAndUseDataShare'),'No'))]",
                     "type": "Microsoft.DataFactory/factories/pipelines",
                     "apiVersion": "2018-06-01",
                     "name": "[concat(parameters('dataFactoryName'), '/SynapseDataLoader')]",
@@ -940,7 +940,7 @@
                     ]
                 },
                 {
-                    "condition": "[and(equals(parameters('selectDataLoader'),'Both'),equals(parameters('selectCopyMethod'),'Copy Data Activity'))]",
+                    "condition": "[and(equals(parameters('selectDataLoader'),'Both'),equals(parameters('deployAndUseDataShare'),'No'))]",
                     "name": "[concat(parameters('dataFactoryName'), '/SynapseAndSqlDataLoader')]",
                     "type": "Microsoft.DataFactory/factories/pipelines",
                     "apiVersion": "2018-06-01",
@@ -1237,7 +1237,7 @@
                     ]
                 },
                 {
-                    "condition": "[and(equals(parameters('selectDataLoader'),'SQL Database'),equals(parameters('selectCopyMethod'),'Copy Data Activity'))]",
+                    "condition": "[and(equals(parameters('selectDataLoader'),'SQL Database'),equals(parameters('deployAndUseDataShare'),'No'))]",
                     "name": "[concat(parameters('dataFactoryName'), '/SqlDataLoader')]",
                     "type": "Microsoft.DataFactory/factories/pipelines",
                     "apiVersion": "2018-06-01",
@@ -1469,7 +1469,7 @@
                     ]
                 },
                 {
-                    "condition": "[and(equals(parameters('selectDataLoader'),'Synapse Database Warehouse'),equals(parameters('selectCopyMethod'),'Copy Data Activity'))]",
+                    "condition": "[and(equals(parameters('selectDataLoader'),'Synapse Database Warehouse'),equals(parameters('deployAndUseDataShare'),'No'))]",
                     "name": "[concat(parameters('dataFactoryName'), '/SynapseDataLoaderPipelineTrigger')]",
                     "type": "Microsoft.DataFactory/factories/triggers",
                     "apiVersion": "2018-06-01",
@@ -1491,22 +1491,19 @@
                                 }
                             }
                         ],
-                        "type": "TumblingWindowTrigger",
+                        "type": "ScheduleTrigger",
                         "typeProperties": {
-                            "frequency": "Hours",
-                            "interval": 24,
-                            "startTime": "[parameters('triggerStartTime')]",
-                            "delay": "00:00:00",
-                            "maxConcurrency": 1,
-                            "retryPolicy": {
-                                "count": 3,
-                                "intervalInSeconds": 30
+                            "recurrence": {
+                                "frequency": "Hour",
+                                "interval": 24,
+                                "startTime": "[parameters('triggerStartTime')]",
+                                "timeZone": "UTC"
                             }
                         }
                     }
                 },
                 {
-                    "condition": "[and(equals(parameters('selectDataLoader'),'Both'),equals(parameters('selectCopyMethod'),'Copy Data Activity'))]",
+                    "condition": "[and(equals(parameters('selectDataLoader'),'Both'),equals(parameters('deployAndUseDataShare'),'No'))]",
                     "name": "[concat(parameters('dataFactoryName'), '/SynapseAndSqlDataLoaderPipelineTrigger')]",
                     "type": "Microsoft.DataFactory/factories/triggers",
                     "apiVersion": "2018-06-01",
@@ -1528,22 +1525,19 @@
                                 }
                             }
                         ],
-                        "type": "TumblingWindowTrigger",
+                        "type": "ScheduleTrigger",
                         "typeProperties": {
-                            "frequency": "Hours",
-                            "interval": 24,
-                            "startTime": "[parameters('triggerStartTime')]",
-                            "delay": "00:00:00",
-                            "maxConcurrency": 1,
-                            "retryPolicy": {
-                                "count": 3,
-                                "intervalInSeconds": 30
+                            "recurrence": {
+                                "frequency": "Hour",
+                                "interval": 24,
+                                "startTime": "[parameters('triggerStartTime')]",
+                                "timeZone": "UTC"
                             }
                         }
                     }
                 },
                 {
-                    "condition": "[and(equals(parameters('selectDataLoader'),'SQL Database'),equals(parameters('selectCopyMethod'),'Copy Data Activity'))]",
+                    "condition": "[and(equals(parameters('selectDataLoader'),'SQL Database'),equals(parameters('deployAndUseDataShare'),'No'))]",
                     "name": "[concat(parameters('dataFactoryName'), '/SqlDataLoaderPipelineTrigger')]",
                     "type": "Microsoft.DataFactory/factories/triggers",
                     "apiVersion": "2018-06-01",
@@ -1565,16 +1559,13 @@
                                 }
                             }
                         ],
-                        "type": "TumblingWindowTrigger",
+                        "type": "ScheduleTrigger",
                         "typeProperties": {
-                            "frequency": "Hours",
-                            "interval": 24,
-                            "startTime": "[parameters('triggerStartTime')]",
-                            "delay": "00:00:00",
-                            "maxConcurrency": 1,
-                            "retryPolicy": {
-                                "count": 3,
-                                "intervalInSeconds": 30
+                            "recurrence": {
+                                "frequency": "Hour",
+                                "interval": 24,
+                                "startTime": "[parameters('triggerStartTime')]",
+                                "timeZone": "UTC"
                             }
                         }
                     }
@@ -2674,7 +2665,7 @@
 
 
                 {
-                    "condition": "[and(equals(parameters('selectDataLoader'),'SQL Database'),equals(parameters('selectCopyMethod'),'Data Share'))]",
+                    "condition": "[and(equals(parameters('selectDataLoader'),'SQL Database'),equals(parameters('deployAndUseDataShare'),'Yes'))]",
                     "name": "[concat(parameters('dataFactoryName'), '/SqlDataLoaderWithDataShare')]",
                     "type": "Microsoft.DataFactory/factories/pipelines",
                     "apiVersion": "2018-06-01",
@@ -2833,7 +2824,7 @@
                     ]
                 },
                 {
-                    "condition": "[equals(parameters('selectCopyMethod'),'Data Share')]",
+                    "condition": "[equals(parameters('deployAndUseDataShare'),'Yes')]",
                     "name": "[concat(parameters('dataFactoryName'), '/source_dataset')]",
                     "type": "Microsoft.DataFactory/factories/datasets",
                     "apiVersion": "2018-06-01",
@@ -2867,7 +2858,7 @@
                     ]
                 },
                 {
-                    "condition": "[equals(parameters('selectCopyMethod'),'Data Share')]",
+                    "condition": "[equals(parameters('deployAndUseDataShare'),'Yes')]",
                     "name": "[concat(parameters('dataFactoryName'), '/source_linkedservice')]",
                     "type": "Microsoft.DataFactory/factories/linkedServices",
                     "apiVersion": "2018-06-01",
@@ -2883,7 +2874,7 @@
                     ]
                 },
                 {
-                    "condition": "[and(equals(parameters('selectDataLoader'),'SQL Database'),equals(parameters('selectCopyMethod'),'Data Share'))]",
+                    "condition": "[and(equals(parameters('selectDataLoader'),'SQL Database'),equals(parameters('deployAndUseDataShare'),'Yes'))]",
                     "name": "[concat(parameters('dataFactoryName'), '/LoadIntoStagingTable_SQL_from_DataShare')]",
                     "type": "Microsoft.DataFactory/factories/dataflows",
                     "apiVersion": "2018-06-01",
@@ -2927,7 +2918,7 @@
                     ]
                 },
                 {
-                    "condition": "[and(equals(parameters('selectDataLoader'),'SQL Database'),equals(parameters('selectCopyMethod'),'Data Share'))]",
+                    "condition": "[and(equals(parameters('selectDataLoader'),'SQL Database'),equals(parameters('deployAndUseDataShare'),'Yes'))]",
                     "name": "[concat(parameters('dataFactoryName'), '/SqlDataLoaderWithDataSharePipelineTrigger')]",
                     "type": "Microsoft.DataFactory/factories/triggers",
                     "apiVersion": "2018-06-01",
@@ -2941,16 +2932,13 @@
                             },
                             "parameters": {}
                         },
-                        "type": "TumblingWindowTrigger",
+                        "type": "ScheduleTrigger",
                         "typeProperties": {
-                            "frequency": "Hours",
-                            "interval": 24,
-                            "startTime": "[parameters('triggerStartTime')]",
-                            "delay": "00:00:00",
-                            "maxConcurrency": 1,
-                            "retryPolicy": {
-                                "count": 3,
-                                "intervalInSeconds": 30
+                            "recurrence": {
+                                "frequency": "Hour",
+                                "interval": 24,
+                                "startTime": "[parameters('triggerStartTime')]",
+                                "timeZone": "UTC"
                             }
                         }
                     },
@@ -2969,7 +2957,7 @@
 
 
                 {
-                    "condition": "[and(equals(parameters('selectDataLoader'),'Synapse Database Warehouse'),equals(parameters('selectCopyMethod'),'Data Share'))]",
+                    "condition": "[and(equals(parameters('selectDataLoader'),'Synapse Database Warehouse'),equals(parameters('deployAndUseDataShare'),'Yes'))]",
                     "name": "[concat(parameters('dataFactoryName'), '/SynapseDataLoaderWithDataShare')]",
                     "type": "Microsoft.DataFactory/factories/pipelines",
                     "apiVersion": "2018-06-01",
@@ -3134,7 +3122,7 @@
                     ]
                 },
                 {
-                    "condition": "[and(equals(parameters('selectDataLoader'),'Synapse Database Warehouse'),equals(parameters('selectCopyMethod'),'Data Share'))]",
+                    "condition": "[and(equals(parameters('selectDataLoader'),'Synapse Database Warehouse'),equals(parameters('deployAndUseDataShare'),'Yes'))]",
                     "name": "[concat(parameters('dataFactoryName'), '/LoadIntoStagingTable_from_DataShare')]",
                     "type": "Microsoft.DataFactory/factories/dataflows",
                     "apiVersion": "2018-06-01",
@@ -3177,7 +3165,7 @@
                     ]
                 },
                 {
-                    "condition": "[and(equals(parameters('selectDataLoader'),'Synapse Database Warehouse'),equals(parameters('selectCopyMethod'),'Data Share'))]",
+                    "condition": "[and(equals(parameters('selectDataLoader'),'Synapse Database Warehouse'),equals(parameters('deployAndUseDataShare'),'Yes'))]",
                     "name": "[concat(parameters('dataFactoryName'), '/SynapseDataLoaderWithDataSharePipelineTrigger')]",
                     "type": "Microsoft.DataFactory/factories/triggers",
                     "apiVersion": "2018-06-01",
@@ -3191,16 +3179,13 @@
                             },
                             "parameters": {}
                         },
-                        "type": "TumblingWindowTrigger",
+                        "type": "ScheduleTrigger",
                         "typeProperties": {
-                            "frequency": "Hours",
-                            "interval": 24,
-                            "startTime": "[parameters('triggerStartTime')]",
-                            "delay": "00:00:00",
-                            "maxConcurrency": 1,
-                            "retryPolicy": {
-                                "count": 3,
-                                "intervalInSeconds": 30
+                            "recurrence": {
+                                "frequency": "Hour",
+                                "interval": 24,
+                                "startTime": "[parameters('triggerStartTime')]",
+                                "timeZone": "UTC"
                             }
                         }
                     },
@@ -3222,7 +3207,7 @@
 
                 
                 {
-                    "condition": "[and(equals(parameters('selectDataLoader'),'Both'),equals(parameters('selectCopyMethod'),'Data Share'))]",
+                    "condition": "[and(equals(parameters('selectDataLoader'),'Both'),equals(parameters('deployAndUseDataShare'),'Yes'))]",
                     "name": "[concat(parameters('dataFactoryName'), '/SynapseAndSqlDataLoaderWithDataShare')]",
                     "type": "Microsoft.DataFactory/factories/pipelines",
                     "apiVersion": "2018-06-01",
@@ -3459,7 +3444,7 @@
                     ]
                 },
                 {
-                    "condition": "[and(equals(parameters('selectDataLoader'),'Both'),equals(parameters('selectCopyMethod'),'Data Share'))]",
+                    "condition": "[and(equals(parameters('selectDataLoader'),'Both'),equals(parameters('deployAndUseDataShare'),'Yes'))]",
                     "name": "[concat(parameters('dataFactoryName'), '/LoadIntoStagingTable_SynapseWithSQL_from_DataShare')]",
                     "type": "Microsoft.DataFactory/factories/dataflows",
                     "apiVersion": "2018-06-01",
@@ -3510,7 +3495,7 @@
                     ]
                 },
                 {
-                    "condition": "[and(equals(parameters('selectDataLoader'),'Both'),equals(parameters('selectCopyMethod'),'Data Share'))]",
+                    "condition": "[and(equals(parameters('selectDataLoader'),'Both'),equals(parameters('deployAndUseDataShare'),'Yes'))]",
                     "name": "[concat(parameters('dataFactoryName'), '/SynapseAndSqlDataLoaderWithDataSharePipelineTrigger')]",
                     "type": "Microsoft.DataFactory/factories/triggers",
                     "apiVersion": "2018-06-01",
@@ -3524,16 +3509,13 @@
                             },
                             "parameters": {}
                         },
-                        "type": "TumblingWindowTrigger",
+                        "type": "ScheduleTrigger",
                         "typeProperties": {
-                            "frequency": "Hours",
-                            "interval": 24,
-                            "startTime": "[parameters('triggerStartTime')]",
-                            "delay": "00:00:00",
-                            "maxConcurrency": 1,
-                            "retryPolicy": {
-                                "count": 3,
-                                "intervalInSeconds": 30
+                            "recurrence": {
+                                "frequency": "Hour",
+                                "interval": 24,
+                                "startTime": "[parameters('triggerStartTime')]",
+                                "timeZone": "UTC"
                             }
                         }
                     },

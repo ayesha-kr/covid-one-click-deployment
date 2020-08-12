@@ -26,7 +26,8 @@
             "defaultValue": "covidtrackingdefinitive"
         },
         "sasURI": {
-            "type": "string"
+            "type": "string",
+            "defaultValue": "Specify the sasURI of public blob storage"
         },
         "containerName1": {
             "defaultValue": "public",
@@ -126,16 +127,6 @@
                 "description": "Specify if you want to write the data into SQL database."
             }
           },
-        "selectCopyMethod": {
-            "type": "string",
-            "allowedValues": [
-                "Data Share",
-                "Copy Data Activity"
-            ],
-            "metadata": {
-                "description": "Specify if you want to write the data into SQL database."
-            }
-        },
           "notificationEmail": {
             "type": "string",
             "defaultValue": "",
@@ -161,6 +152,17 @@
             "metadata": {
                 "description": "Data share account name should have length of 1 - 77, and cannot contain <>%&:\\?/#*$^();,.|-+={}[]!~@"
             }
+        },
+        "deployAndUseDataShare": {
+            "type": "string",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "metadata": {
+                "description": "Please specify if you want to deploy Datashare."
+            },
+            "defaultValue": "No"
         }
     },
     "variables": {
@@ -314,8 +316,8 @@
                     "selectDataLoader": {
                         "value": "[parameters('selectDataLoader')]"
                     },
-                    "selectCopyMethod": {
-                        "value": "[parameters('selectCopyMethod')]"
+                    "deployAndUseDataShare": {
+                        "value": "[parameters('deployAndUseDataShare')]"
                     },
                     "notificationEmail": {
                         "value": "[parameters('notificationEmail')]"
@@ -379,9 +381,8 @@
                     "notificationEmail": {
                         "value": "[parameters('notificationEmail')]"
                     },
-
-                    "selectCopyMethod": {
-                        "value": "[parameters('selectCopyMethod')]"
+                    "deployAndUseDataShare": {
+                        "value": "[parameters('deployAndUseDataShare')]"
                     },
                   
                     "webHookUriPipeline": {
@@ -410,6 +411,9 @@
                     },
                     "location": {
                         "value": "[parameters('location')]"
+                    },
+                    "deployAndUseDataShare": {
+                        "value": "[parameters('deployAndUseDataShare')]"
                     }
                 }
             }

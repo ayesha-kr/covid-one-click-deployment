@@ -121,8 +121,8 @@ If you are using data share to get data from public environment into customer en
 ![Manual Pipeline Trigger](https://github.com/ayesha-kr/covid-one-click-deployment/blob/osama-dev/datasets/covid-19/definitive-healthcare/customer/images/data%20share/3.png)
 ![Manual Pipeline Trigger](https://github.com/ayesha-kr/covid-one-click-deployment/blob/osama-dev/datasets/covid-19/definitive-healthcare/customer/images/data%20share/4.png)
 ![Manual Pipeline Trigger](https://github.com/ayesha-kr/covid-one-click-deployment/blob/osama-dev/datasets/covid-19/definitive-healthcare/customer/images/data%20share/5.png)
-![Manual Pipeline Trigger](https://github.com/ayesha-kr/covid-one-click-deployment/blob/osama-dev/datasets/covid-19/definitive-healthcare/customer/images/data%20share/6.png)
 5. Select **public** container and click *Next*. And now click **Add datasets**.
+![Manual Pipeline Trigger](https://github.com/ayesha-kr/covid-one-click-deployment/blob/osama-dev/datasets/covid-19/definitive-healthcare/customer/images/data%20share/6.png)
 ![Manual Pipeline Trigger](https://github.com/ayesha-kr/covid-one-click-deployment/blob/osama-dev/datasets/covid-19/definitive-healthcare/customer/images/data%20share/7.png)
 6. Now under **Invitations** tab click **Add recipient**.
 ![Manual Pipeline Trigger](https://github.com/ayesha-kr/covid-one-click-deployment/blob/osama-dev/datasets/covid-19/definitive-healthcare/customer/images/data%20share/8.png)

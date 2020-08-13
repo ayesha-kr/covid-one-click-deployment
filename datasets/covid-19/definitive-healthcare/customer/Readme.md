@@ -114,8 +114,19 @@ If you are using data share to get data from public environment into customer en
 
 1. Open the Data Share Account.
 2. Click **Start Sharing your data**.
+![Manual Pipeline Trigger](https://github.com/ayesha-kr/covid-one-click-deployment/blob/osama-dev/datasets/covid-19/definitive-healthcare/customer/images/data%20share/1.png)
 3. Click on the share named **demo_public_share** (or any other name you have provided while deploying).
+![Manual Pipeline Trigger](https://github.com/ayesha-kr/covid-one-click-deployment/blob/osama-dev/datasets/covid-19/definitive-healthcare/customer/images/data%20share/2.png)
 4. Under **Datasets** tab, click **Add datasets** and then select **Azure Blob Storage** as dataset type and click *Next*. Then select subscription, resource group and storage account deployed with current deployment and click *Next*.
+![Manual Pipeline Trigger](https://github.com/ayesha-kr/covid-one-click-deployment/blob/osama-dev/datasets/covid-19/definitive-healthcare/customer/images/data%20share/3.png)
+![Manual Pipeline Trigger](https://github.com/ayesha-kr/covid-one-click-deployment/blob/osama-dev/datasets/covid-19/definitive-healthcare/customer/images/data%20share/4.png)
+![Manual Pipeline Trigger](https://github.com/ayesha-kr/covid-one-click-deployment/blob/osama-dev/datasets/covid-19/definitive-healthcare/customer/images/data%20share/5.png)
+![Manual Pipeline Trigger](https://github.com/ayesha-kr/covid-one-click-deployment/blob/osama-dev/datasets/covid-19/definitive-healthcare/customer/images/data%20share/6.png)
+![Manual Pipeline Trigger](https://github.com/ayesha-kr/covid-one-click-deployment/blob/osama-dev/datasets/covid-19/definitive-healthcare/customer/images/data%20share/7.png)
 5. Select **public** container and click *Next*. And now click **Add datasets**.
+![Manual Pipeline Trigger](https://github.com/ayesha-kr/covid-one-click-deployment/blob/osama-dev/datasets/covid-19/definitive-healthcare/customer/images/data%20share/8.png)
+![Manual Pipeline Trigger](https://github.com/ayesha-kr/covid-one-click-deployment/blob/osama-dev/datasets/covid-19/definitive-healthcare/customer/images/data%20share/9.png)
 6. Now under **Invitations** tab click **Add recipient**.
+![Manual Pipeline Trigger](https://github.com/ayesha-kr/covid-one-click-deployment/blob/osama-dev/datasets/covid-19/definitive-healthcare/customer/images/data%20share/10.png)
 7. In the blade opened, click **Add recipient** and provide the customer side email and click **Add and send invitation**.
+![Manual Pipeline Trigger](https://github.com/ayesha-kr/covid-one-click-deployment/blob/osama-dev/datasets/covid-19/definitive-healthcare/customer/images/data%20share/11.png)

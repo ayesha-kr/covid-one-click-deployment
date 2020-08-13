@@ -65,7 +65,7 @@
                 "description": "Your password must be at least 8 characters in length. Your password must contain characters from three of the following categories – English uppercase letters, English lowercase letters, numbers (0-9), and non-alphanumeric characters (!, $, #, %, etc.) Your password cannot contain all or part of the login name. Part of a login name is defined as three or more consecutive alphanumeric characters."
             }
         },
-        "allowAzurServicesToAccessSqlServer": {
+        "allowAzureServicesToAccessSqlServer": {
             "defaultValue": true,
             "type": "bool",
             "metadata": {
@@ -113,7 +113,7 @@
             "defaultValue": "DW100c",
             "type": "string",
             "metadata": {
-                "description": "This is the most basic/smallest data warwhouse compute tier."
+                "description": "DW100c is the most basic/smallest data warehouse compute tier. Max value can be upto DW30000c"
             }
         },
         "selectDataLoader": {

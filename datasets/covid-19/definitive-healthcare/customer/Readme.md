@@ -104,3 +104,18 @@ Follow these steps to add multiple emails to recieve alerts on.
 4. Finally at the bottom in section **Notifications**, there is already an email created which is the default email you entered at the deployment time. Here you can add as many emails as you want to send alert notifications.
 
 ![email_image](./images/email.jpg)
+
+
+# Configure Data Share
+
+If you are using data share to get data from public environment into customer environment then you need to follow the steps given below after you have run the public side pipeline:
+
+## Step 1 - Public Side
+
+1. Open the Data Share Account.
+2. Click **Start Sharing your data**.
+3. Click on the share named **demo_public_share** (or any other name you have provided while deploying).
+4. Under **Datasets** tab, click **Add datasets** and then select **Azure Blob Storage** as dataset type and click *Next*. Then select subscription, resource group and storage account deployed with current deployment and click *Next*.
+5. Select **public** container and click *Next*. And now click **Add datasets**.
+6. Now under **Invitations** tab click **Add recipient**.
+7. In the blade opened, click **Add recipient** and provide the customer side email and click **Add and send invitation**.

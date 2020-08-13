@@ -149,19 +149,36 @@ If you are using data share to get data from public environment into customer en
 
 ## Step 1 - Customer Side
 
+1. Go to Data Share Invitations.
+
 ![data share customer](https://github.com/ayesha-kr/covid-one-click-deployment/blob/osama-dev/datasets/covid-19/definitive-healthcare/customer/images/data%20share/11.png)
+
+2. Click on **demo_public_share** (or any other name you have provided while deploying at public side).
 
 ![data share customer](https://github.com/ayesha-kr/covid-one-click-deployment/blob/osama-dev/datasets/covid-19/definitive-healthcare/customer/images/data%20share/12.png)
 
+3. Agree to the terms of use and provide subscription, resource group, data share account and received share name. Click **Accept and configure**.
+
 ![data share customer](https://github.com/ayesha-kr/covid-one-click-deployment/blob/osama-dev/datasets/covid-19/definitive-healthcare/customer/images/data%20share/13.png)
 
+4. Under the *Datasets* tab, check mark the dataset and click **Map to target**.
+
 ![data share customer](https://github.com/ayesha-kr/covid-one-click-deployment/blob/osama-dev/datasets/covid-19/definitive-healthcare/customer/images/data%20share/14.png)
+
+5. Provide the storage account name (the one deployed currently) along with other options and give the container name as **staging**. Click *Map to target*.
 
 ![data share customer](https://github.com/ayesha-kr/covid-one-click-deployment/blob/osama-dev/datasets/covid-19/definitive-healthcare/customer/images/data%20share/15.png)
 
 ![data share customer](https://github.com/ayesha-kr/covid-one-click-deployment/blob/osama-dev/datasets/covid-19/definitive-healthcare/customer/images/data%20share/16.png)
 
+6. Now under *Details* tab, click **Trigger snapshot** and then click **Full copy**.
+
 ![data share customer](https://github.com/ayesha-kr/covid-one-click-deployment/blob/osama-dev/datasets/covid-19/definitive-healthcare/customer/images/data%20share/17.png)
 
 ![data share customer](https://github.com/ayesha-kr/covid-one-click-deployment/blob/osama-dev/datasets/covid-19/definitive-healthcare/customer/images/data%20share/18.png)
 
+7. Optionally you can enable the snapshot schedule. For that, check mark the **Daily** schedule under *Snapshot schedule* tab and click *Enable*.
+
+![data share customer](https://github.com/ayesha-kr/covid-one-click-deployment/blob/osama-dev/datasets/covid-19/definitive-healthcare/customer/images/data%20share/19.png)
+
+![data share customer](https://github.com/ayesha-kr/covid-one-click-deployment/blob/osama-dev/datasets/covid-19/definitive-healthcare/customer/images/data%20share/20.png)

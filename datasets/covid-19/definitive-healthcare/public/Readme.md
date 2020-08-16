@@ -23,20 +23,20 @@
 
 Click the following button to deploy all the resources.
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fayesha-kr%2Fcovid-one-click-deployment%2Fmaster%2Fdatasets%2Fcovid-19%2Fdefinitive-healthcare%2Fpublic%2Ftemplates%2Fazuredeploy.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fayesha-kr%2Fcovid-one-click-deployment%2Fdev-zahid%2Fdatasets%2Fcovid-19%2Fdefinitive-healthcare%2Fpublic%2Ftemplates%2Fazuredeploy.json)
 
 
 #### Configure Firewall Rule
 After deployment, to access the newly created SQL server from your client IP, configure the firewall rule as described in the following GIF:
 
-![Firewall Rule](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/public/images/firewallRule.gif)
+![Firewall Rule](https://github.com/ayesha-kr/covid-one-click-deployment/blob/dev-zahid/datasets/covid-19/definitive-healthcare/public/images/firewallRule.gif)
 
 
 #### Manually Trigger Pipeline
 
 After the deployment you can go in side your resource group open the ADF auther and monitor section and trigger the pipeline as given below.
 
-![Manual Pipeline Trigger](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/public/images/manual-ADF-public-env-trigger.png)
+![Manual Pipeline Trigger](https://github.com/ayesha-kr/covid-one-click-deployment/blob/dev-zahid/datasets/covid-19/definitive-healthcare/public/images/manual-ADF-public-env-trigger.png)
 
 
 
@@ -44,7 +44,7 @@ After the deployment you can go in side your resource group open the ADF auther 
 
 If the trigger is deployed along with pipeline, you have to explicitly activate that trigger as shown below.
 
-![Activate Trigger](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/public/images/activateTrigger.gif)
+![Activate Trigger](https://github.com/ayesha-kr/covid-one-click-deployment/blob/dev-zahid/datasets/covid-19/definitive-healthcare/public/images/activateTrigger.gif)
 
 
 

@@ -2842,7 +2842,7 @@
                                         {
                                             "name": "Name",
                                             "operator": "Include",
-                                            "values": [ "Covid_Tracking_DefinitiveHC_Without_Sql_Sink" ]
+                                            "values": [ "CovidDefinitiveHC-Trigger_Without_Sql_Sink" ]
                                         }
                                     ],
                                     "operator": "GreaterThanOrEqual",
@@ -2886,7 +2886,12 @@
                                         {
                                             "name": "Name",
                                             "operator": "Include",
-                                            "values": [ "Covid_Tracking_DefinitiveHC_Without_Sql_Sink" ]
+                                            "values": [ "CovidDefinitiveHC-Trigger_Without_Sql_Sink" ]
+                                        },
+                                        {
+                                            "name": "FailureType",
+                                            "operator": "Include",
+                                            "values": [ "UserError", "SystemError", "BadGateway" ]
                                         }
                                     ],
                                     "operator": "GreaterThanOrEqual",
@@ -3188,7 +3193,12 @@
                                         {
                                             "name": "Name",
                                             "operator": "Include",
-                                            "values": [ "Covid_Tracking_DefinitiveHC_With_Sql_Sink" ]
+                                            "values": [ "CovidDefinitiveHC-Trigger_With_Sql_Sink" ]
+                                        },
+                                        {
+                                            "name": "FailureType",
+                                            "operator": "Include",
+                                            "values": [ "UserError", "SystemError", "BadGateway" ]
                                         }
                                     ],
                                     "operator": "GreaterThanOrEqual",
@@ -3232,7 +3242,7 @@
                                         {
                                             "name": "Name",
                                             "operator": "Include",
-                                            "values": [ "Covid_Tracking_DefinitiveHC_With_Sql_Sink" ]
+                                            "values": [ "CovidDefinitiveHC-Trigger_With_Sql_Sink" ]
                                         }
                                     ],
                                     "operator": "GreaterThanOrEqual",

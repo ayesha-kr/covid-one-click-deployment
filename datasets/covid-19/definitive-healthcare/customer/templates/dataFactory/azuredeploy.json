@@ -1807,7 +1807,7 @@
                                         {
                                             "name": "Name",
                                             "operator": "Include",
-                                            "values": [ "SynapseDataLoader" ]
+                                            "values": [ "SynapseDataLoaderPipelineTrigger" ]
                                         }
                                     ],
                                     "operator": "GreaterThanOrEqual",
@@ -1829,7 +1829,7 @@
                 },
                 {
                     "condition": "[equals(parameters('selectDataLoader'),'Synapse Database Warehouse')]",
-                    "name": "synapseTriggerRunFailureAlertConfig",
+                    "name": "synapseFailedTriggerRunAlertConfig",
                     "type": "Microsoft.Insights/metricAlerts",
                     "location": "global",
                     "apiVersion": "2018-03-01",
@@ -1851,7 +1851,12 @@
                                         {
                                             "name": "Name",
                                             "operator": "Include",
-                                            "values": [ "SynapseDataLoader" ]
+                                            "values": [ "SynapseDataLoaderPipelineTrigger" ]
+                                        },
+                                        {
+                                            "name": "FailureType",
+                                            "operator": "Include",
+                                            "values": [ "UserError", "SystemError", "BadGateway" ]
                                         }
                                     ],
                                     "operator": "GreaterThanOrEqual",
@@ -1907,7 +1912,7 @@
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'synapseCancelledPipelineAlertConfig')]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'synapseCancelledActivityAlertConfig')]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'synapseCancelledTriggerAlertConfig')]",
-                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'synapseTriggerRunFailureAlertConfig')]"
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'synapseFailedTriggerRunAlertConfig')]"
 
                             ]
                         }
@@ -1920,7 +1925,7 @@
                         "synapseCancelledPipelineAlertConfig",
                         "synapseCancelledActivityAlertConfig",
                         "synapseCancelledTriggerAlertConfig",
-                        "synapseTriggerRunFailureAlertConfig"
+                        "synapseFailedTriggerRunAlertConfig"
 
                     ]
                 },
@@ -2154,7 +2159,7 @@
                                         {
                                             "name": "Name",
                                             "operator": "Include",
-                                            "values": [ "SynapseAndSqlDataLoader" ]
+                                            "values": [ "SynapseAndSqlDataLoaderPipelineTrigger" ]
                                         }
                                     ],
                                     "operator": "GreaterThanOrEqual",
@@ -2176,7 +2181,7 @@
                 },
                 {
                     "condition": "[equals(parameters('selectDataLoader'),'Both')]",
-                    "name": "sqlAndsynapseTriggerRunFailedAlertConfig",
+                    "name": "sqlAndsynapseFailedTriggerRunAlertConfig",
                     "type": "Microsoft.Insights/metricAlerts",
                     "location": "global",
                     "apiVersion": "2018-03-01",
@@ -2198,7 +2203,12 @@
                                         {
                                             "name": "Name",
                                             "operator": "Include",
-                                            "values": [ "SynapseAndSqlDataLoader" ]
+                                            "values": [ "SynapseAndSqlDataLoaderPipelineTrigger" ]
+                                        },
+                                        {
+                                            "name": "FailureType",
+                                            "operator": "Include",
+                                            "values": [ "UserError", "SystemError", "BadGateway" ]
                                         }
                                     ],
                                     "operator": "GreaterThanOrEqual",
@@ -2254,7 +2264,7 @@
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlAndsynapseCancelledPipelineAlertConfig')]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlAndsynapseCancelledActivityAlertConfig')]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlAndsynapseCancelledTriggerAlertConfig')]",
-                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlAndsynapseTriggerRunFailedAlertConfig')]"
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlAndsynapseFailedTriggerRunAlertConfig')]"
                             ]
                         }
                     },
@@ -2266,7 +2276,7 @@
                         "sqlAndsynapseCancelledPipelineAlertConfig",
                         "sqlAndsynapseCancelledActivityAlertConfig",
                         "sqlAndsynapseCancelledTriggerAlertConfig",
-                        "sqlAndsynapseTriggerRunFailedAlertConfig"
+                        "sqlAndsynapseFailedTriggerRunAlertConfig"
                     ]
                 },
                 {
@@ -2499,7 +2509,7 @@
                                         {
                                             "name": "Name",
                                             "operator": "Include",
-                                            "values": [ "SqlDataLoader" ]
+                                            "values": [ "SqlDataLoaderPipelineTrigger" ]
                                         }
                                     ],
                                     "operator": "GreaterThanOrEqual",
@@ -2521,7 +2531,7 @@
                 },
                 {
                     "condition": "[equals(parameters('selectDataLoader'),'SQL Database')]",
-                    "name": "sqlTriggerRunFailedAlertConfig",
+                    "name": "sqlFailedTriggerRunAlertConfig",
                     "type": "Microsoft.Insights/metricAlerts",
                     "location": "global",
                     "apiVersion": "2018-03-01",
@@ -2543,7 +2553,12 @@
                                         {
                                             "name": "Name",
                                             "operator": "Include",
-                                            "values": [ "SqlDataLoader" ]
+                                            "values": [ "SqlDataLoaderPipelineTrigger" ]
+                                        },
+                                        {
+                                            "name": "FailureType",
+                                            "operator": "Include",
+                                            "values": [ "UserError", "SystemError", "BadGateway" ]
                                         }
                                     ],
                                     "operator": "GreaterThanOrEqual",
@@ -2599,7 +2614,7 @@
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlCancelledPipelineAlertConfig')]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlCancelledActivityAlertConfig')]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlCancelledTriggerAlertConfig')]",
-                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlTriggerRunFailedAlertConfig')]"
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlFailedTriggerRunAlertConfig')]"
                             ]
                         }
                     },
@@ -2611,7 +2626,7 @@
                         "sqlCancelledPipelineAlertConfig",
                         "sqlCancelledActivityAlertConfig",
                         "sqlCancelledTriggerAlertConfig",
-                        "sqlTriggerRunFailedAlertConfig"
+                        "sqlFailedTriggerRunAlertConfig"
                     ]
                 },
 

@@ -63,11 +63,7 @@
                 "description": "Please specify comma separated email addresses on which you would like to receive the ADF pipeline alerts."
             }
         },
-        "webHookUriPipeline": {
-            "type": "string"
-
-        },
-        "webHookUriActivity": {
+        "webHookUri": {
             "type": "string"
 
         }
@@ -2565,10 +2561,10 @@
                 {
                     "type": "Microsoft.Insights/actionGroups",
                     "apiVersion": "2018-03-01",
-                    "name": "NotificationPipelineFailure",
+                    "name": "NotificationAlertFromADF",
                     "location": "Global",
                     "properties": {
-                        "groupShortName": "pipelineFail",
+                        "groupShortName": "ADFalerts",
                         "enabled": true,
                         "emailReceivers": [
                             {
@@ -2579,32 +2575,7 @@
                         "webhookReceivers": [
                             {
                                 "name": "msftTeamsNotify",
-                                "serviceUri": "[parameters('webHookUriPipeline')]"
-                            }
-                        ]
-                    },
-                    "dependsOn": [
-                        "[parameters('factoryName')]"
-                    ]
-                },
-                {
-                    "type": "Microsoft.Insights/actionGroups",
-                    "apiVersion": "2018-03-01",
-                    "name": "NotificationActivityFailure",
-                    "location": "Global",
-                    "properties": {
-                        "groupShortName": "activityFail",
-                        "enabled": true,
-                        "emailReceivers": [
-                            {
-                                "name": "notifEmail",
-                                "emailAddress": "[parameters('notificationEmail')]"
-                            }
-                        ],
-                        "webhookReceivers": [
-                            {
-                                "name": "msftTeamsNotify",
-                                "serviceUri": "[parameters('webHookUriActivity')]"
+                                "serviceUri": "[parameters('webHookUri')]"
                             }
                         ]
                     },
@@ -2652,13 +2623,13 @@
                         },
                         "actions": [
                             {
-                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationPipelineFailure')]"
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationAlertFromADF')]"
                             }
                         ]
                     },
                     "dependsOn": [
                         "[parameters('factoryName')]",
-                        "NotificationPipelineFailure"
+                        "NotificationAlertFromADF"
                     ]
                 },
                 {
@@ -2696,13 +2667,13 @@
                         },
                         "actions": [
                             {
-                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationPipelineFailure')]"
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationAlertFromADF')]"
                             }
                         ]
                     },
                     "dependsOn": [
                         "[parameters('factoryName')]",
-                        "NotificationPipelineFailure"
+                        "NotificationAlertFromADF"
                     ]
                 },
                 {
@@ -2755,13 +2726,13 @@
                         },
                         "actions": [
                             {
-                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationActivityFailure')]"
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationAlertFromADF')]"
                             }
                         ]
                     },
                     "dependsOn": [
                         "[parameters('factoryName')]",
-                        "NotificationActivityFailure"
+                        "NotificationAlertFromADF"
                     ]
                 },
                 {
@@ -2809,13 +2780,13 @@
                         },
                         "actions": [
                             {
-                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationActivityFailure')]"
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationAlertFromADF')]"
                             }
                         ]
                     },
                     "dependsOn": [
                         "[parameters('factoryName')]",
-                        "NotificationActivityFailure"
+                        "NotificationAlertFromADF"
                     ]
                 },
                 {
@@ -2853,13 +2824,13 @@
                         },
                         "actions": [
                             {
-                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationPipelineFailure')]"
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationAlertFromADF')]"
                             }
                         ]
                     },
                     "dependsOn": [
                         "[parameters('factoryName')]",
-                        "NotificationPipelineFailure"
+                        "NotificationAlertFromADF"
                     ]
                 },
                 {
@@ -2902,13 +2873,13 @@
                         },
                         "actions": [
                             {
-                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationPipelineFailure')]"
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationAlertFromADF')]"
                             }
                         ]
                     },
                     "dependsOn": [
                         "[parameters('factoryName')]",
-                        "NotificationPipelineFailure"
+                        "NotificationAlertFromADF"
                     ]
                 },
                 {
@@ -2941,7 +2912,7 @@
                             "scopeType": "Resource",
                             "values": [
                                 "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('factoryName'))]",
-                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/actionGroups/', 'NotificationPipelineFailure')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/actionGroups/', 'NotificationAlertFromADF')]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'covidTrackingWithoutSqlActivityFailedAlertConfig')]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'covidTrackingWithoutSqlPipelineFailedAlertConfig')]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'covidTrackingWithoutSqlTriggerFailedAlertConfig')]",
@@ -2953,7 +2924,7 @@
                     },
                     "dependsOn": [
                         "[parameters('factoryName')]",
-                        "NotificationPipelineFailure",
+                        "NotificationAlertFromADF",
                         "covidTrackingWithoutSqlPipelineFailedAlertConfig",
                         "covidTrackingWithoutSqlActivityFailedAlertConfig",
                         "covidTrackingWithoutSqlTriggerFailedAlertConfig",
@@ -3003,13 +2974,13 @@
                         },
                         "actions": [
                             {
-                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationPipelineFailure')]"
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationAlertFromADF')]"
                             }
                         ]
                     },
                     "dependsOn": [
                         "[parameters('factoryName')]",
-                        "NotificationPipelineFailure"
+                        "NotificationAlertFromADF"
                     ]
                 },
                 {
@@ -3047,13 +3018,13 @@
                         },
                         "actions": [
                             {
-                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationPipelineFailure')]"
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationAlertFromADF')]"
                             }
                         ]
                     },
                     "dependsOn": [
                         "[parameters('factoryName')]",
-                        "NotificationPipelineFailure"
+                        "NotificationAlertFromADF"
                     ]
                 },
                 {
@@ -3106,13 +3077,13 @@
                         },
                         "actions": [
                             {
-                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationActivityFailure')]"
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationAlertFromADF')]"
                             }
                         ]
                     },
                     "dependsOn": [
                         "[parameters('factoryName')]",
-                        "NotificationActivityFailure"
+                        "NotificationAlertFromADF"
                     ]
                 },
                 {
@@ -3160,13 +3131,13 @@
                         },
                         "actions": [
                             {
-                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationActivityFailure')]"
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationAlertFromADF')]"
                             }
                         ]
                     },
                     "dependsOn": [
                         "[parameters('factoryName')]",
-                        "NotificationActivityFailure"
+                        "NotificationAlertFromADF"
                     ]
                 },
                 {
@@ -3209,13 +3180,13 @@
                         },
                         "actions": [
                             {
-                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationPipelineFailure')]"
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationAlertFromADF')]"
                             }
                         ]
                     },
                     "dependsOn": [
                         "[parameters('factoryName')]",
-                        "NotificationPipelineFailure"
+                        "NotificationAlertFromADF"
                     ]
                 },
                 {
@@ -3253,13 +3224,13 @@
                         },
                         "actions": [
                             {
-                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationPipelineFailure')]"
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationAlertFromADF')]"
                             }
                         ]
                     },
                     "dependsOn": [
                         "[parameters('factoryName')]",
-                        "NotificationPipelineFailure"
+                        "NotificationAlertFromADF"
                     ]
                 },
                 {
@@ -3292,7 +3263,7 @@
                             "scopeType": "Resource",
                             "values": [
                                 "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('factoryName'))]",
-                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/actionGroups/', 'NotificationPipelineFailure')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/actionGroups/', 'NotificationAlertFromADF')]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'covidTrackingWithSqlActivityFailedAlertConfig')]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'covidTrackingWithSqlPipelineFailedAlertConfig')]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'covidTrackingWithSqlPipelineCancelledAlertConfig')]",
@@ -3304,7 +3275,7 @@
                     },
                     "dependsOn": [
                         "[parameters('factoryName')]",
-                        "NotificationPipelineFailure",
+                        "NotificationAlertFromADF",
                         "covidTrackingWithSqlPipelineFailedAlertConfig",
                         "covidTrackingWithSqlActivityFailedAlertConfig",
                         "covidTrackingWithSqlActivityCancelledAlertConfig",

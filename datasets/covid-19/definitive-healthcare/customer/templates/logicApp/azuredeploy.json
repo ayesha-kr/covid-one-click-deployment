@@ -387,7 +387,7 @@
     "outputs": {
         "WebHookURI": {
           "type": "string",
-          "value": "[listCallbackURL(resourceId('Microsoft.Logic/workflows/triggers', variables('logicAppName'), 'manual'), '2019-05-01').value]"
+          "value": "[listCallbackURL(resourceId('Microsoft.Logic/workflows/triggers', parameters('logicAppName'), 'manual'), '2019-05-01').value]"
         }
       }
 }

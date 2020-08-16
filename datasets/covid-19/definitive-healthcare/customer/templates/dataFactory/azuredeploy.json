@@ -90,11 +90,7 @@
                 "description": "Please specify comma separated email addresses on which you would like to receive the ADF pipeline alerts."
             }
         },
-        "webHookUriPipeline": {
-            "type": "string"
-
-        },
-        "webHookUriActivity": {
+        "webHookUri": {
             "type": "string"
 
         }
@@ -1544,32 +1540,7 @@
                         "webhookReceivers": [
                             {
                                 "name": "msftTeamsNotify",
-                                "serviceUri": "[parameters('webHookUriPipeline')]"
-                            }
-                        ]
-                    },
-                    "dependsOn": [
-                        "[parameters('dataFactoryName')]"
-                    ]
-                },
-                {
-                    "type": "Microsoft.Insights/actionGroups",
-                    "apiVersion": "2018-03-01",
-                    "name": "NotificationActivityFailure",
-                    "location": "Global",
-                    "properties": {
-                        "groupShortName": "failureAlert",
-                        "enabled": true,
-                        "emailReceivers": [
-                            {
-                                "name": "notifEmail",
-                                "emailAddress": "[parameters('notificationEmail')]"
-                            }
-                        ],
-                        "webhookReceivers": [
-                            {
-                                "name": "msftTeamsNotify",
-                                "serviceUri": "[parameters('webHookUriActivity')]"
+                                "serviceUri": "[parameters('webHookUri')]"
                             }
                         ]
                     },

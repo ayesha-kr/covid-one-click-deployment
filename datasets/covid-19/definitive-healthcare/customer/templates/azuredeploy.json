@@ -322,11 +322,8 @@
                     "notificationEmail": {
                         "value": "[parameters('notificationEmail')]"
                     },
-                    "webHookUriPipeline": {
-                        "value": "[if(equals(parameters('enableMicrosoftTeamsNotification'),'Yes'), reference('logicAppTemplate','2018-05-01').outputs.WebHookURIPipeline.value, 'http://example.com')]"
-                    },
-                    "webHookUriActivity": {
-                        "value": "[if(equals(parameters('enableMicrosoftTeamsNotification'),'Yes'), reference('logicAppTemplate','2018-05-01').outputs.WebHookURIActivity.value, 'http://example.com')]"
+                    "webHookUri": {
+                        "value": "[if(equals(parameters('enableMicrosoftTeamsNotification'),'Yes'), reference('logicAppTemplate','2018-05-01').outputs.WebHookURI.value, 'http://example.com')]"
                     }
                 }
             }
@@ -385,11 +382,7 @@
                         "value": "[parameters('deployAndUseDataShare')]"
                     },
                   
-                    "webHookUriPipeline": {
-                        "value": "http://example.com"
-                    },
-                    "webHookUriActivity": {
-
+                    "webHookUri": {
                         "value": "http://example.com"
                     }
                 }

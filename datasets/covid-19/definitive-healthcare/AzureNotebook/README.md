@@ -88,7 +88,7 @@ With an Azure Synapse Studio notebook, you can:
 
 ![Import Synapse notebook](./images/select-ipynb-file.png)
 
-Note: You can not update the name of the notebook after its published. So make sure you update that before publishing the notebook.
+*Note: You can not update the name of the notebook after its published. So make sure you update that before publishing the notebook.*
 
 10. To run the notebook you need to attach the Synpase notebook to a SPark SQL Pool. Go to Manage pools -> New
 
@@ -100,7 +100,7 @@ Note: You can not update the name of the notebook after its published. So make s
 
 ![Synapse Notebook](./images/create-pool-basics.png)
 
-12. Additional Settings: keep Auto-pause enable and change the 'Number of idel minutes' to 10, you can leave the rest of the fields as default. 
+12. Additional Settings: Keep Auto-pause enable and change the 'Number of idle minutes' to **10**, you can leave the rest of the fields as default. 
 
 ![Synapse Notebook](./images/create-pool-add-settings.png)
 
@@ -112,7 +112,7 @@ Note: You can not update the name of the notebook after its published. So make s
 
 ![Synapse Notebook](./images/goto-develop.png)
 
-15. Attach notebook to the Spark Pool.
+15. Attach notebook to the Spark Pool you have created above.
 
 ![Synapse Notebook](./images/attach-spark-pool.png)
 

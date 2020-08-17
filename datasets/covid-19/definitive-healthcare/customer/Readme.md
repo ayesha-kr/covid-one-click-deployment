@@ -1,7 +1,8 @@
 ## Table Of Contents:
-#### Deploy Data Factory with optional SQL Server and SQL Database
-#### Setup and Configure Alerts for Azure Data Factory
 
+1. Deploy Data Factory with optional SQL Server and SQL Database
+2. Setup and Configure Alerts for Azure Data Factory
+3. Configure Data Share
 
 ## Deploy Data Factory with optional SQL Server and SQL Database
 
@@ -78,7 +79,7 @@ If you have selected Microsoft Teams notification, then your Logic app needs to 
 
 3. Click on **"Save"** to save the authorization information and navigate to resource group.
 
-4. Now click on the deployed logic app, the default name of which is **"TeamsNotify"**. Click on the option **"Logic app designer"** from the side bar under heading **"Development tools"**. This will open a visual editor, if there was problem connecting to teams then it will display connection error. In that case, refer back to step 1. Next if the connection is successful you will see a box labeled **"Post a message (V3)"**, click on that. Next to select **"Team"** and **"Channel"**, click on the cross button at the right side of these two field to open up drop down menu for available Team and Channel in Teams account. If you cant see your "Team" and "Channel", goto step 1, there might be problem with authentication.
+4. Now click on the deployed logic app, the default name of which is **"TeamsNotify"**. Click on the option **"Logic app designer"** from the side bar under heading **"Development tools"**. This will open a visual editor, if there was problem connecting to MS Teams then it will display connection error. In that case, refer back to step 1. Next, if the connection is successful you will see a box labeled **"Post a message (V3)"**, click on that. Next to select **"Team"** and **"Channel"**, click on the cross(X) button at the right side of these two fields to open up the drop down menu for available Teams and Channels in a MS Teams account. If you cant see your "Team" and "Channel", goto step 1, there might be problem with authentication.
 
 ![designer_image](./images/logicappdesigner.jpg)
 
@@ -89,7 +90,7 @@ With this our setup of Alerts is complete.
 
 Next we elaborate on how to add multiple emails in the action group.
 
-## Adding multiple emails in action group
+## Adding multiple emails in an action group
 
 Follow these steps to add multiple emails to recieve alerts on.
 
@@ -99,18 +100,18 @@ Follow these steps to add multiple emails to recieve alerts on.
 
 ![manageactions_image](./images/alertstopbar.jpg)
 
-3. Once in the manage actions pane, there will be list of all the action groups. Select you action group.
+3. Once in the manage actions pane, there will be list of all the action groups. Select your action group.
 
-4. Finally at the bottom in section **Notifications**, there is already an email created which is the default email you entered at the deployment time. Here you can add as many emails as you want to send alert notifications.
+4. Finally at the bottom in section **Notifications**, there is already an email created which is the default email you entered at the time deployment. Here you can add as many emails as you want to send alert notifications.
 
 ![email_image](./images/email.jpg)
 
 
-# Configure Data Share
+## Configure Data Share
 
 If you are using data share to get data from public environment into customer environment then you need to follow the steps given below after you have run the public side pipeline:
 
-## Step 1 - Public Side
+### Data Share setup: Public Side
 
 1. Open the Data Share Account.
 
@@ -147,7 +148,7 @@ If you are using data share to get data from public environment into customer en
 ![data share public](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/customer/images/data%20share/10.png)
 
 
-## Step 1 - Customer Side
+### Data Share setup: Customer Side
 
 1. Go to Data Share Invitations.
 

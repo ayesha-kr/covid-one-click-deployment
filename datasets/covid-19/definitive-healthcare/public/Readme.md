@@ -1,7 +1,7 @@
 ## Table Of Contents:
-#### Deploy Data Factory with optional SQL Server and SQL Database
-#### Setup and Configure Alerts for Azure Data Factory
-
+1. Deploy Data Factory with optional SQL Server and SQL Database
+2. Setup and Configure Alerts for Azure Data Factory
+3. Configure Data Share
 
 
 ## Deploy Data Factory with optional SQL Server and SQL Database
@@ -53,11 +53,11 @@ If the trigger is deployed along with pipeline, you have to explicitly activate 
 
 
 
-# Setup and Configure Alerts for Azure Data Factory
+## Setup and Configure Alerts for Azure Data Factory
 
 
 
-## Step 1: Deploy the templates
+#### Step 1: Deploy the templates
 
 1. Open git repository for the project and click on **Deploy to Azure**, this will open up a new window.
 
@@ -77,7 +77,7 @@ If you have selected Microsoft Teams notification, then your Logic app needs to 
 
 
 
-## Step 2: Authenticating Microsoft Teams account with Azure Logic App
+#### Step 2: Authenticating Microsoft Teams account with Azure Logic App
 
 1. First navigate to the resource group that containes your deployment and find the resource titled **"msftTeamsConnectionAuth"**. Click on it and navigate to its **"Edit API connection"** option from the sidebar. 
 
@@ -100,7 +100,7 @@ With this our setup of Alerts is complete.
 
 Next we elaborate on how to add multiple emails in the action group.
 
-## Adding multiple emails in action group
+#### Adding multiple emails in action group
 
 Follow these steps to add multiple emails to recieve alerts on.
 
@@ -117,11 +117,11 @@ Follow these steps to add multiple emails to recieve alerts on.
 ![email_image](./images/email.jpg)
 
 
-# Configure Data Share
+## Configure Data Share
 
 If you are using data share to get data from public environment into customer environment then you need to follow the steps given below after you have run the public side pipeline:
 
-## Step 1 - Public Side
+### Step 1 - Public Side
 
 1. Open the Data Share Account.
 
@@ -158,7 +158,7 @@ If you are using data share to get data from public environment into customer en
 ![data share public](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/customer/images/data%20share/10.png)
 
 
-## Step 1 - Customer Side
+### Step 1 - Customer Side
 
 1. Go to Data Share Invitations.
 

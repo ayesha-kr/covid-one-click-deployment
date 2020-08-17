@@ -1321,11 +1321,6 @@
                                         }
                                     },
                                     "staging": {
-                                        "linkedService": {
-                                            "referenceName": "customerStorageLinkedService",
-                                            "type": "LinkedServiceReference"
-                                        },
-                                        "folderPath": "staging"
                                     },
                                     "compute": {
                                         "coreCount": 8,
@@ -1366,11 +1361,6 @@
                                         }
                                     },
                                     "staging": {
-                                        "linkedService": {
-                                            "referenceName": "customerStorageLinkedService",
-                                            "type": "LinkedServiceReference"
-                                        },
-                                        "folderPath": "staging"
                                     },
                                     "compute": {
                                         "coreCount": 8,

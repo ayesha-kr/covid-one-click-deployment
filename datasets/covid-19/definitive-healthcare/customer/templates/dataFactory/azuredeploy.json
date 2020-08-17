@@ -1321,6 +1321,7 @@
                                         }
                                     },
                                     "staging": {
+                                        "folderPath": "staging"
                                     },
                                     "compute": {
                                         "coreCount": 8,
@@ -1361,6 +1362,7 @@
                                         }
                                     },
                                     "staging": {
+                                        "folderPath": "staging"
                                     },
                                     "compute": {
                                         "coreCount": 8,

@@ -1670,7 +1670,7 @@
                                         {
                                             "name": "Name",
                                             "operator": "Include",
-                                            "values": [ "Copy latest data", "Verify Master Key", "LoadIntoStagingTable", "LoadIntoOperationalTable" ]
+                                            "values": [ "Copy latest data", "Verify Master Key", "LoadIntoStagingTable", "LoadIntoOperationalTable",  "Create Views in Synapse"]
                                         },
                                         {
                                             "name": "PipelineName",
@@ -2022,7 +2022,7 @@
                                         {
                                             "name": "Name",
                                             "operator": "Include",
-                                            "values": [ "Copy latest data", "Verify Master Key", "Verify Schema in SQL DB", "LoadIntoStagingTable_SynapseWithSQL", "LoadIntoOperationalTable_SynapseWithSQL", "Create Views in Synapse" ]
+                                            "values": [ "Copy latest data", "Verify Master Key", "Verify Schema in SQL DB", "LoadIntoStagingTable_SynapseWithSQL", "LoadIntoOperationalTable_SynapseWithSQL", "Create Views in Synapse", "Create Views in SQL DB" ]
                                         },
                                         {
                                             "name": "PipelineName",
@@ -2081,7 +2081,7 @@
                                         {
                                             "name": "Name",
                                             "operator": "Include",
-                                            "values": [ "Copy latest data", "Verify Master Key", "Verify Schema in SQL DB", "LoadIntoStagingTable_SynapseWithSQL", "LoadIntoOperationalTable_SynapseWithSQL", "Create Views in Synapse" ]
+                                            "values": [ "Copy latest data", "Verify Master Key", "Verify Schema in SQL DB", "LoadIntoStagingTable_SynapseWithSQL", "LoadIntoOperationalTable_SynapseWithSQL", "Create Views in Synapse", "Create Views in SQL DB" ]
                                         },
                                         {
                                             "name": "PipelineName",
@@ -2372,7 +2372,7 @@
                                         {
                                             "name": "Name",
                                             "operator": "Include",
-                                            "values": [ "Copy latest data", "LoadIntoStagingTable_SQL", "LoadIntoOperationalTable_SQL", "Verify Schema in SQL DB", "Create Views in Synapse" ]
+                                            "values": [ "Copy latest data", "LoadIntoStagingTable_SQL", "LoadIntoOperationalTable_SQL", "Verify Schema in SQL DB", "Create Views in SQL DB" ]
                                         },
                                         {
                                             "name": "PipelineName",
@@ -2431,7 +2431,7 @@
                                         {
                                             "name": "Name",
                                             "operator": "Include",
-                                            "values": [ "Copy latest data", "LoadIntoStagingTable_SQL", "LoadIntoOperationalTable_SQL", "Verify Schema in SQL DB", "Create Views in Synapse" ]
+                                            "values": [ "Copy latest data", "LoadIntoStagingTable_SQL", "LoadIntoOperationalTable_SQL", "Verify Schema in SQL DB", "Create Views in SQL DB" ]
                                         },
                                         {
                                             "name": "PipelineName",

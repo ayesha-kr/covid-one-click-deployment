@@ -29,14 +29,6 @@
             "type": "string",
             "defaultValue": "Specify the sasURI of public blob storage"
         },
-        "containerName1": {
-            "defaultValue": "public",
-            "type": "string"
-        },
-        "containerName2": {
-            "defaultValue": "staging",
-            "type": "string"
-        },
         "sqlServerName": {
             "type": "string",
             "defaultValue": "democustomerdbserver",
@@ -171,7 +163,9 @@
         "sqlServerUniqueName": "[concat(parameters('sqlServerName'), uniqueString(resourceGroup().id))]",
         "dataFactoryUniqueName": "[concat(parameters('dataFactoryName'), uniqueString(resourceGroup().id))]",
         "webHookUri": "",
-        "dataShareAccountName": "[concat(parameters('dataShareAccountName'), uniquestring(resourceGroup().id))]"
+        "dataShareAccountName": "[concat(parameters('dataShareAccountName'), uniquestring(resourceGroup().id))]",
+        "publicContainer": "public",
+        "stagingContainer": "staging"
     },
     "resources": [
         {
@@ -190,11 +184,11 @@
                     "location": {
                         "value": "[parameters('location')]"
                     },
-                    "containerName1": {
-                        "value": "[parameters('containerName1')]"
+                    "publicContainer": {
+                        "value": "[variables('publicContainer')]"
                     },
-                    "containerName2": {
-                        "value": "[parameters('containerName2')]"
+                    "stagingContainer": {
+                        "value": "[variables('stagingContainer')]"
                     }
                 }
             }

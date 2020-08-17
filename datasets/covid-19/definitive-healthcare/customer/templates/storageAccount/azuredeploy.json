@@ -9,11 +9,11 @@
                 "description": "The name you provide will be appended with a unique sting to make it globally available. The field can contain only lowercase letters and numbers. Name must be between 1 and 11 characters."
             }
         },
-        "containerName1": {
+        "publicContainer": {
             "defaultValue": "public",
             "type": "string"
         },
-        "containerName2": {
+        "stagingContainer": {
             "defaultValue": "staging",
             "type": "string"
         },
@@ -106,7 +106,7 @@
         {
             "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
             "apiVersion": "2019-06-01",
-            "name": "[concat(parameters('storageAccountName'), '/default/',parameters('containerName1'))]",
+            "name": "[concat(parameters('storageAccountName'), '/default/',parameters('publicContainer'))]",
             "dependsOn": [
                 "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccountName'), 'default')]",
                 "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
@@ -118,7 +118,7 @@
         {
             "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
             "apiVersion": "2019-06-01",
-            "name": "[concat(parameters('storageAccountName'), '/default/',parameters('containerName2'))]",
+            "name": "[concat(parameters('storageAccountName'), '/default/',parameters('stagingContainer'))]",
             "dependsOn": [
                 "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccountName'), 'default')]",
                 "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"

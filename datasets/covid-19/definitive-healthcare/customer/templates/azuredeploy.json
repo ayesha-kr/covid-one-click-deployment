@@ -224,8 +224,8 @@
                     "sqlAdministratorLoginPassword": {
                         "value": "[parameters('sqlAdministratorLoginPassword')]"
                     },
-                    "allowAzureIPs": {
-                        "value": "[parameters('allowAzureIPs')]"
+                    "allowAzureServicesToAccessSqlServer": {
+                        "value": "[parameters('allowAzureServicesToAccessSqlServer')]"
                     },
                     "sqlConnectionType": {
                         "value": "[parameters('sqlConnectionType')]"

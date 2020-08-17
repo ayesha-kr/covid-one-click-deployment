@@ -278,7 +278,7 @@
                                                     }
                                                 },
                                                 "method": "post",
-                                                "path": "/v3/beta/teams/@{encodeURIComponent('4bf162f6-f40c-4f6e-abc9-72f8a8fccec8')}/channels/@{encodeURIComponent('19:0212500ce13f44e49ecf3dafb01db31a@thread.tacv2')}/messages"
+                                                "path": "/v3/beta/teams/@{encodeURIComponent('')}/channels/@{encodeURIComponent('')}/messages"
                                             },
                                             "runAfter": {},
                                             "type": "ApiConnection"
@@ -302,7 +302,7 @@
                                                     }
                                                 },
                                                 "method": "post",
-                                                "path": "/v3/beta/teams/@{encodeURIComponent('4bf162f6-f40c-4f6e-abc9-72f8a8fccec8')}/channels/@{encodeURIComponent('19:0212500ce13f44e49ecf3dafb01db31a@thread.tacv2')}/messages"
+                                                "path": "/v3/beta/teams/@{encodeURIComponent('')}/channels/@{encodeURIComponent('')}/messages"
                                             },
                                             "runAfter": {},
                                             "type": "ApiConnection"
@@ -326,7 +326,7 @@
                                                     }
                                                 },
                                                 "method": "post",
-                                                "path": "/v3/beta/teams/@{encodeURIComponent('4bf162f6-f40c-4f6e-abc9-72f8a8fccec8')}/channels/@{encodeURIComponent('19:0212500ce13f44e49ecf3dafb01db31a@thread.tacv2')}/messages"
+                                                "path": "/v3/beta/teams/@{encodeURIComponent('')}/channels/@{encodeURIComponent('')}/messages"
                                             },
                                             "runAfter": {},
                                             "type": "ApiConnection"
@@ -350,7 +350,7 @@
                                                     }
                                                 },
                                                 "method": "post",
-                                                "path": "/v3/beta/teams/@{encodeURIComponent('4bf162f6-f40c-4f6e-abc9-72f8a8fccec8')}/channels/@{encodeURIComponent('19:0212500ce13f44e49ecf3dafb01db31a@thread.tacv2')}/messages"
+                                                "path": "/v3/beta/teams/@{encodeURIComponent('')}/channels/@{encodeURIComponent('')}/messages"
                                             },
                                             "runAfter": {},
                                             "type": "ApiConnection"

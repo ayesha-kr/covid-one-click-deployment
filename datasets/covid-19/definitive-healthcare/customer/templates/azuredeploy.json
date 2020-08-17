@@ -53,7 +53,7 @@
         },
         "sqlAdministratorLogin": {
             "type": "string",
-            "defaultValue": "master",
+            "defaultValue": "masteruser",
             "metadata": {
                 "description": "Your login name must not contain a SQL Identifier or a typical system name (like admin, administrator, sa, root, dbmanager, loginmanager, etc.) or a built-in database user or role (like dbo, guest, public, etc.)"
             }
@@ -69,7 +69,7 @@
             "defaultValue": true,
             "type": "bool",
             "metadata": {
-                "description": "Allow Azure services to access server."
+                "description": "By selecting Yes option, it allow Azure services to access SQL server. It is required so that Azure Data Factory can access SQL server "
             }
         },
         "sqlConnectionType": {
@@ -113,7 +113,7 @@
             "defaultValue": "DW100c",
             "type": "string",
             "metadata": {
-                "description": "Data warehouse tier."
+                "description": "Data warehouse tier. DW100c is the smallest value."
             }
         },
         "selectDataLoader": {

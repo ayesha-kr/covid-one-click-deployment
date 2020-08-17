@@ -35,7 +35,7 @@ After the deployment you can go in side your resource group open the ADF auther 
 #### Configure Firewall Rule
 After deployment, to access the newly created SQL server from your client IP, configure the firewall rule as described in the following GIF:
 
-![Firewall Rule](https://github.com/osamaemumba/arm-template-button-with-condition/blob/dev-zahid/firewallRule.gif)
+![Firewall Rule](./images/firewallRule.gif)
 
 
 

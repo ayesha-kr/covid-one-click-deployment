@@ -211,7 +211,6 @@
                         "typeProperties": {
                             "location": {
                                 "type": "AzureBlobStorageLocation",
-                                "fileName": "covid_tracking.csv",
                                 "folderPath": "curated/covid-19/covid_tracking/latest",
                                 "container": "public"
                             }
@@ -240,6 +239,7 @@
                         "typeProperties": {
                             "location": {
                                 "type": "AzureBlobStorageLocation",
+                                "fileName": "covid_tracking.csv",
                                 "folderPath": "output",
                                 "container": "staging"
                             },

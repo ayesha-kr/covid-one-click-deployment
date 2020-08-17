@@ -1572,7 +1572,7 @@
                                         {
                                             "name": "Name",
                                             "operator": "Include",
-                                            "values": [ "SynapseDataLoader" ]
+                                            "values": [ "SynapseDataLoader", "SynapseDataLoaderWithDataShare" ]
                                         },
                                         {
                                             "name": "FailureType",
@@ -1621,7 +1621,7 @@
                                         {
                                             "name": "Name",
                                             "operator": "Include",
-                                            "values": [ "SynapseDataLoader" ]
+                                            "values": [ "SynapseDataLoader", "SynapseDataLoaderWithDataShare" ]
                                         }
                                     ],
                                     "operator": "GreaterThanOrEqual",
@@ -1675,7 +1675,7 @@
                                         {
                                             "name": "PipelineName",
                                             "operator": "Include",
-                                            "values": [ "SynapseDataLoader" ]
+                                            "values": [ "SynapseDataLoader", "SynapseDataLoaderWithDataShare" ]
                                         },
                                         {
                                             "name": "FailureType",
@@ -1734,7 +1734,7 @@
                                         {
                                             "name": "PipelineName",
                                             "operator": "Include",
-                                            "values": [ "SynapseDataLoader" ]
+                                            "values": [ "SynapseDataLoader", "SynapseDataLoaderWithDataShare" ]
                                         }
                                     ],
                                     "operator": "GreaterThanOrEqual",
@@ -1778,7 +1778,7 @@
                                         {
                                             "name": "Name",
                                             "operator": "Include",
-                                            "values": [ "SynapseDataLoaderPipelineTrigger" ]
+                                            "values": [ "SynapseDataLoaderPipelineTrigger", "SynapseDataLoaderWithDataSharePipelineTrigger" ]
                                         }
                                     ],
                                     "operator": "GreaterThanOrEqual",
@@ -1822,7 +1822,7 @@
                                         {
                                             "name": "Name",
                                             "operator": "Include",
-                                            "values": [ "SynapseDataLoaderPipelineTrigger" ]
+                                            "values": [ "SynapseDataLoaderPipelineTrigger", "SynapseDataLoaderWithDataSharePipelineTrigger" ]
                                         },
                                         {
                                             "name": "FailureType",
@@ -1924,7 +1924,7 @@
                                         {
                                             "name": "Name",
                                             "operator": "Include",
-                                            "values": [ "SynapseAndSqlDataLoader" ]
+                                            "values": [ "SynapseAndSqlDataLoader", "SynapseAndSqlDataLoaderWithDataShare" ]
                                         },
                                         {
                                             "name": "FailureType",
@@ -1973,7 +1973,7 @@
                                         {
                                             "name": "Name",
                                             "operator": "Include",
-                                            "values": [ "SynapseAndSqlDataLoader" ]
+                                            "values": [ "SynapseAndSqlDataLoader", "SynapseAndSqlDataLoaderWithDataShare" ]
                                         }
                                     ],
                                     "operator": "GreaterThanOrEqual",
@@ -2027,7 +2027,7 @@
                                         {
                                             "name": "PipelineName",
                                             "operator": "Include",
-                                            "values": [ "SynapseAndSqlDataLoader" ]
+                                            "values": [ "SynapseAndSqlDataLoader", "SynapseAndSqlDataLoaderWithDataShare" ]
                                         },
                                         {
                                             "name": "FailureType",
@@ -2086,7 +2086,7 @@
                                         {
                                             "name": "PipelineName",
                                             "operator": "Include",
-                                            "values": [ "SynapseAndSqlDataLoader" ]
+                                            "values": [ "SynapseAndSqlDataLoader", "SynapseAndSqlDataLoaderWithDataShare" ]
                                         }
                                     ],
                                     "operator": "GreaterThanOrEqual",
@@ -2130,7 +2130,7 @@
                                         {
                                             "name": "Name",
                                             "operator": "Include",
-                                            "values": [ "SynapseAndSqlDataLoaderPipelineTrigger" ]
+                                            "values": [ "SynapseAndSqlDataLoaderPipelineTrigger", "SynapseAndSqlDataLoaderWithDataSharePipelineTrigger" ]
                                         }
                                     ],
                                     "operator": "GreaterThanOrEqual",
@@ -2174,7 +2174,7 @@
                                         {
                                             "name": "Name",
                                             "operator": "Include",
-                                            "values": [ "SynapseAndSqlDataLoaderPipelineTrigger" ]
+                                            "values": [ "SynapseAndSqlDataLoaderPipelineTrigger", "SynapseAndSqlDataLoaderWithDataSharePipelineTrigger" ]
                                         },
                                         {
                                             "name": "FailureType",
@@ -2274,7 +2274,7 @@
                                         {
                                             "name": "Name",
                                             "operator": "Include",
-                                            "values": [ "SqlDataLoader" ]
+                                            "values": [ "SqlDataLoader", "SqlDataLoaderWithDataShare" ]
                                         },
                                         {
                                             "name": "FailureType",
@@ -2323,7 +2323,7 @@
                                         {
                                             "name": "Name",
                                             "operator": "Include",
-                                            "values": [ "SqlDataLoader" ]
+                                            "values": [ "SqlDataLoader", "SqlDataLoaderWithDataShare" ]
                                         }
                                     ],
                                     "operator": "GreaterThanOrEqual",
@@ -2377,7 +2377,7 @@
                                         {
                                             "name": "PipelineName",
                                             "operator": "Include",
-                                            "values": [ "SqlDataLoader" ]
+                                            "values": [ "SqlDataLoader", "SqlDataLoaderWithDataShare" ]
                                         },
                                         {
                                             "name": "FailureType",
@@ -2436,7 +2436,7 @@
                                         {
                                             "name": "PipelineName",
                                             "operator": "Include",
-                                            "values": [ "SqlDataLoader" ]
+                                            "values": [ "SqlDataLoader", "SqlDataLoaderWithDataShare" ]
                                         }
                                     ],
                                     "operator": "GreaterThanOrEqual",
@@ -2480,7 +2480,7 @@
                                         {
                                             "name": "Name",
                                             "operator": "Include",
-                                            "values": [ "SqlDataLoaderPipelineTrigger" ]
+                                            "values": [ "SqlDataLoaderPipelineTrigger", "SqlDataLoaderWithDataSharePipelineTrigger" ]
                                         }
                                     ],
                                     "operator": "GreaterThanOrEqual",
@@ -2524,7 +2524,7 @@
                                         {
                                             "name": "Name",
                                             "operator": "Include",
-                                            "values": [ "SqlDataLoaderPipelineTrigger" ]
+                                            "values": [ "SqlDataLoaderPipelineTrigger", "SqlDataLoaderWithDataSharePipelineTrigger" ]
                                         },
                                         {
                                             "name": "FailureType",
@@ -2890,15 +2890,6 @@
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/pipelines/SqlDataLoaderWithDataShare')]"
                     ]
                 },
-
-
-
-
-
-
-
-
-
                 {
                     "condition": "[and(equals(parameters('selectDataLoader'),'Synapse Database Warehouse'),equals(parameters('deployAndUseDataShare'),'Yes'))]",
                     "name": "[concat(parameters('dataFactoryName'), '/SynapseDataLoaderWithDataShare')]",

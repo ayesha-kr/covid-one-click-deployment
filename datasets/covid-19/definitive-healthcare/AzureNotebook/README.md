@@ -1,4 +1,4 @@
-# Clone Azure Notebook
+# Consumption of this dataset using Azure notebook
 
 The following button will take you to the hosted Azure notebook project. From there you can click 'Clone' to clone the project into your own Azure Notebook account.
 
@@ -31,3 +31,42 @@ This notebook loads the data from a CSV file into a dataframe and then writes it
 
 
 Note: To write the data to Azure Synapse or SQL DB, please provide the connection details in the notebook.
+
+
+
+
+
+# Consumption of this dataset using Azure Synapse Notebook
+
+## Introduction
+
+A Synapse Studio (preview) notebook is a web interface for you to create files that contain live code, visualizations, and narrative text. Notebooks are a good place to validate ideas and use quick experiments to get insights from your data. Notebooks are also widely used in data preparation, data visualization, machine learning, and other Big Data scenarios.
+
+With an Azure Synapse Studio notebook, you can:
+
+- Get started with zero setup effort.
+- Keep data secure with built-in enterprise security features.
+- Analyze data across raw formats (CSV, txt, JSON, etc.), processed file formats (parquet, Delta Lake, ORC, etc.), and SQL tabular data files against Spark and SQL.
+- Be productive with enhanced authoring capabilities and built-in data visualization.
+
+1. Click here to open the Azure [Synapse Notebook]().
+
+2. Open Azure Synpase Workspaces
+
+3. Click on **Add** to create a new workspace
+
+4. Fill in the required values, you may use exisng ADlS Gen 2 storage account or create a new one.
+
+5. Create SQl credentials.
+
+6. Create worskpace.
+
+7. Open Synapse Workspace.
+
+8. Import notebook, open the file downloaded in *Step 1*.
+
+9. 
+
+
+
+

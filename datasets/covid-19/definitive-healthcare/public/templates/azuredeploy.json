@@ -53,7 +53,7 @@
             "metadata": {
                 "description": "Your login name must not contain a SQL Identifier or a typical system name (like admin, administrator, sa, root, dbmanager, loginmanager, etc.) or a built-in database user or role (like dbo, guest, public, etc.)"
             },
-            "defaultValue": "demo"
+            "defaultValue": "master"
         },
         "sqlAdministratorLoginPassword": {
             "type": "securestring",

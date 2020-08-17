@@ -23,14 +23,14 @@
 
 Click the following button to deploy all the resources.
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fayesha-kr%2Fcovid-one-click-deployment%2Fdev-zahid%2Fdatasets%2Fcovid-19%2Fdefinitive-healthcare%2Fcustomer%2Ftemplates%2Fazuredeploy.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fayesha-kr%2Fcovid-one-click-deployment%2Fmaster%2Fdatasets%2Fcovid-19%2Fdefinitive-healthcare%2Fcustomer%2Ftemplates%2Fazuredeploy.json)
 
 
 #### Manually Trigger Pipeline
 
 After the deployment you can go in side your resource group open the ADF auther and monitor section and trigger the pipeline as given below.
 
-![Manual Pipeline Trigger](https://github.com/ayesha-kr/covid-one-click-deployment/blob/dev-zahid/datasets/covid-19/definitive-healthcare/customer/images/manual-ADF-customer-trigger.png)
+![Manual Pipeline Trigger](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/customer/images/manual-ADF-customer-trigger.png)
 
 
 #### Configure Firewall Rule

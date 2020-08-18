@@ -164,8 +164,7 @@
         "dataFactoryUniqueName": "[concat(parameters('dataFactoryName'), uniqueString(resourceGroup().id))]",
         "webHookUri": "",
         "dataShareAccountName": "[concat(parameters('dataShareAccountName'), uniquestring(resourceGroup().id))]",
-        "publicContainer": "public",
-        "stagingContainer": "staging"
+        "stagingContainer": "ReceivedCopy"
     },
     "resources": [
         {
@@ -183,9 +182,6 @@
                     },
                     "location": {
                         "value": "[parameters('location')]"
-                    },
-                    "publicContainer": {
-                        "value": "[variables('publicContainer')]"
                     },
                     "stagingContainer": {
                         "value": "[variables('stagingContainer')]"

@@ -9,12 +9,8 @@
                 "description": "The name you provide will be appended with a unique sting to make it globally available. The field can contain only lowercase letters and numbers. Name must be between 1 and 11 characters."
             }
         },
-        "publicContainer": {
-            "defaultValue": "public",
-            "type": "string"
-        },
         "stagingContainer": {
-            "defaultValue": "staging",
+            "defaultValue": "ReceivedCopy",
             "type": "string"
         },
         "location": {
@@ -101,18 +97,6 @@
                 "cors": {
                     "corsRules": []
                 }
-            }
-        },
-        {
-            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
-            "apiVersion": "2019-06-01",
-            "name": "[concat(parameters('storageAccountName'), '/default/',parameters('publicContainer'))]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('storageAccountName'), 'default')]",
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
-            ],
-            "properties": {
-                "publicAccess": "None"
             }
         },
         {

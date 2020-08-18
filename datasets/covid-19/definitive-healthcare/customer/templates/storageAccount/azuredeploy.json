@@ -10,7 +10,7 @@
             }
         },
         "stagingContainer": {
-            "defaultValue": "ReceivedCopy",
+            "defaultValue": "receivedcopy",
             "type": "string"
         },
         "location": {

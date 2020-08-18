@@ -142,18 +142,23 @@ If you are using data share to get data from public environment into customer en
 
 ![data share public](https://github.com/ayesha-kr/covid-one-click-deployment/blob/osama-dev/datasets/covid-19/definitive-healthcare/customer/images/data%20share/7.png)
 
-6. Now under **Invitations** tab click **Add recipient**.
+6. Optionally you can enable the share subscription under *Settings* or *Share Subscriptions* tab.
+
+![data share public](https://github.com/ayesha-kr/covid-one-click-deployment/blob/osama-dev/datasets/covid-19/definitive-healthcare/customer/images/data%20share/7-a.png)
+
+
+7. Now under **Invitations** tab click **Add recipient**.
 
 ![data share public](https://github.com/ayesha-kr/covid-one-click-deployment/blob/osama-dev/datasets/covid-19/definitive-healthcare/customer/images/data%20share/8.png)
 
-7. In the blade opened, click **Add recipient** and provide the customer side email and click **Add and send invitation**.
+8. In the blade opened, click **Add recipient** and provide the customer side email and click **Add and send invitation**.
 
 ![data share public](https://github.com/ayesha-kr/covid-one-click-deployment/blob/osama-dev/datasets/covid-19/definitive-healthcare/customer/images/data%20share/9.png)
 
 ![data share public](https://github.com/ayesha-kr/covid-one-click-deployment/blob/osama-dev/datasets/covid-19/definitive-healthcare/customer/images/data%20share/10.png)
 
 
-### Data Share setup: Customer Side
+### Step 1 - Customer Side
 
 1. Go to Data Share Invitations.
 
@@ -183,8 +188,10 @@ If you are using data share to get data from public environment into customer en
 
 ![data share customer](https://github.com/ayesha-kr/covid-one-click-deployment/blob/osama-dev/datasets/covid-19/definitive-healthcare/customer/images/data%20share/18.png)
 
-7. Optionally you can enable the snapshot schedule. For that, check mark the **Daily** schedule under *Snapshot schedule* tab and click *Enable*.
+7. Optionally you can enable the snapshot schedule if configured at public side. For that, check mark the **Daily** schedule under *Snapshot schedule* tab and click *Enable*.
 
 ![data share customer](https://github.com/ayesha-kr/covid-one-click-deployment/blob/osama-dev/datasets/covid-19/definitive-healthcare/customer/images/data%20share/19.png)
 
 ![data share customer](https://github.com/ayesha-kr/covid-one-click-deployment/blob/osama-dev/datasets/covid-19/definitive-healthcare/customer/images/data%20share/20.png)
+
+

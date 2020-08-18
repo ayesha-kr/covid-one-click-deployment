@@ -17,13 +17,14 @@
 5. Option (Yes or No) to deploy or not to deploy SQL Server, SQL Database and SQL sink within the pipeline.
 6. If selected **Yes**, please provide
 
-   SQL Server Name 
+   - SQL Server Name 
 
-   SQL Database Name
+   - SQL Database Name
    
-   SQL Login Administrator Username
+   - SQL Login Administrator Username
    
-   SQL Login Administrator Password
+   - SQL Login Administrator Password
+
 7. Notification Email
 8. Option (Yes or No) to enable Microsoft Teams Notifications
 9. Logic App Name

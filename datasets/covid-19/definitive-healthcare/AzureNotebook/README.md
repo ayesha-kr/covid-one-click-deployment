@@ -124,8 +124,14 @@ With an Azure Synapse Studio notebook, you can:
 
 ![Synapse Notebook](./images/run-all.png)
 
+18. After you have run the notebook, to view the data that has been loaded in to Synapse, Go to **Data** -> **Databases** -> **covid19** -> **Tables** -> **definitivehealthcare**. Right-Click on the table name i.e. **definitivehealthcare** -> **New Notebook** -> **Load to DataFrame**. This will open a new notebook pre-filled with code that loads the data from table into data frame
 
+![Load data frame](./images/goto-data-load-frame.png)
 
+19. Run the new notebook to view data from the database.
 
+![Run: Load data frame](./images/open-frame-run-all.png)
 
+20. Output
 
+![Load data frame](./images/output-load-frame.png)

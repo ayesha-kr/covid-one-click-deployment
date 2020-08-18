@@ -1,3 +1,15 @@
+# Table Of Contents
+
+1. Introduction
+2. Open COVID-19 datasets
+3. Data Flow Architecture Diagram
+4. Data Flow deployment steps
+5. CI/CD setup for Azure Data Factory
+6. Connect Azure Boards with the Github Repo
+7. Add Metric Alerts to Azure Datafactory Pipelines
+8. Configure Data Share
+9. Contact us
+
 # One Click Deployment of Covid-19 Data Flow
 This is a guide for processing the following open Covid-19 datasets, using the Microsoft Azure data factory. 
 
@@ -40,6 +52,7 @@ Please follow the instructions given in the following link to connect Azure Boar
 
 [Connect Azure Boards to Github](https://docs.microsoft.com/en-us/azure/devops/boards/github/connect-to-github?view=azure-devops)
 
+
 ## 7. Add Metric Alerts to Azure Datafactory Pipelines
 
 Alerts come in handy when we want feedback on failure or cancellation of pipeline or its respective activities. We get debugging information out of the box which helps save alot of effort and reduce downtime. 
@@ -62,6 +75,8 @@ You can follow the instructions given in the following link to set up Data share
 
 [Azure Data Share](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/customer/Readme.md)
 
+
 ## 9. Contact us
+
 We hope that this blog is helpful for you. In case you have any questions, feel free to reach out to us at ayesha.khaliq@emumba.com OR hamza.rashid@emumba.com.
 

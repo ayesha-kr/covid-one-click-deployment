@@ -47,7 +47,7 @@ If you are using data share to get data from public environment into customer en
 
 You can follow the instructions given in the following link to set up Data share account and create/accept invitation and other configurations:-
 
-[Azure Data Share](https://github.com/ayesha-kr/covid-one-click-deployment/blob/osama-dev/datasets/covid-19/definitive-healthcare/customer/Readme.md)
+[Azure Data Share](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/customer/Readme.md)
 
 
 ## 8. Contact us

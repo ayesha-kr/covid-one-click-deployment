@@ -240,8 +240,8 @@
                             "location": {
                                 "type": "AzureBlobStorageLocation",
                                 "fileName": "covid_tracking.csv",
-                                "folderPath": "output",
-                                "container": "staging"
+                                "folderPath": "definitiveHealthCare",
+                                "container": "ReceivedCopy"
                             },
                             "columnDelimiter": ",",
                             "escapeChar": "\\",
@@ -273,8 +273,8 @@
                         "typeProperties": {
                             "location": {
                                 "type": "AzureBlobStorageLocation",
-                                "folderPath": "output",
-                                "container": "staging"
+                                "folderPath": "definitiveHealthCare",
+                                "container": "ReceivedCopy"
                             }
                         }
                     }
@@ -827,7 +827,7 @@
                                             "referenceName": "customerStorageLinkedService",
                                             "type": "LinkedServiceReference"
                                         },
-                                        "folderPath": "staging"
+                                        "folderPath": "ReceivedCopy"
                                     },
                                     "compute": {
                                         "coreCount": 8,
@@ -870,7 +870,7 @@
                                             "referenceName": "customerStorageLinkedService",
                                             "type": "LinkedServiceReference"
                                         },
-                                        "folderPath": "staging"
+                                        "folderPath": "ReceivedCopy"
                                     },
                                     "compute": {
                                         "coreCount": 8,
@@ -1074,7 +1074,7 @@
                                             "referenceName": "customerStorageLinkedService",
                                             "type": "LinkedServiceReference"
                                         },
-                                        "folderPath": "staging"
+                                        "folderPath": "ReceivedCopy"
                                     },
                                     "compute": {
                                         "coreCount": 8,
@@ -1119,7 +1119,7 @@
                                             "referenceName": "customerStorageLinkedService",
                                             "type": "LinkedServiceReference"
                                         },
-                                        "folderPath": "staging"
+                                        "folderPath": "ReceivedCopy"
                                     },
                                     "compute": {
                                         "coreCount": 8,
@@ -1321,7 +1321,7 @@
                                         }
                                     },
                                     "staging": {
-                                        "folderPath": "staging"
+                                        "folderPath": "ReceivedCopy"
                                     },
                                     "compute": {
                                         "coreCount": 8,
@@ -1362,7 +1362,7 @@
                                         }
                                     },
                                     "staging": {
-                                        "folderPath": "staging"
+                                        "folderPath": "ReceivedCopy"
                                     },
                                     "compute": {
                                         "coreCount": 8,
@@ -2662,7 +2662,7 @@
                                         }
                                     },
                                     "staging": {
-                                        "folderPath": "staging"
+                                        "folderPath": "ReceivedCopy"
                                     },
                                     "compute": {
                                         "coreCount": 8,
@@ -2700,7 +2700,7 @@
                                         }
                                     },
                                     "staging": {
-                                        "folderPath": "staging"
+                                        "folderPath": "ReceivedCopy"
                                     },
                                     "compute": {
                                         "coreCount": 8,
@@ -2778,7 +2778,7 @@
                                 "type": "AzureBlobStorageLocation",
                                 "fileName": "covid_tracking.csv",
                                 "folderPath": "curated/covid-19/covid_definitiveHC/latest",
-                                "container": "staging"
+                                "container": "ReceivedCopy"
                             },
                             "columnDelimiter": ",",
                             "escapeChar": "\\",
@@ -2949,7 +2949,7 @@
                                             "referenceName": "customerStorageLinkedService",
                                             "type": "LinkedServiceReference"
                                         },
-                                        "folderPath": "staging"
+                                        "folderPath": "ReceivedCopy"
                                     },
                                     "compute": {
                                         "coreCount": 8,
@@ -2991,7 +2991,7 @@
                                             "referenceName": "customerStorageLinkedService",
                                             "type": "LinkedServiceReference"
                                         },
-                                        "folderPath": "staging"
+                                        "folderPath": "ReceivedCopy"
                                     },
                                     "compute": {
                                         "coreCount": 8,
@@ -3233,7 +3233,7 @@
                                             "referenceName": "customerStorageLinkedService",
                                             "type": "LinkedServiceReference"
                                         },
-                                        "folderPath": "staging"
+                                        "folderPath": "ReceivedCopy"
                                     },
                                     "compute": {
                                         "coreCount": 8,
@@ -3277,7 +3277,7 @@
                                             "referenceName": "customerStorageLinkedService",
                                             "type": "LinkedServiceReference"
                                         },
-                                        "folderPath": "staging"
+                                        "folderPath": "ReceivedCopy"
                                     },
                                     "compute": {
                                         "coreCount": 8,

@@ -1562,11 +1562,11 @@
                             },
                             "rawBlobDirectory": {
                                 "type": "string",
-                                "defaultValue": "raw/covid-19/covid_tracking"
+                                "defaultValue": "raw/covid-19/covid_definitiveHC"
                             },
                             "curatedBlobDirectory": {
                                 "type": "string",
-                                "defaultValue": "curated/covid-19/covid_tracking"
+                                "defaultValue": "curated/covid-19/covid_definitiveHC"
                             },
                             "filename": {
                                 "type": "string",
@@ -2470,11 +2470,11 @@
                             },
                             "rawBlobDirectory": {
                                 "type": "string",
-                                "defaultValue": "raw/covid-19/covid_tracking"
+                                "defaultValue": "raw/covid-19/covid_definitiveHC"
                             },
                             "curatedBlobDirectory": {
                                 "type": "string",
-                                "defaultValue": "curated/covid-19/covid_tracking"
+                                "defaultValue": "curated/covid-19/covid_definitiveHC"
                             },
                             "filename": {
                                 "type": "string",

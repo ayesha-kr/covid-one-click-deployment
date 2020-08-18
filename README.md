@@ -54,6 +54,14 @@ For Customer Environment Alerts:-
 
 [Setup Metric Alerts_Customer Environment](./datasets/covid-19/definitive-healthcare/public/Readme.md)
 
-## 8. Contact us
+## 8. Configure Data Share
+
+If you are using data share to get data from public environment into customer environment then you need setup data share account and a share on the public side and send a notification to the customer side where too a data share account must be present to accept the invitation. To deploy Data Share account on either of the two environments, you will need to select the option Yes/No to do so. If Yes is selected at public side, then the data share account and a share will be deployed at public side while if you select Yes on the customer side, only a data share account will be deployed and the data pipeline that will be deployed will be the one without copy data activity that copies data from public staorage to the customer one.
+
+You can follow the instructions given in the following link to set up Data share account and create/accept invitation and other configurations:-
+
+[Azure Data Share](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/customer/Readme.md)
+
+## 9. Contact us
 We hope that this blog is helpful for you. In case you have any questions, feel free to reach out to us at ayesha.khaliq@emumba.com OR hamza.rashid@emumba.com.
 

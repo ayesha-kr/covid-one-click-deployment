@@ -40,6 +40,20 @@ Please follow the instructions given in the following link to connect Azure Boar
 
 [Connect Azure Boards to Github](https://docs.microsoft.com/en-us/azure/devops/boards/github/connect-to-github?view=azure-devops)
 
-## 7. Contact us
+## 7. Add Metric Alerts to Azure Datafactory Pipelines
+
+Alerts come in handy when we want feedback on failure or cancellation of pipeline or its respective activities. We get debugging information out of the box which helps save alot of effort and reduce downtime. 
+
+Follow the instructions given in the following link to setup alerts:-
+
+For Public Environment Alerts:- 
+
+[Setup Metric Alerts_Public Environment](./datasets/covid-19/definitive-healthcare/customer/Readme.md)
+
+For Customer Environment Alerts:- 
+
+[Setup Metric Alerts_Customer Environment](./datasets/covid-19/definitive-healthcare/public/Readme.md)
+
+## 8. Contact us
 We hope that this blog is helpful for you. In case you have any questions, feel free to reach out to us at ayesha.khaliq@emumba.com OR hamza.rashid@emumba.com.
 

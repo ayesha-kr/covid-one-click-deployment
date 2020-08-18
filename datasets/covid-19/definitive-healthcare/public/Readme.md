@@ -13,11 +13,24 @@
 1. Resource Group
 2. Data Factory Name
 3. Storage Account Name
-4. Option (Yes or No) to deploy or not to deploy SQL Server, SQL Database and SQL sink within the pipeline.
-5. SQL Server Name (If selected 'Yes')
-6. SQL Database Name (If selected 'Yes')
-7. SQL Login Administrator Username (If selected 'Yes').
-8. SQL Login Administrator Password (If selected 'Yes').
+4. Location
+5. Option (Yes or No) to deploy or not to deploy SQL Server, SQL Database and SQL sink within the pipeline.
+6. If selected **Yes**, please provide
+
+   SQL Server Name 
+
+   SQL Database Name
+   
+   SQL Login Administrator Username
+   
+   SQL Login Administrator Password
+7. Notification Email
+8. Option (Yes or No) to enable Microsoft Teams Notifications
+9. Logic App Name
+10. Data Share Account Name.
+11. Share Name
+12. Option (Yes or No) to deploy and use data share.
+
 
 **NOTE** - If you go with SQL sink, the name of the table where data is written is _**covid_tracking**_.
 
@@ -152,11 +165,16 @@ If you are using data share to get data from public environment into customer en
 
 ![data share public](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/customer/images/data%20share/7.png)
 
-6. Now under **Invitations** tab click **Add recipient**.
+6. Optionally you can enable the share subscription under *Settings* or *Share Subscriptions* tab.
+
+![data share public](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/customer/images/data%20share/7-a.png)
+
+
+7. Now under **Invitations** tab click **Add recipient**.
 
 ![data share public](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/customer/images/data%20share/8.png)
 
-7. In the blade opened, click **Add recipient** and provide the customer side email and click **Add and send invitation**.
+8. In the blade opened, click **Add recipient** and provide the customer side email and click **Add and send invitation**.
 
 ![data share public](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/customer/images/data%20share/9.png)
 
@@ -193,7 +211,7 @@ If you are using data share to get data from public environment into customer en
 
 ![data share customer](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/customer/images/data%20share/18.png)
 
-7. Optionally you can enable the snapshot schedule. For that, check mark the **Daily** schedule under *Snapshot schedule* tab and click *Enable*.
+7. Optionally you can enable the snapshot schedule if configured at public side. For that, check mark the **Daily** schedule under *Snapshot schedule* tab and click *Enable*.
 
 ![data share customer](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/customer/images/data%20share/19.png)
 

@@ -18,19 +18,18 @@
 6. Sas URI
 7. SQL Server Name
 8. Location
-5. Option (Yes or No) to deploy or not to deploy SQL Server, SQL Database and SQL sink within the pipeline.
-6. SQL Login Administrator Username
-7. SQL Login Administrator Password
-8. Option (true or false) to allow azure services to access sql server.
-9. SQL Database Name
-10. SQL Data Warehouse Name.
-11. Service Level Objective
-12. Option (SQL Database, Synapse Database Warehouse, Both) for data loader.
-13. Notification Email
-14. Option (Yes or No) to enable Microsoft Teams Notifications
-15. Logic App Name
-16. Data Share Account Name.
-17. Option (Yes or No) to deploy and use data share.
+9. SQL Login Administrator Username
+10. SQL Login Administrator Password
+11. Option (true or false) to allow azure services to access sql server.
+12. SQL Database Name
+13. SQL Data Warehouse Name.
+14. Service Level Objective
+15. Option (SQL Database, Synapse Database Warehouse, Both) for data loader.
+16. Notification Email
+17. Option (Yes or No) to enable Microsoft Teams Notifications
+18. Logic App Name
+19. Data Share Account Name.
+20. Option (Yes or No) to deploy and use data share.
 
 Click the following button to deploy all the resources.
 

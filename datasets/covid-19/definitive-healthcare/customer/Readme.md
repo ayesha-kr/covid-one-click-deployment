@@ -36,7 +36,7 @@ After the deployment you can go in side your resource group open the ADF auther 
 #### Configure Firewall Rule
 After deployment, to access the newly created SQL server from your client IP, configure the firewall rule as described in the following GIF:
 
-![Firewall Rule](https://github.com/osamaemumba/arm-template-button-with-condition/blob/master/firewallRule.gif)
+![Firewall Rule](./images/firewallRule.gif)
 
 
 
@@ -79,11 +79,16 @@ If you have selected Microsoft Teams notification, then your Logic app needs to 
 
 3. Click on **"Save"** to save the authorization information and navigate to resource group.
 
-4. Now click on the deployed logic app, the default name of which is **"TeamsNotify"**. Click on the option **"Logic app designer"** from the side bar under heading **"Development tools"**. This will open a visual editor, if there was problem connecting to MS Teams then it will display connection error. In that case, refer back to step 1. Next, if the connection is successful you will see a box labeled **"Post a message (V3)"**, click on that. Next to select **"Team"** and **"Channel"**, click on the cross(X) button at the right side of these two fields to open up the drop down menu for available Teams and Channels in a MS Teams account. If you cant see your "Team" and "Channel", goto step 1, there might be problem with authentication.
+4. Now click on the deployed logic app, the default name of which is **"TeamsNotify"**. Click on the option **"Logic app designer"** from the side bar under heading **"Development tools"**. This will open a visual editor, if there was problem connecting to teams then it will display connection error. In that case, refer back to step 1.
 
-![designer_image](./images/logicappdesigner.jpg)
+![designer_image](./images/logicappdesigner1.jpg)
 
-5. Finally click on save and your logic app setup is completed.
+
+5. Next if the connection is successful, click on **switch** button thats in the designer panel. It will open 6 different cases, click on a case and you will see a box labeled **"Post a message (V3)"**, click on that. Next to select **"Team"** and **"Channel"**, click on the cross button at the right side of these two field to open up drop down menu for available Team and Channel in Teams account. If you cant see your "Team" and "Channel", goto step 1, there might be problem with authentication. Do this for all 6 cases.
+
+![designer_image](./images/logicappdesigner2.jpg)
+
+6. Finally click on save and your logic app setup is completed.
 
 With this our setup of Alerts is complete.
 

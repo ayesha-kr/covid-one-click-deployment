@@ -29,14 +29,6 @@
             "type": "string",
             "defaultValue": "Specify the sasURI of public blob storage"
         },
-        "containerName1": {
-            "defaultValue": "public",
-            "type": "string"
-        },
-        "containerName2": {
-            "defaultValue": "staging",
-            "type": "string"
-        },
         "sqlServerName": {
             "type": "string",
             "defaultValue": "democustomerdbserver",
@@ -69,7 +61,7 @@
             "defaultValue": true,
             "type": "bool",
             "metadata": {
-                "description": "Allow Azure services to access server."
+                "description": "By selecting Yes option, it allow Azure services to access SQL server. It is required so that Azure Data Factory can access SQL server "
             }
         },
         "sqlConnectionType": {
@@ -171,7 +163,9 @@
         "sqlServerUniqueName": "[concat(parameters('sqlServerName'), uniqueString(resourceGroup().id))]",
         "dataFactoryUniqueName": "[concat(parameters('dataFactoryName'), uniqueString(resourceGroup().id))]",
         "webHookUri": "",
-        "dataShareAccountName": "[concat(parameters('dataShareAccountName'), uniquestring(resourceGroup().id))]"
+        "dataShareAccountName": "[concat(parameters('dataShareAccountName'), uniquestring(resourceGroup().id))]",
+        "publicContainer": "public",
+        "stagingContainer": "staging"
     },
     "resources": [
         {
@@ -190,11 +184,11 @@
                     "location": {
                         "value": "[parameters('location')]"
                     },
-                    "containerName1": {
-                        "value": "[parameters('containerName1')]"
+                    "publicContainer": {
+                        "value": "[variables('publicContainer')]"
                     },
-                    "containerName2": {
-                        "value": "[parameters('containerName2')]"
+                    "stagingContainer": {
+                        "value": "[variables('stagingContainer')]"
                     }
                 }
             }
@@ -322,11 +316,8 @@
                     "notificationEmail": {
                         "value": "[parameters('notificationEmail')]"
                     },
-                    "webHookUriPipeline": {
-                        "value": "[if(equals(parameters('enableMicrosoftTeamsNotification'),'Yes'), reference('logicAppTemplate','2018-05-01').outputs.WebHookURIPipeline.value, 'http://example.com')]"
-                    },
-                    "webHookUriActivity": {
-                        "value": "[if(equals(parameters('enableMicrosoftTeamsNotification'),'Yes'), reference('logicAppTemplate','2018-05-01').outputs.WebHookURIActivity.value, 'http://example.com')]"
+                    "webHookUri": {
+                        "value": "[if(equals(parameters('enableMicrosoftTeamsNotification'),'Yes'), reference('logicAppTemplate','2018-05-01').outputs.WebHookURI.value, 'http://example.com')]"
                     }
                 }
             }
@@ -385,11 +376,7 @@
                         "value": "[parameters('deployAndUseDataShare')]"
                     },
                   
-                    "webHookUriPipeline": {
-                        "value": "http://example.com"
-                    },
-                    "webHookUriActivity": {
-
+                    "webHookUri": {
                         "value": "http://example.com"
                     }
                 }

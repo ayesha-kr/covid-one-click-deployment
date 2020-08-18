@@ -186,7 +186,7 @@ If you are using data share to get data from public environment into customer en
 
 ![data share customer](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/customer/images/data%20share/14.png)
 
-5. Provide the storage account name (the one deployed currently) along with other options and give the container name as **staging**. Click *Map to target*.
+5. Provide the storage account name (the one deployed currently) along with other options and give the container name or Path as **ReceivedCopy**. Click *Map to target*.
 
 ![data share customer](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/customer/images/data%20share/15.png)
 

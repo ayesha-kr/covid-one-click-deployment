@@ -2777,7 +2777,7 @@
                             "location": {
                                 "type": "AzureBlobStorageLocation",
                                 "fileName": "covid_tracking.csv",
-                                "folderPath": "public/curated/covid-19/covid_definitiveHC/latest",
+                                "folderPath": "curated/covid-19/covid_definitiveHC/latest",
                                 "container": "staging"
                             },
                             "columnDelimiter": ",",

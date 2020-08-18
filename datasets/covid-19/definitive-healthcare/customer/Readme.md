@@ -12,14 +12,25 @@
 #### To be provided:
 1. Resource Group
 2. Data Factory Name
-3. Storage Account Name
-4. Option (Yes or No) to deploy or not to deploy SQL Server, SQL Database and SQL sink within the pipeline.
-5. SQL Server Name (If selected 'Yes')
-6. SQL Database Name (If selected 'Yes')
-7. SQL Login Administrator Username (If selected 'Yes').
-8. SQL Login Administrator Password (If selected 'Yes').
-
-**NOTE** - If you go with SQL sink, the name of the table where data is written is _**covid_tracking**_.
+3. data Factory Location
+4. Storage Account Name
+5. Public Storage Account Name
+6. Sas URI
+7. SQL Server Name
+8. Location
+5. Option (Yes or No) to deploy or not to deploy SQL Server, SQL Database and SQL sink within the pipeline.
+6. SQL Login Administrator Username
+7. SQL Login Administrator Password
+8. Option (true or false) to allow azure services to access sql server.
+9. SQL Database Name
+10. SQL Data Warehouse Name.
+11. Service Level Objective
+12. Option (SQL Database, Synapse Database Warehouse, Both) for data loader.
+13. Notification Email
+14. Option (Yes or No) to enable Microsoft Teams Notifications
+15. Logic App Name
+16. Data Share Account Name.
+17. Option (Yes or No) to deploy and use data share.
 
 Click the following button to deploy all the resources.
 

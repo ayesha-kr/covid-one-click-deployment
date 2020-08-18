@@ -1,3 +1,15 @@
+# Table Of Contents
+
+1. Introduction
+2. Open COVID-19 datasets
+3. Data Flow Architecture Diagram
+4. Data Flow deployment steps
+5. CI/CD setup for Azure Data Factory
+6. Connect Azure Boards with the Github Repo
+7. Add Metric Alerts to Azure Datafactory Pipelines
+8. Configure Data Share
+9. Contact us
+
 # One Click Deployment of Covid-19 Data Flow
 This is a guide for processing the following open Covid-19 datasets, using the Microsoft Azure data factory. 
 
@@ -40,6 +52,31 @@ Please follow the instructions given in the following link to connect Azure Boar
 
 [Connect Azure Boards to Github](https://docs.microsoft.com/en-us/azure/devops/boards/github/connect-to-github?view=azure-devops)
 
-## 7. Contact us
+
+## 7. Add Metric Alerts to Azure Datafactory Pipelines
+
+Alerts come in handy when we want feedback on failure or cancellation of pipeline or its respective activities. We get debugging information out of the box which helps save alot of effort and reduce downtime. 
+
+Follow the instructions given in the following link to setup alerts:-
+
+For Public Environment Alerts:- 
+
+[Setup Metric Alerts_Public Environment](./datasets/covid-19/definitive-healthcare/customer/Readme.md)
+
+For Customer Environment Alerts:- 
+
+[Setup Metric Alerts_Customer Environment](./datasets/covid-19/definitive-healthcare/public/Readme.md)
+
+## 8. Configure Data Share
+
+If you are using data share to get data from public environment into customer environment then you need setup data share account and a share on the public side and send a notification to the customer side where too a data share account must be present to accept the invitation. To deploy Data Share account on either of the two environments, you will need to select the option Yes/No to do so. If Yes is selected at public side, then the data share account and a share will be deployed at public side while if you select Yes on the customer side, only a data share account will be deployed and the data pipeline that will be deployed will be the one without copy data activity that copies data from public staorage to the customer one.
+
+You can follow the instructions given in the following link to set up Data share account and create/accept invitation and other configurations:-
+
+[Azure Data Share](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/customer/Readme.md)
+
+
+## 9. Contact us
+
 We hope that this blog is helpful for you. In case you have any questions, feel free to reach out to us at ayesha.khaliq@emumba.com OR hamza.rashid@emumba.com.
 

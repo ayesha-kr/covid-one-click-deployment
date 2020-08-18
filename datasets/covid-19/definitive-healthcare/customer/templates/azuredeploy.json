@@ -29,14 +29,6 @@
             "type": "string",
             "defaultValue": "Specify the sasURI of public blob storage"
         },
-        "containerName1": {
-            "defaultValue": "public",
-            "type": "string"
-        },
-        "containerName2": {
-            "defaultValue": "staging",
-            "type": "string"
-        },
         "sqlServerName": {
             "type": "string",
             "defaultValue": "democustomerdbserver",
@@ -46,14 +38,14 @@
         },
         "location": {
             "type": "string",
-            "defaultValue": "[resourceGroup().location]",
+            "defaultValue": "eastus",
             "metadata": {
                 "description": "Location for all resources."
             }
         },
         "sqlAdministratorLogin": {
             "type": "string",
-            "defaultValue": "emumba",
+            "defaultValue": "masteruser",
             "metadata": {
                 "description": "Your login name must not contain a SQL Identifier or a typical system name (like admin, administrator, sa, root, dbmanager, loginmanager, etc.) or a built-in database user or role (like dbo, guest, public, etc.)"
             }
@@ -65,11 +57,11 @@
                 "description": "Your password must be at least 8 characters in length. Your password must contain characters from three of the following categories – English uppercase letters, English lowercase letters, numbers (0-9), and non-alphanumeric characters (!, $, #, %, etc.) Your password cannot contain all or part of the login name. Part of a login name is defined as three or more consecutive alphanumeric characters."
             }
         },
-        "allowAzureIPs": {
+        "allowAzureServicesToAccessSqlServer": {
             "defaultValue": true,
             "type": "bool",
             "metadata": {
-                "description": "Allow Azure services to access server."
+                "description": "By selecting Yes option, it allow Azure services to access SQL server. It is required so that Azure Data Factory can access SQL server "
             }
         },
         "sqlConnectionType": {
@@ -113,7 +105,7 @@
             "defaultValue": "DW100c",
             "type": "string",
             "metadata": {
-                "description": "Data warehouse tier."
+                "description": "DW100c is the most basic/smallest data warehouse compute tier. Max value can be upto DW30000c"
             }
         },
         "selectDataLoader": {
@@ -160,7 +152,7 @@
                 "No"
             ],
             "metadata": {
-                "description": "Please specify if you want to deploy Datashare."
+                "description": "Please select Yes if you have enabled/deployed data share in public environment."
             },
             "defaultValue": "No"
         }
@@ -171,7 +163,8 @@
         "sqlServerUniqueName": "[concat(parameters('sqlServerName'), uniqueString(resourceGroup().id))]",
         "dataFactoryUniqueName": "[concat(parameters('dataFactoryName'), uniqueString(resourceGroup().id))]",
         "webHookUri": "",
-        "dataShareAccountName": "[concat(parameters('dataShareAccountName'), uniquestring(resourceGroup().id))]"
+        "dataShareAccountName": "[concat(parameters('dataShareAccountName'), uniquestring(resourceGroup().id))]",
+        "stagingContainer": "receivedcopy"
     },
     "resources": [
         {
@@ -190,11 +183,8 @@
                     "location": {
                         "value": "[parameters('location')]"
                     },
-                    "containerName1": {
-                        "value": "[parameters('containerName1')]"
-                    },
-                    "containerName2": {
-                        "value": "[parameters('containerName2')]"
+                    "stagingContainer": {
+                        "value": "[variables('stagingContainer')]"
                     }
                 }
             }
@@ -224,8 +214,8 @@
                     "sqlAdministratorLoginPassword": {
                         "value": "[parameters('sqlAdministratorLoginPassword')]"
                     },
-                    "allowAzureIPs": {
-                        "value": "[parameters('allowAzureIPs')]"
+                    "allowAzureServicesToAccessSqlServer": {
+                        "value": "[parameters('allowAzureServicesToAccessSqlServer')]"
                     },
                     "sqlConnectionType": {
                         "value": "[parameters('sqlConnectionType')]"
@@ -322,11 +312,8 @@
                     "notificationEmail": {
                         "value": "[parameters('notificationEmail')]"
                     },
-                    "webHookUriPipeline": {
-                        "value": "[if(equals(parameters('enableMicrosoftTeamsNotification'),'Yes'), reference('logicAppTemplate','2018-05-01').outputs.WebHookURIPipeline.value, 'http://example.com')]"
-                    },
-                    "webHookUriActivity": {
-                        "value": "[if(equals(parameters('enableMicrosoftTeamsNotification'),'Yes'), reference('logicAppTemplate','2018-05-01').outputs.WebHookURIActivity.value, 'http://example.com')]"
+                    "webHookUri": {
+                        "value": "[if(equals(parameters('enableMicrosoftTeamsNotification'),'Yes'), reference('logicAppTemplate','2018-05-01').outputs.WebHookURI.value, 'http://example.com')]"
                     }
                 }
             }
@@ -385,11 +372,7 @@
                         "value": "[parameters('deployAndUseDataShare')]"
                     },
                   
-                    "webHookUriPipeline": {
-                        "value": "http://example.com"
-                    },
-                    "webHookUriActivity": {
-
+                    "webHookUri": {
                         "value": "http://example.com"
                     }
                 }

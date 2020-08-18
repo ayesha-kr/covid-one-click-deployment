@@ -63,11 +63,7 @@
                 "description": "Please specify comma separated email addresses on which you would like to receive the ADF pipeline alerts."
             }
         },
-        "webHookUriPipeline": {
-            "type": "string"
-
-        },
-        "webHookUriActivity": {
+        "webHookUri": {
             "type": "string"
 
         }
@@ -530,7 +526,7 @@
                                     "name": "roundOffLatAndLong"
                                 }
                             ],
-                            "script": "parameters{\n\tfilename as string ('covid_tracking'),\n\trunid as string ('runtime_guid')\n}\nsource(output(\n\t\tOBJECTID as string,\n\t\tX as string,\n\t\tY as string,\n\t\tHOSPITAL_NAME as string,\n\t\tHOSPITAL_TYPE as string,\n\t\tHQ_ADDRESS as string,\n\t\tHQ_ADDRESS1 as string,\n\t\tHQ_CITYString as string,\n\t\tHQ_STATE as string,\n\t\tHQ_ZIP_CODE as string,\n\t\tCOUNTY_NAME as string,\n\t\tSTATE_NAME as string,\n\t\tSTATE_FIPS as string,\n\t\tCNTY_FIPS as string,\n\t\tFIPS as string,\n\t\tNUM_LICENSED_BEDS as string,\n\t\tNUM_STAFFED_BEDS as string,\n\t\tNUM_ICU_BEDS as string,\n\t\tADULT_ICU_BEDS as string,\n\t\tPEDI_ICU_BEDS as string,\n\t\tBED_UTILIZATION as string,\n\t\tPotential_Increase_In_Bed_Capac as string,\n\t\tAVG_VENTILATOR_USAGE as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\trowUrlColumn: 'lineage') ~> sourceCSV\nroundOffLatAndLong select(mapColumn(\n\t\tRow_ID,\n\t\tLoad_Date,\n\t\tLoad_Time,\n\t\tLongitude,\n\t\tLatitude,\n\t\tHospital_Name,\n\t\tHospital_Type,\n\t\tHq_Address,\n\t\tHq_Address1,\n\t\tHq_Citystring,\n\t\tHq_State,\n\t\tHq_Zip_Code,\n\t\tCounty_Name,\n\t\tState_Name,\n\t\tState_Fips,\n\t\tCnty_Fips,\n\t\tFips,\n\t\tNum_Licensed_Beds,\n\t\tNum_Staffed_Beds,\n\t\tNum_Icu_Beds,\n\t\tAdult_Icu_Beds,\n\t\tPedi_Icu_Beds,\n\t\tBed_Utilization,\n\t\tPotential_Increase_In_Bed_Capac,\n\t\tAvg_Ventilator_Usage\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> DropLineageColumn\nsourceCSV derive(load_time = substring(toString(currentTimestamp()), 12,25),\n\t\tload_date = currentDate()) ~> LoadDateAndLoadTimestamp\nLoadDateAndLoadTimestamp select(mapColumn(\n\t\teach(patternMatch(`.*`),\n\t\t\tregexReplace(initCap(regexReplace($$,'_',' ')),' ','_') = $$)\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ModifyHeadingStyle\nModifyHeadingStyle select(mapColumn(\n\t\tRow_ID = Objectid,\n\t\tLoad_Date,\n\t\tLoad_Time,\n\t\tLongitude = X,\n\t\tLatitude = Y,\n\t\tHospital_Name,\n\t\tHospital_Type,\n\t\tHq_Address,\n\t\tHq_Address1,\n\t\tHq_Citystring,\n\t\tHq_State,\n\t\tHq_Zip_Code,\n\t\tCounty_Name,\n\t\tState_Name,\n\t\tState_Fips,\n\t\tCnty_Fips,\n\t\tFips,\n\t\tNum_Licensed_Beds,\n\t\tNum_Staffed_Beds,\n\t\tNum_Icu_Beds,\n\t\tAdult_Icu_Beds,\n\t\tPedi_Icu_Beds,\n\t\tBed_Utilization,\n\t\tPotential_Increase_In_Bed_Capac,\n\t\tAvg_Ventilator_Usage,\n\t\tLineage\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> RenameAndRearrange\nRenameAndRearrange derive(Longitude = round(toDouble(Longitude),3),\n\t\tLatitude = round(toDouble(Latitude),3)) ~> roundOffLatAndLong\nDropLineageColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:[(concat($filename, '.csv'))],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SinkLatestCSV\nDropLineageColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:[(concat($filename, '.jsonl'))],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sinkLatestJsonl\nDropLineageColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:[(concat($filename,'_', $runid,'.csv'))],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SinkCSV\nDropLineageColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:[(concat($filename,'_', $runid,'.jsonl'))],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sinkJsonl\nDropLineageColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'parquet',\n\tpartitionFileNames:[(concat($filename, '.parquet'))],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sinkLatestParquet\nDropLineageColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'parquet',\n\tpartitionFileNames:[(concat($filename,'_', $runid,'.parquet'))],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sinkParquet\nDropLineageColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sinkSQL"
+                            "script": "parameters{\n\tfilename as string ('covid_tracking'),\n\trunid as string ('runtime_guid')\n}\nsource(output(\n\t\tOBJECTID as string,\n\t\tX as string,\n\t\tY as string,\n\t\tHOSPITAL_NAME as string,\n\t\tHOSPITAL_TYPE as string,\n\t\tHQ_ADDRESS as string,\n\t\tHQ_ADDRESS1 as string,\n\t\tHQ_CITYString as string,\n\t\tHQ_STATE as string,\n\t\tHQ_ZIP_CODE as string,\n\t\tCOUNTY_NAME as string,\n\t\tSTATE_NAME as string,\n\t\tSTATE_FIPS as string,\n\t\tCNTY_FIPS as string,\n\t\tFIPS as string,\n\t\tNUM_LICENSED_BEDS as string,\n\t\tNUM_STAFFED_BEDS as string,\n\t\tNUM_ICU_BEDS as string,\n\t\tADULT_ICU_BEDS as string,\n\t\tPEDI_ICU_BEDS as string,\n\t\tBED_UTILIZATION as string,\n\t\tPotential_Increase_In_Bed_Capac as string,\n\t\tAVG_VENTILATOR_USAGE as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\trowUrlColumn: 'lineage') ~> sourceCSV\nroundOffLatAndLong select(mapColumn(\n\t\tRow_ID,\n\t\tLoad_Date,\n\t\tLoad_Time,\n\t\tLongitude,\n\t\tLatitude,\n\t\tHospital_Name,\n\t\tHospital_Type,\n\t\tHq_Address,\n\t\tHq_Address1,\n\t\tHq_Citystring,\n\t\tHq_State,\n\t\tHq_Zip_Code,\n\t\tCounty_Name,\n\t\tState_Name,\n\t\tState_Fips,\n\t\tCnty_Fips,\n\t\tFips,\n\t\tNum_Licensed_Beds,\n\t\tNum_Staffed_Beds,\n\t\tNum_Icu_Beds,\n\t\tAdult_Icu_Beds,\n\t\tPedi_Icu_Beds,\n\t\tBed_Utilization,\n\t\tPotential_Increase_In_Bed_Capac,\n\t\tAvg_Ventilator_Usage\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> DropLineageColumn\nsourceCSV derive(load_time = substring(toString(currentTimestamp()), 12,25),\n\t\tload_date = currentDate()) ~> LoadDateAndLoadTimestamp\nLoadDateAndLoadTimestamp select(mapColumn(\n\t\teach(patternMatch(`.*`),\n\t\t\tregexReplace(initCap(regexReplace($$,'_',' ')),' ','_') = $$)\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ModifyHeadingStyle\nModifyHeadingStyle select(mapColumn(\n\t\tRow_ID = Objectid,\n\t\tLoad_Date,\n\t\tLoad_Time,\n\t\tLongitude = X,\n\t\tLatitude = Y,\n\t\tHospital_Name,\n\t\tHospital_Type,\n\t\tHq_Address,\n\t\tHq_Address1,\n\t\tHq_Citystring,\n\t\tHq_State,\n\t\tHq_Zip_Code,\n\t\tCounty_Name,\n\t\tState_Name,\n\t\tState_Fips,\n\t\tCnty_Fips,\n\t\tFips,\n\t\tNum_Licensed_Beds,\n\t\tNum_Staffed_Beds,\n\t\tNum_Icu_Beds,\n\t\tAdult_Icu_Beds,\n\t\tPedi_Icu_Beds,\n\t\tBed_Utilization,\n\t\tPotential_Increase_In_Bed_Capac,\n\t\tAvg_Ventilator_Usage,\n\t\tLineage\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> RenameAndRearrange\nRenameAndRearrange derive(Longitude = round(toDouble(Longitude),3),\n\t\tLatitude = round(toDouble(Latitude),3)) ~> roundOffLatAndLong\nDropLineageColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:[(concat($filename, '.csv'))],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SinkLatestCSV\nDropLineageColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:[(concat($filename, '.jsonl'))],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sinkLatestJsonl\nDropLineageColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:[(concat($filename,'_', $runid,'.csv'))],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SinkCSV\nDropLineageColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:[(concat($filename,'_', $runid,'.jsonl'))],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sinkJsonl\nDropLineageColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'parquet',\n\tpartitionFileNames:[(concat($filename, '.parquet'))],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sinkLatestParquet\nDropLineageColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'parquet',\n\tpartitionFileNames:[(concat($filename,'_', $runid,'.parquet'))],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sinkParquet\nDropLineageColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sinkSQL"
                         }
                     },
                     "dependsOn": [
@@ -1566,11 +1562,11 @@
                             },
                             "rawBlobDirectory": {
                                 "type": "string",
-                                "defaultValue": "raw/covid-19/covid_tracking"
+                                "defaultValue": "raw/covid-19/covid_definitiveHC"
                             },
                             "curatedBlobDirectory": {
                                 "type": "string",
-                                "defaultValue": "curated/covid-19/covid_tracking"
+                                "defaultValue": "curated/covid-19/covid_definitiveHC"
                             },
                             "filename": {
                                 "type": "string",
@@ -2474,11 +2470,11 @@
                             },
                             "rawBlobDirectory": {
                                 "type": "string",
-                                "defaultValue": "raw/covid-19/covid_tracking"
+                                "defaultValue": "raw/covid-19/covid_definitiveHC"
                             },
                             "curatedBlobDirectory": {
                                 "type": "string",
-                                "defaultValue": "curated/covid-19/covid_tracking"
+                                "defaultValue": "curated/covid-19/covid_definitiveHC"
                             },
                             "filename": {
                                 "type": "string",
@@ -2565,10 +2561,10 @@
                 {
                     "type": "Microsoft.Insights/actionGroups",
                     "apiVersion": "2018-03-01",
-                    "name": "NotificationPipelineFailure",
+                    "name": "NotificationAlertFromADF",
                     "location": "Global",
                     "properties": {
-                        "groupShortName": "pipelineFail",
+                        "groupShortName": "ADFalerts",
                         "enabled": true,
                         "emailReceivers": [
                             {
@@ -2579,32 +2575,7 @@
                         "webhookReceivers": [
                             {
                                 "name": "msftTeamsNotify",
-                                "serviceUri": "[parameters('webHookUriPipeline')]"
-                            }
-                        ]
-                    },
-                    "dependsOn": [
-                        "[parameters('factoryName')]"
-                    ]
-                },
-                {
-                    "type": "Microsoft.Insights/actionGroups",
-                    "apiVersion": "2018-03-01",
-                    "name": "NotificationActivityFailure",
-                    "location": "Global",
-                    "properties": {
-                        "groupShortName": "activityFail",
-                        "enabled": true,
-                        "emailReceivers": [
-                            {
-                                "name": "notifEmail",
-                                "emailAddress": "[parameters('notificationEmail')]"
-                            }
-                        ],
-                        "webhookReceivers": [
-                            {
-                                "name": "msftTeamsNotify",
-                                "serviceUri": "[parameters('webHookUriActivity')]"
+                                "serviceUri": "[parameters('webHookUri')]"
                             }
                         ]
                     },
@@ -2652,13 +2623,13 @@
                         },
                         "actions": [
                             {
-                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationPipelineFailure')]"
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationAlertFromADF')]"
                             }
                         ]
                     },
                     "dependsOn": [
                         "[parameters('factoryName')]",
-                        "NotificationPipelineFailure"
+                        "NotificationAlertFromADF"
                     ]
                 },
                 {
@@ -2696,13 +2667,13 @@
                         },
                         "actions": [
                             {
-                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationPipelineFailure')]"
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationAlertFromADF')]"
                             }
                         ]
                     },
                     "dependsOn": [
                         "[parameters('factoryName')]",
-                        "NotificationPipelineFailure"
+                        "NotificationAlertFromADF"
                     ]
                 },
                 {
@@ -2755,13 +2726,13 @@
                         },
                         "actions": [
                             {
-                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationActivityFailure')]"
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationAlertFromADF')]"
                             }
                         ]
                     },
                     "dependsOn": [
                         "[parameters('factoryName')]",
-                        "NotificationActivityFailure"
+                        "NotificationAlertFromADF"
                     ]
                 },
                 {
@@ -2809,13 +2780,13 @@
                         },
                         "actions": [
                             {
-                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationActivityFailure')]"
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationAlertFromADF')]"
                             }
                         ]
                     },
                     "dependsOn": [
                         "[parameters('factoryName')]",
-                        "NotificationActivityFailure"
+                        "NotificationAlertFromADF"
                     ]
                 },
                 {
@@ -2842,7 +2813,7 @@
                                         {
                                             "name": "Name",
                                             "operator": "Include",
-                                            "values": [ "Covid_Tracking_DefinitiveHC_Without_Sql_Sink" ]
+                                            "values": [ "CovidDefinitiveHC-Trigger_Without_Sql_Sink" ]
                                         }
                                     ],
                                     "operator": "GreaterThanOrEqual",
@@ -2853,13 +2824,13 @@
                         },
                         "actions": [
                             {
-                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationPipelineFailure')]"
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationAlertFromADF')]"
                             }
                         ]
                     },
                     "dependsOn": [
                         "[parameters('factoryName')]",
-                        "NotificationPipelineFailure"
+                        "NotificationAlertFromADF"
                     ]
                 },
                 {
@@ -2886,7 +2857,12 @@
                                         {
                                             "name": "Name",
                                             "operator": "Include",
-                                            "values": [ "Covid_Tracking_DefinitiveHC_Without_Sql_Sink" ]
+                                            "values": [ "CovidDefinitiveHC-Trigger_Without_Sql_Sink" ]
+                                        },
+                                        {
+                                            "name": "FailureType",
+                                            "operator": "Include",
+                                            "values": [ "UserError", "SystemError", "BadGateway" ]
                                         }
                                     ],
                                     "operator": "GreaterThanOrEqual",
@@ -2897,13 +2873,13 @@
                         },
                         "actions": [
                             {
-                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationPipelineFailure')]"
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationAlertFromADF')]"
                             }
                         ]
                     },
                     "dependsOn": [
                         "[parameters('factoryName')]",
-                        "NotificationPipelineFailure"
+                        "NotificationAlertFromADF"
                     ]
                 },
                 {
@@ -2936,7 +2912,7 @@
                             "scopeType": "Resource",
                             "values": [
                                 "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('factoryName'))]",
-                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/actionGroups/', 'NotificationPipelineFailure')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/actionGroups/', 'NotificationAlertFromADF')]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'covidTrackingWithoutSqlActivityFailedAlertConfig')]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'covidTrackingWithoutSqlPipelineFailedAlertConfig')]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'covidTrackingWithoutSqlTriggerFailedAlertConfig')]",
@@ -2948,7 +2924,7 @@
                     },
                     "dependsOn": [
                         "[parameters('factoryName')]",
-                        "NotificationPipelineFailure",
+                        "NotificationAlertFromADF",
                         "covidTrackingWithoutSqlPipelineFailedAlertConfig",
                         "covidTrackingWithoutSqlActivityFailedAlertConfig",
                         "covidTrackingWithoutSqlTriggerFailedAlertConfig",
@@ -2998,13 +2974,13 @@
                         },
                         "actions": [
                             {
-                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationPipelineFailure')]"
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationAlertFromADF')]"
                             }
                         ]
                     },
                     "dependsOn": [
                         "[parameters('factoryName')]",
-                        "NotificationPipelineFailure"
+                        "NotificationAlertFromADF"
                     ]
                 },
                 {
@@ -3042,13 +3018,13 @@
                         },
                         "actions": [
                             {
-                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationPipelineFailure')]"
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationAlertFromADF')]"
                             }
                         ]
                     },
                     "dependsOn": [
                         "[parameters('factoryName')]",
-                        "NotificationPipelineFailure"
+                        "NotificationAlertFromADF"
                     ]
                 },
                 {
@@ -3101,13 +3077,13 @@
                         },
                         "actions": [
                             {
-                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationActivityFailure')]"
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationAlertFromADF')]"
                             }
                         ]
                     },
                     "dependsOn": [
                         "[parameters('factoryName')]",
-                        "NotificationActivityFailure"
+                        "NotificationAlertFromADF"
                     ]
                 },
                 {
@@ -3155,13 +3131,13 @@
                         },
                         "actions": [
                             {
-                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationActivityFailure')]"
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationAlertFromADF')]"
                             }
                         ]
                     },
                     "dependsOn": [
                         "[parameters('factoryName')]",
-                        "NotificationActivityFailure"
+                        "NotificationAlertFromADF"
                     ]
                 },
                 {
@@ -3188,7 +3164,12 @@
                                         {
                                             "name": "Name",
                                             "operator": "Include",
-                                            "values": [ "Covid_Tracking_DefinitiveHC_With_Sql_Sink" ]
+                                            "values": [ "CovidDefinitiveHC-Trigger_With_Sql_Sink" ]
+                                        },
+                                        {
+                                            "name": "FailureType",
+                                            "operator": "Include",
+                                            "values": [ "UserError", "SystemError", "BadGateway" ]
                                         }
                                     ],
                                     "operator": "GreaterThanOrEqual",
@@ -3199,13 +3180,13 @@
                         },
                         "actions": [
                             {
-                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationPipelineFailure')]"
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationAlertFromADF')]"
                             }
                         ]
                     },
                     "dependsOn": [
                         "[parameters('factoryName')]",
-                        "NotificationPipelineFailure"
+                        "NotificationAlertFromADF"
                     ]
                 },
                 {
@@ -3232,7 +3213,7 @@
                                         {
                                             "name": "Name",
                                             "operator": "Include",
-                                            "values": [ "Covid_Tracking_DefinitiveHC_With_Sql_Sink" ]
+                                            "values": [ "CovidDefinitiveHC-Trigger_With_Sql_Sink" ]
                                         }
                                     ],
                                     "operator": "GreaterThanOrEqual",
@@ -3243,13 +3224,13 @@
                         },
                         "actions": [
                             {
-                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationPipelineFailure')]"
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationAlertFromADF')]"
                             }
                         ]
                     },
                     "dependsOn": [
                         "[parameters('factoryName')]",
-                        "NotificationPipelineFailure"
+                        "NotificationAlertFromADF"
                     ]
                 },
                 {
@@ -3282,7 +3263,7 @@
                             "scopeType": "Resource",
                             "values": [
                                 "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('factoryName'))]",
-                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/actionGroups/', 'NotificationPipelineFailure')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/actionGroups/', 'NotificationAlertFromADF')]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'covidTrackingWithSqlActivityFailedAlertConfig')]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'covidTrackingWithSqlPipelineFailedAlertConfig')]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'covidTrackingWithSqlPipelineCancelledAlertConfig')]",
@@ -3294,7 +3275,7 @@
                     },
                     "dependsOn": [
                         "[parameters('factoryName')]",
-                        "NotificationPipelineFailure",
+                        "NotificationAlertFromADF",
                         "covidTrackingWithSqlPipelineFailedAlertConfig",
                         "covidTrackingWithSqlActivityFailedAlertConfig",
                         "covidTrackingWithSqlActivityCancelledAlertConfig",

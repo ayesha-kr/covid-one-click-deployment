@@ -53,7 +53,7 @@
             "metadata": {
                 "description": "Your login name must not contain a SQL Identifier or a typical system name (like admin, administrator, sa, root, dbmanager, loginmanager, etc.) or a built-in database user or role (like dbo, guest, public, etc.)"
             },
-            "defaultValue": "demo"
+            "defaultValue": "masteruser"
         },
         "sqlAdministratorLoginPassword": {
             "type": "securestring",
@@ -262,11 +262,8 @@
                     "notificationEmail": {
                         "value": "[parameters('notificationEmail')]"
                     },
-                    "webHookUriPipeline": {
-                        "value": "[if(equals(parameters('enableMicrosoftTeamsNotification'),'Yes'), reference('logicAppTemplate','2018-05-01').outputs.WebHookURIPipeline.value, 'http://example.com')]"
-                    },
-                    "webHookUriActivity": {
-                        "value": "[if(equals(parameters('enableMicrosoftTeamsNotification'),'Yes'), reference('logicAppTemplate','2018-05-01').outputs.WebHookURIActivity.value, 'http://example.com')]"
+                    "webHookUri": {
+                        "value": "[if(equals(parameters('enableMicrosoftTeamsNotification'),'Yes'), reference('logicAppTemplate','2018-05-01').outputs.WebHookURI.value, 'http://example.com')]"
                     }
                 }
             }
@@ -315,10 +312,7 @@
                     "notificationEmail": {
                         "value": "[parameters('notificationEmail')]"
                     },
-                    "webHookUriPipeline": {
-                        "value": "http://example.com"
-                    },
-                    "webHookUriActivity": {
+                    "webHookUri": {
                         "value": "http://example.com"
                     }
                 }

@@ -152,11 +152,16 @@ If you are using data share to get data from public environment into customer en
 
 ![data share public](https://github.com/ayesha-kr/covid-one-click-deployment/blob/osama-dev/datasets/covid-19/definitive-healthcare/customer/images/data%20share/7.png)
 
-6. Now under **Invitations** tab click **Add recipient**.
+6. Optionally you can enable the share subscription under *Settings* or *Share Subscriptions* tab.
+
+![data share public](https://github.com/ayesha-kr/covid-one-click-deployment/blob/osama-dev/datasets/covid-19/definitive-healthcare/customer/images/data%20share/7-a.png)
+
+
+7. Now under **Invitations** tab click **Add recipient**.
 
 ![data share public](https://github.com/ayesha-kr/covid-one-click-deployment/blob/osama-dev/datasets/covid-19/definitive-healthcare/customer/images/data%20share/8.png)
 
-7. In the blade opened, click **Add recipient** and provide the customer side email and click **Add and send invitation**.
+8. In the blade opened, click **Add recipient** and provide the customer side email and click **Add and send invitation**.
 
 ![data share public](https://github.com/ayesha-kr/covid-one-click-deployment/blob/osama-dev/datasets/covid-19/definitive-healthcare/customer/images/data%20share/9.png)
 

@@ -43,9 +43,11 @@ Please follow the instructions given in the following link to connect Azure Boar
 
 ## 7. Configure Data Share
 
-If you are using data share to get data from public environment into customer environment then you need to follow the steps given below after you have run the public side pipeline:
+If you are using data share to get data from public environment into customer environment then you need setup data share account and a share on the public side and send a notification to the customer side where too a data share account must be present to accept the invitation. To deploy Data Share account on either of the two environments, you will need to select the option Yes/No to do so. If Yes is selected at public side, then the data share account and a share will be deployed at public side while if you select Yes on the customer side, only a data share account will be deployed and the data pipeline that will be deployed will the one with copy data activity that copies data from public staorage to the customer one.
 
-### Data Share setup: Public Side
+You can follow the instructions given in the following link to set up Data share account and create/accept invitation and other configurations:-
+
+[Azure Data Factory CICD](./datasets/covid-19/definitive-healthcare/customer/readme.md)
 
 1. Open the Data Share Account.
 

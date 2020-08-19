@@ -1636,7 +1636,7 @@
                 },
                 {
                     "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'No')]",
-                    "name": "[concat(parameters('factoryName'), '/CovidDNewYorkTimes-Trigger_Without_Sql_Sink')]",
+                    "name": "[concat(parameters('factoryName'), '/CovidNewYorkTimes-Trigger_Without_Sql_Sink')]",
                     "type": "Microsoft.DataFactory/factories/triggers",
                     "apiVersion": "2018-06-01",
                     "properties": {

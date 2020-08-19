@@ -422,7 +422,7 @@
                             "type": "LinkedServiceReference"
                         },
                         "folder": {
-                            "name": "CovidNweYorkTimes/Sinks"
+                            "name": "CovidNewYorkTimes/Sinks"
                         },
                         "annotations": [],
                         "type": "AzureSqlTable",
@@ -1125,7 +1125,7 @@
                             },
                             "curatedBlobDirectory": {
                                 "type": "string",
-                                "defaultValue": "curated/covid-19/NewYorkTimes"
+                                "defaultValue": "curated/covid-19/covid_NewYorkTimes"
                             },
                             "filename": {
                                 "type": "string",
@@ -1133,7 +1133,7 @@
                             }
                         },
                         "folder": {
-                            "name": "Case Data"
+                            "name": "CovidNewYorkTimes/BlobStorageDataExtraction"
                         },
                         "annotations": [
                             "covidtracking"
@@ -1607,11 +1607,11 @@
                             },
                             "rawBlobDirectory": {
                                 "type": "string",
-                                "defaultValue": "raw/covid-19/NewYorkTimes"
+                                "defaultValue": "raw/covid-19/covid_NewYorkTimes"
                             },
                             "curatedBlobDirectory": {
                                 "type": "string",
-                                "defaultValue": "curated/covid-19/NewYorkTimes"
+                                "defaultValue": "curated/covid-19/covid_NewYorkTimes"
                             },
                             "filename": {
                                 "type": "string",
@@ -1619,7 +1619,7 @@
                             }
                         },
                         "folder": {
-                            "name": "Case Data"
+                            "name": "CovidNewYorkTimes/BlobStorageAndSqlDataExtraction"
                         },
                         "annotations": [
                             "covidtracking"

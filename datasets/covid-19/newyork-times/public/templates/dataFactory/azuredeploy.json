@@ -637,7 +637,7 @@
                         "annotations": [],
                         "type": "HttpServer",
                         "typeProperties": {
-                            "url": "[parameters('covid_tracking_newyorktimes_http_linkedservice_properties_typeProperties_url')]",
+                            "url": "https://raw.githubusercontent.com/",
                             "enableServerCertificateValidation": true,
                             "authenticationType": "Anonymous"
                         }
@@ -1121,11 +1121,11 @@
                             },
                             "rawBlobDirectory": {
                                 "type": "string",
-                                "defaultValue": "raw/covid-19/covid_tracking"
+                                "defaultValue": "raw/covid-19/covid_NewYorkTimes"
                             },
                             "curatedBlobDirectory": {
                                 "type": "string",
-                                "defaultValue": "curated/covid-19/covid_tracking"
+                                "defaultValue": "curated/covid-19/NewYorkTimes"
                             },
                             "filename": {
                                 "type": "string",
@@ -1607,11 +1607,11 @@
                             },
                             "rawBlobDirectory": {
                                 "type": "string",
-                                "defaultValue": "raw/covid-19/covid_tracking"
+                                "defaultValue": "raw/covid-19/NewYorkTimes"
                             },
                             "curatedBlobDirectory": {
                                 "type": "string",
-                                "defaultValue": "curated/covid-19/covid_tracking"
+                                "defaultValue": "curated/covid-19/NewYorkTimes"
                             },
                             "filename": {
                                 "type": "string",

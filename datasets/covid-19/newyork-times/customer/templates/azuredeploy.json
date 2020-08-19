@@ -1,0 +1,405 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "dataFactoryName": {
+            "type": "string",
+            "defaultValue": "demoCustomerADF",
+            "metadata": {
+                "description": "The name you provide will be appended with a unique sting to make it globally available. The name can contain only letters, numbers and hyphens. The first and last characters must be a letter or number. Spaces are not allowed."
+            }
+        },
+        "dataFactoryLocation": {
+            "defaultValue": "East US",
+            "type": "string",
+            "metadata": {}
+        },
+        "storageAccountName": {
+            "defaultValue": "demoenvsa",
+            "type": "string",
+            "metadata": {
+                "description": "The name you provide will be appended with a unique sting to make it globally available. The field can contain only lowercase letters and numbers. Name must be between 1 and 11 characters."
+            }
+        },
+        "publicStorageAccountName": {
+            "type": "string",
+            "defaultValue": "covidtrackingdefinitive"
+        },
+        "sasURI": {
+            "type": "string",
+            "defaultValue": "Specify the sasURI of public blob storage"
+        },
+        "sqlServerName": {
+            "type": "string",
+            "defaultValue": "democustomerdbserver",
+            "metadata": {
+                "description": "The name you provide will be appended with a unique sting to make it globally available. Your server name can contain only lowercase letters, numbers, and '-', but can't start or end with '-' or have more than 49 characters."
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "eastus",
+            "metadata": {
+                "description": "Location for all resources."
+            }
+        },
+        "sqlAdministratorLogin": {
+            "type": "string",
+            "defaultValue": "masteruser",
+            "metadata": {
+                "description": "Your login name must not contain a SQL Identifier or a typical system name (like admin, administrator, sa, root, dbmanager, loginmanager, etc.) or a built-in database user or role (like dbo, guest, public, etc.)"
+            }
+        },
+        "sqlAdministratorLoginPassword": {
+            "type": "securestring",
+            "defaultValue": "DemoCustomer2020!@#$",
+            "metadata": {
+                "description": "Your password must be at least 8 characters in length. Your password must contain characters from three of the following categories – English uppercase letters, English lowercase letters, numbers (0-9), and non-alphanumeric characters (!, $, #, %, etc.) Your password cannot contain all or part of the login name. Part of a login name is defined as three or more consecutive alphanumeric characters."
+            }
+        },
+        "allowAzureServicesToAccessSqlServer": {
+            "defaultValue": true,
+            "type": "bool",
+            "metadata": {
+                "description": "By selecting Yes option, it allow Azure services to access SQL server. It is required so that Azure Data Factory can access SQL server "
+            }
+        },
+        "sqlConnectionType": {
+            "defaultValue": "Default",
+            "allowedValues": [
+                "Default",
+                "Redirect",
+                "Proxy"
+            ],
+            "type": "string",
+            "metadata": {
+                "description": "SQL logical server connection type."
+            }
+        },
+        "sqlDBName": {
+            "type": "string",
+            "defaultValue": "democustomersqldb",
+            "metadata": {
+                "description": "Value should not match special patterns. It should contain a length of maximum of 128."
+            }
+        },
+        "dataWarehouseName": {
+            "type": "string",
+            "defaultValue": "democustomerdw",
+            "metadata": {
+                "description": "Value should not match special patterns. It should contain a length of maximum of 128."
+            }
+        },
+        "transparentDataEncryption": {
+            "defaultValue": "Enabled",
+            "type": "string",
+            "allowedValues": [
+                "Enabled",
+                "Disabled"
+            ],
+            "metadata": {
+                "description": "Enable/Disable Transparent Data Encryption"
+            }
+        },
+        "serviceLevelObjective": {
+            "defaultValue": "DW100c",
+            "type": "string",
+            "metadata": {
+                "description": "DW100c is the most basic/smallest data warehouse compute tier. Max value can be upto DW30000c"
+            }
+        },
+        "selectDataLoader": {
+            "type": "string",
+            "allowedValues": [
+                "SQL Database",
+                "Synapse Database Warehouse",
+                "Both"
+            ],
+            "metadata": {
+                "description": "Specify if you want to write the data into SQL database."
+            }
+          },
+          "notificationEmail": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Please specify a single email address where you would like to receive ADF Pipeline alerts."
+            }
+        },
+        "logicAppName": {
+            "defaultValue": "TeamsNotify",
+            "type": "String"
+        },
+        "enableMicrosoftTeamsNotification": {
+            "defaultValue": "Yes",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "type": "string"
+        },
+        "dataShareAccountName": {
+            "type": "string",
+            "defaultValue": "demo_customer_datashare",
+            "metadata": {
+                "description": "Data share account name should have length of 1 - 77, and cannot contain <>%&:\\?/#*$^();,.|-+={}[]!~@"
+            }
+        },
+        "deployAndUseDataShare": {
+            "type": "string",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "metadata": {
+                "description": "Please select Yes if you have enabled/deployed data share in public environment."
+            },
+            "defaultValue": "No"
+        }
+    },
+    "variables": {
+        "databaseCollation": "SQL_Latin1_General_CP1_CI_AS",
+        "storageAccountUniqueName": "[toLower(concat(parameters('storageAccountName'), uniqueString(resourceGroup().id)))]",
+        "sqlServerUniqueName": "[concat(parameters('sqlServerName'), uniqueString(resourceGroup().id))]",
+        "dataFactoryUniqueName": "[concat(parameters('dataFactoryName'), uniqueString(resourceGroup().id))]",
+        "webHookUri": "",
+        "dataShareAccountName": "[concat(parameters('dataShareAccountName'), uniquestring(resourceGroup().id))]",
+        "stagingContainer": "receivedcopy"
+    },
+    "resources": [
+        {
+            "name": "storageTemplate",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/customer/templates/storageAccount/azuredeploy.json"
+                },
+                "parameters": {
+                    "storageAccountName": {
+                        "value": "[variables('storageAccountUniqueName')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "stagingContainer": {
+                        "value": "[variables('stagingContainer')]"
+                    }
+                }
+            }
+        },
+        {
+            "name": "sqlServerTemplate",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments','storageTemplate')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/customer/templates/sqlServer/azuredeploy.json"
+                },
+                "parameters": {
+                    "sqlServerName": {
+                        "value": "[variables('sqlServerUniqueName')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "sqlAdministratorLogin": {
+                        "value": "[parameters('sqlAdministratorLogin')]"
+                    },
+                    "sqlAdministratorLoginPassword": {
+                        "value": "[parameters('sqlAdministratorLoginPassword')]"
+                    },
+                    "allowAzureServicesToAccessSqlServer": {
+                        "value": "[parameters('allowAzureServicesToAccessSqlServer')]"
+                    },
+                    "sqlConnectionType": {
+                        "value": "[parameters('sqlConnectionType')]"
+                    },
+                    "sqlDBName": {
+                        "value": "[parameters('sqlDBName')]"
+                    },
+                    "dataWarehouseName": {
+                        "value": "[parameters('dataWarehouseName')]"
+                    },
+                    "transparentDataEncryption": {
+                        "value": "[parameters('transparentDataEncryption')]"
+                    },
+                    "serviceLevelObjective": {
+                        "value": "[parameters('serviceLevelObjective')]"
+                    },
+                    "selectDataLoader": {
+                        "value": "[parameters('selectDataLoader')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[equals(parameters('enableMicrosoftTeamsNotification'),'Yes')]",
+            "name": "logicAppTemplate",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/customer/templates/logicApp/azuredeploy.json"
+                },
+                "parameters": {
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "logicAppName": {
+                        "value": "[parameters('logicAppName')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[equals(parameters('enableMicrosoftTeamsNotification'),'Yes')]",
+            "name": "azureDataFactoryTemplateWithTeamsNotif",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments','sqlServerTemplate')]",
+                "[resourceId('Microsoft.Resources/deployments','logicAppTemplate')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/customer/templates/dataFactory/azuredeploy.json"
+                },
+                "parameters": {
+                    "dataFactoryName": {
+                        "value": "[variables('dataFactoryUniqueName')]"
+                    },
+                    "dataFactoryLocation": {
+                        "value": "[parameters('dataFactoryLocation')]"
+                    },
+                    "storageAccountName": {
+                        "value": "[variables('storageAccountUniqueName')]"
+                    },
+                    "sasURI": {
+                        "value": "[parameters('sasURI')]"
+                    },
+                    "sqlServerName": {
+                        "value": "[variables('sqlServerUniqueName')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "sqlAdministratorLogin": {
+                        "value": "[parameters('sqlAdministratorLogin')]"
+                    },
+                    "sqlAdministratorLoginPassword": {
+                        "value": "[parameters('sqlAdministratorLoginPassword')]"
+                    },
+                    "sqlDBName": {
+                        "value": "[parameters('sqlDBName')]"
+                    },
+                    "dataWarehouseName": {
+                        "value": "[parameters('dataWarehouseName')]"
+                    },
+                    "selectDataLoader": {
+                        "value": "[parameters('selectDataLoader')]"
+                    },
+                    "deployAndUseDataShare": {
+                        "value": "[parameters('deployAndUseDataShare')]"
+                    },
+                    "notificationEmail": {
+                        "value": "[parameters('notificationEmail')]"
+                    },
+                    "webHookUri": {
+                        "value": "[if(equals(parameters('enableMicrosoftTeamsNotification'),'Yes'), reference('logicAppTemplate','2018-05-01').outputs.WebHookURI.value, 'http://example.com')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[equals(parameters('enableMicrosoftTeamsNotification'),'No')]",
+            "name": "azureDataFactoryTemplateWithoutTeamsNotif",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments','sqlServerTemplate')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/customer/templates/dataFactory/azuredeploy.json"
+                },
+                "parameters": {
+                    "dataFactoryName": {
+                        "value": "[variables('dataFactoryUniqueName')]"
+                    },
+                    "dataFactoryLocation": {
+                        "value": "[parameters('dataFactoryLocation')]"
+                    },
+                    "storageAccountName": {
+                        "value": "[variables('storageAccountUniqueName')]"
+                    },
+                    "sasURI": {
+                        "value": "[parameters('sasURI')]"
+                    },
+                    "sqlServerName": {
+                        "value": "[variables('sqlServerUniqueName')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "sqlAdministratorLogin": {
+                        "value": "[parameters('sqlAdministratorLogin')]"
+                    },
+                    "sqlAdministratorLoginPassword": {
+                        "value": "[parameters('sqlAdministratorLoginPassword')]"
+                    },
+                    "sqlDBName": {
+                        "value": "[parameters('sqlDBName')]"
+                    },
+                    "dataWarehouseName": {
+                        "value": "[parameters('dataWarehouseName')]"
+                    },
+                    "selectDataLoader": {
+                        "value": "[parameters('selectDataLoader')]"
+                    },
+                    "notificationEmail": {
+                        "value": "[parameters('notificationEmail')]"
+                    },
+                    "deployAndUseDataShare": {
+                        "value": "[parameters('deployAndUseDataShare')]"
+                    },
+                  
+                    "webHookUri": {
+                        "value": "http://example.com"
+                    }
+                }
+            }
+        },
+        {
+            "name": "dataShareTemplate",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "dependsOn": [],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/customer/templates/dataShare/azuredeploy.json"
+                },
+                "parameters": {
+                    "dataShareAccountName": {
+                        "value": "[variables('dataShareAccountName')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "deployAndUseDataShare": {
+                        "value": "[parameters('deployAndUseDataShare')]"
+                    }
+                }
+            }
+        }
+    ]
+}

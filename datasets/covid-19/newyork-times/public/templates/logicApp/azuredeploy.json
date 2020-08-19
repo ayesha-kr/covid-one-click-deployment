@@ -24,7 +24,7 @@
             "name": "msftTeamsConnectionAuth",
             "tags": {
                 "Environment": "Public",
-                "AssociatedDataSet": "CovidDefinitiveHC"
+                "AssociatedDataSet": "CovidNewYorkTimes"
             },
             "properties": {
                 "api": {
@@ -38,10 +38,6 @@
             "apiVersion": "2017-07-01",
             "name": "[parameters('logicAppName')]",
             "location": "eastus",
-            "tags": {
-                "Environment": "Public",
-                "AssociatedDataSet": "CovidDefinitiveHC"
-            },
             "dependsOn": [
                 "[resourceId('Microsoft.Web/connections/', 'msftTeamsConnectionAuth')]"
             ],

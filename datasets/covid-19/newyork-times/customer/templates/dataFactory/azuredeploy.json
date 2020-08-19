@@ -104,10 +104,6 @@
             "apiVersion": "2018-06-01",
             "name": "[parameters('dataFactoryName')]",
             "location": "[parameters('dataFactoryLocation')]",
-            "tags": {
-                "Environment": "Customer",
-                "AssociatedDataSet": "CovidDefinitiveHC"
-            },
             "identity": {
                 "type": "SystemAssigned"
             },

@@ -31,8 +31,8 @@
             "name": "[parameters('dataShareAccountName')]",
             "location": "[parameters('location')]",
             "tags": {
-                "Environment": "Customer",
-                "AssociatedDataSet": "CovidDefinitiveHC"
+                "Environment": "Public",
+                "AssociatedDataSet": "CovidNewYorkTimes"
             },
             "identity": {
                 "type": "SystemAssigned"

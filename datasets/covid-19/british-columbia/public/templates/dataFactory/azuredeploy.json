@@ -978,7 +978,7 @@
                 },
                 {
                     "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'Yes')]",
-                    "name": "[concat(parameters('factoryName'), '/CovidDefinitiveHC-Trigger_With_Sql_Sink')]",
+                    "name": "[concat(parameters('factoryName'), '/Covid_Tracking_BritishColumbia_Trigger_With_Sql_Sink')]",
                     "type": "Microsoft.DataFactory/factories/triggers",
                     "apiVersion": "2018-06-01",
                     "properties": {
@@ -987,7 +987,7 @@
                         "pipelines": [
                             {
                                 "pipelineReference": {
-                                    "referenceName": "Covid_Tracking_DefinitiveHC_With_Sql_Sink",
+                                    "referenceName": "Covid_Tracking_BritishColumbia_With_Sql_Sink",
                                     "type": "PipelineReference"
                                 }
                             }
@@ -1004,12 +1004,12 @@
                     },
                     "dependsOn": [
                         "[parameters('factoryName')]",
-                        "[concat(variables('factoryId'), '/pipelines/Covid_Tracking_DefinitiveHC_With_Sql_Sink')]"
+                        "[concat(variables('factoryId'), '/pipelines/Covid_Tracking_BritishColumbia_With_Sql_Sink')]"
                     ]
                 },
                 {
                     "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'No')]",
-                    "name": "[concat(parameters('factoryName'), '/CovidDefinitiveHC-Trigger_Without_Sql_Sink')]",
+                    "name": "[concat(parameters('factoryName'), '/Covid_Tracking_BritishColumbia_Trigger_Without_Sql_Sink')]",
                     "type": "Microsoft.DataFactory/factories/triggers",
                     "apiVersion": "2018-06-01",
                     "properties": {
@@ -1018,7 +1018,7 @@
                         "pipelines": [
                             {
                                 "pipelineReference": {
-                                    "referenceName": "Covid_Tracking_DefinitiveHC_Without_Sql_Sink",
+                                    "referenceName": "Covid_Tracking_BritishColumbia_Without_Sql_Sink",
                                     "type": "PipelineReference"
                                 }
                             }
@@ -1035,7 +1035,7 @@
                     },
                     "dependsOn": [
                         "[parameters('factoryName')]",
-                        "[concat(variables('factoryId'), '/pipelines/Covid_Tracking_DefinitiveHC_Without_Sql_Sink')]"
+                        "[concat(variables('factoryId'), '/pipelines/Covid_Tracking_BritishColumbia_Trigger_Without_Sql_Sink')]"
                     ]
                 },
                 {
@@ -1087,7 +1087,7 @@
                                         {
                                             "name": "Name",
                                             "operator": "Include",
-                                            "values": [ "Covid_Tracking_DefinitiveHC_Without_Sql_Sink" ]
+                                            "values": [ "Covid_Tracking_BritishColumbia_Without_Sql_Sink" ]
                                         },
                                         {
                                             "name": "FailureType",
@@ -1136,7 +1136,7 @@
                                         {
                                             "name": "Name",
                                             "operator": "Include",
-                                            "values": [ "Covid_Tracking_DefinitiveHC_Without_Sql_Sink" ]
+                                            "values": [ "Covid_Tracking_BritishColumbia_Without_Sql_Sink" ]
                                         }
                                     ],
                                     "operator": "GreaterThanOrEqual",
@@ -1190,7 +1190,7 @@
                                         {
                                             "name": "PipelineName",
                                             "operator": "Include",
-                                            "values": [ "Covid_Tracking_DefinitiveHC_Without_Sql_Sink" ]
+                                            "values": [ "Covid_Tracking_BritishColumbia_Without_Sql_Sink" ]
                                         },
                                         {
                                             "name": "FailureType",
@@ -1249,7 +1249,7 @@
                                         {
                                             "name": "PipelineName",
                                             "operator": "Include",
-                                            "values": [ "Covid_Tracking_DefinitiveHC_Without_Sql_Sink" ]
+                                            "values": [ "Covid_Tracking_BritishColumbia_Without_Sql_Sink" ]
                                         }
                                     ],
                                     "operator": "GreaterThanOrEqual",
@@ -1293,7 +1293,7 @@
                                         {
                                             "name": "Name",
                                             "operator": "Include",
-                                            "values": [ "CovidDefinitiveHC-Trigger_Without_Sql_Sink" ]
+                                            "values": [ "Covid_Tracking_BritishColumbia_Trigger_Without_Sql_Sink" ]
                                         }
                                     ],
                                     "operator": "GreaterThanOrEqual",
@@ -1337,7 +1337,7 @@
                                         {
                                             "name": "Name",
                                             "operator": "Include",
-                                            "values": [ "CovidDefinitiveHC-Trigger_Without_Sql_Sink" ]
+                                            "values": [ "Covid_Tracking_BritishColumbia_Trigger_Without_Sql_Sink" ]
                                         },
                                         {
                                             "name": "FailureType",
@@ -1438,7 +1438,7 @@
                                         {
                                             "name": "Name",
                                             "operator": "Include",
-                                            "values": [ "Covid_Tracking_DefinitiveHC_With_Sql_Sink" ]
+                                            "values": [ "Covid_Tracking_BritishColumbia_With_Sql_Sink" ]
                                         },
                                         {
                                             "name": "FailureType",
@@ -1487,7 +1487,7 @@
                                         {
                                             "name": "Name",
                                             "operator": "Include",
-                                            "values": [ "Covid_Tracking_DefinitiveHC_With_Sql_Sink" ]
+                                            "values": [ "Covid_Tracking_BritishColumbia_With_Sql_Sink" ]
                                         }
                                     ],
                                     "operator": "GreaterThanOrEqual",
@@ -1541,7 +1541,7 @@
                                         {
                                             "name": "PipelineName",
                                             "operator": "Include",
-                                            "values": [ "Covid_Tracking_DefinitiveHC_With_Sql_Sink" ]
+                                            "values": [ "Covid_Tracking_BritishColumbia_With_Sql_Sink" ]
                                         },
                                         {
                                             "name": "FailureType",
@@ -1600,7 +1600,7 @@
                                         {
                                             "name": "PipelineName",
                                             "operator": "Include",
-                                            "values": [ "Covid_Tracking_DefinitiveHC_With_Sql_Sink" ]
+                                            "values": [ "Covid_Tracking_BritishColumbia_With_Sql_Sink" ]
                                         }
                                     ],
                                     "operator": "GreaterThanOrEqual",
@@ -1644,7 +1644,7 @@
                                         {
                                             "name": "Name",
                                             "operator": "Include",
-                                            "values": [ "CovidDefinitiveHC-Trigger_With_Sql_Sink" ]
+                                            "values": [ "Covid_Tracking_BritishColumbia_Trigger_With_Sql_Sink" ]
                                         },
                                         {
                                             "name": "FailureType",
@@ -1693,7 +1693,7 @@
                                         {
                                             "name": "Name",
                                             "operator": "Include",
-                                            "values": [ "CovidDefinitiveHC-Trigger_With_Sql_Sink" ]
+                                            "values": [ "Covid_Tracking_BritishColumbia_Trigger_With_Sql_Sink" ]
                                         }
                                     ],
                                     "operator": "GreaterThanOrEqual",

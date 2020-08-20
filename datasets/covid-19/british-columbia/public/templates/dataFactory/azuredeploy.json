@@ -48,6 +48,10 @@
                 "description": "Your login name must not contain a SQL Identifier or a typical system name (like admin, administrator, sa, root, dbmanager, loginmanager, etc.) or a built-in database user or role (like dbo, guest, public, etc.)"
             }
         },
+        "covid_tracking_britishcolumbia_http_linkedservice_properties_typeProperties_url": {
+            "type": "string",
+            "defaultValue": "http://www.bccdc.ca/"
+        },
         "sqlAdministratorLoginPassword": {
             "type": "securestring",
             "metadata": {

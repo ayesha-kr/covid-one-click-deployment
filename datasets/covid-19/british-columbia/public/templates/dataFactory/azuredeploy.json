@@ -83,7 +83,7 @@
             "location": "[parameters('location')]",
             "tags": {
                 "Environment": "Public",
-                "AssociatedDataSet": "CovidDefinitiveHC"
+                "AssociatedDataSet": "CovidBritishColumbia"
             },
             "identity": {
                 "type": "SystemAssigned"

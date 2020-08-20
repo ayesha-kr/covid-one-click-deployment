@@ -30,6 +30,10 @@
             "apiVersion": "2019-11-01",
             "name": "[parameters('dataShareAccountName')]",
             "location": "[parameters('location')]",
+            "tags": {
+                "Environment": "Customer",
+                "AssociatedDataSet": "CovidNewYorkTimes"
+            },
             "identity": {
                 "type": "SystemAssigned"
             },

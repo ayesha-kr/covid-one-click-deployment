@@ -104,6 +104,10 @@
             "apiVersion": "2018-06-01",
             "name": "[parameters('dataFactoryName')]",
             "location": "[parameters('dataFactoryLocation')]",
+            "tags": {
+                "Environment": "Customer",
+                "AssociatedDataSet": "CovidNewYorkTimes"
+            },
             "identity": {
                 "type": "SystemAssigned"
             },
@@ -192,7 +196,7 @@
                     "condition": "[equals(parameters('deployAndUseDataShare'),'No')]",
                     "type": "Microsoft.DataFactory/factories/datasets",
                     "apiVersion": "2018-06-01",
-                    "name": "[concat(parameters('dataFactoryName'), '/DhcInputDataset')]",
+                    "name": "[concat(parameters('dataFactoryName'), '/NytInputDataset')]",
 
                     "dependsOn": [
                         "[parameters('dataFactoryName')]",
@@ -200,7 +204,7 @@
                     ],
                     "properties": {
                         "folder": {
-                            "name": "CovidDefinitiveHC/Sources"
+                            "name": "CovidNewYorkTimes/Sources"
                         },
                         "linkedServiceName": {
                             "referenceName": "publicStorageLinkedService",
@@ -211,7 +215,7 @@
                         "typeProperties": {
                             "location": {
                                 "type": "AzureBlobStorageLocation",
-                                "folderPath": "curated/covid-19/covid_definitiveHC/latest",
+                                "folderPath": "curated/covid-19/covid_NewYorkTimes/latest",
                                 "container": "public"
                             }
                         }
@@ -221,14 +225,14 @@
                     "condition": "[equals(parameters('deployAndUseDataShare'),'No')]",
                     "type": "Microsoft.DataFactory/factories/datasets",
                     "apiVersion": "2018-06-01",
-                    "name": "[concat(parameters('dataFactoryName'), '/DhcOutputDatasetSource')]",
+                    "name": "[concat(parameters('dataFactoryName'), '/NytOutputDatasetSource')]",
                     "dependsOn": [
                         "[parameters('dataFactoryName')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/customerStorageLinkedService')]"
                     ],
                     "properties": {
                         "folder": {
-                            "name": "CovidDefinitiveHC/Sources"
+                            "name": "CovidNewYorkTimes/Sources"
                         },
                         "linkedServiceName": {
                             "referenceName": "customerStorageLinkedService",
@@ -240,7 +244,7 @@
                             "location": {
                                 "type": "AzureBlobStorageLocation",
                                 "fileName": "covid_tracking.csv",
-                                "folderPath": "definitiveHealthCare",
+                                "folderPath": "NewYorkTimes",
                                 "container": "receivedcopy"
                             },
                             "columnDelimiter": ",",
@@ -255,14 +259,14 @@
                     "condition": "[equals(parameters('deployAndUseDataShare'),'No')]",
                     "type": "Microsoft.DataFactory/factories/datasets",
                     "apiVersion": "2018-06-01",
-                    "name": "[concat(parameters('dataFactoryName'), '/DhcOutputDatasetSink')]",
+                    "name": "[concat(parameters('dataFactoryName'), '/NytOutputDatasetSink')]",
                     "dependsOn": [
                         "[parameters('dataFactoryName')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/customerStorageLinkedService')]"
                     ],
                     "properties": {
                         "folder": {
-                            "name": "CovidDefinitiveHC/Sinks"
+                            "name": "CovidNewYorkTimes/Sinks"
                         },
                         "linkedServiceName": {
                             "referenceName": "customerStorageLinkedService",
@@ -273,7 +277,7 @@
                         "typeProperties": {
                             "location": {
                                 "type": "AzureBlobStorageLocation",
-                                "folderPath": "definitiveHealthCare",
+                                "folderPath": "NewYorkTimes",
                                 "container": "receivedcopy"
                             }
                         }
@@ -286,7 +290,7 @@
                     "apiVersion": "2018-06-01",
                     "properties": {
                         "folder": {
-                            "name": "CovidDefinitiveHC/Sources"
+                            "name": "CovidNewYorkTimes/Sources"
                         },
                         "linkedServiceName": {
                             "referenceName": "AzureSynapseAnalyticsStaging",
@@ -296,8 +300,8 @@
                         "type": "AzureSqlDWTable",
                         "schema": [],
                         "typeProperties": {
-                            "schema": "definitive_HC",
-                            "table": "stagingdhc"
+                            "schema": "NewYorkTimes",
+                            "table": "stagingNyt"
                         }
                     },
                     "dependsOn": [
@@ -312,7 +316,7 @@
                     "apiVersion": "2018-06-01",
                     "properties": {
                         "folder": {
-                            "name": "CovidDefinitiveHC/Sinks"
+                            "name": "CovidNewYorkTimes/Sinks"
                         },
                         "linkedServiceName": {
                             "referenceName": "AzureSynapseAnalyticsStaging",
@@ -322,8 +326,8 @@
                         "type": "AzureSqlDWTable",
                         "schema": [],
                         "typeProperties": {
-                            "schema": "definitive_HC",
-                            "table": "stagingdhc"
+                            "schema": "NewYorkTimes",
+                            "table": "stagingNyt"
                         }
                     },
                     "dependsOn": [
@@ -338,7 +342,7 @@
                     "apiVersion": "2018-06-01",
                     "properties": {
                         "folder": {
-                            "name": "CovidDefinitiveHC/Sinks"
+                            "name": "CovidNewYorkTimes/Sinks"
                         },
                         "linkedServiceName": {
                             "referenceName": "AzureSynapseOperational",
@@ -348,8 +352,8 @@
                         "type": "AzureSqlDWTable",
                         "schema": [],
                         "typeProperties": {
-                            "schema": "definitive_HC",
-                            "table": "operationaldhc"
+                            "schema": "NewYorkTimes",
+                            "table": "operationalNyt"
                         }
                     },
                     "dependsOn": [
@@ -364,7 +368,7 @@
                     "apiVersion": "2018-06-01",
                     "properties": {
                         "folder": {
-                            "name": "CovidDefinitiveHC/Sources"
+                            "name": "CovidNewYorkTimes/Sources"
                         },
                         "linkedServiceName": {
                             "referenceName": "AzureSqlDatabase",
@@ -374,8 +378,8 @@
                         "type": "AzureSqlTable",
                         "schema": [],
                         "typeProperties": {
-                            "schema": "definitive_HC",
-                            "table": "stagingdhc"
+                            "schema": "NewYorkTimes",
+                            "table": "stagingNyt"
                         }
                     },
                     "dependsOn": [
@@ -390,7 +394,7 @@
                     "apiVersion": "2018-06-01",
                     "properties": {
                         "folder": {
-                            "name": "CovidDefinitiveHC/Sinks"
+                            "name": "CovidNewYorkTimes/Sinks"
                         },
                         "linkedServiceName": {
                             "referenceName": "AzureSqlDatabase",
@@ -400,8 +404,8 @@
                         "type": "AzureSqlTable",
                         "schema": [],
                         "typeProperties": {
-                            "schema": "definitive_HC",
-                            "table": "stagingdhc"
+                            "schema": "NewYorkTimes",
+                            "table": "stagingNyt"
                         }
                     },
                     "dependsOn": [
@@ -416,7 +420,7 @@
                     "apiVersion": "2018-06-01",
                     "properties": {
                         "folder": {
-                            "name": "CovidDefinitiveHC/Sinks"
+                            "name": "CovidNewYorkTimes/Sinks"
                         },
                         "linkedServiceName": {
                             "referenceName": "AzureSqlDatabase",
@@ -426,8 +430,8 @@
                         "type": "AzureSqlTable",
                         "schema": [],
                         "typeProperties": {
-                            "schema": "definitive_HC",
-                            "table": "operationaldhc"
+                            "schema": "NewYorkTimes",
+                            "table": "operationalNyt"
                         }
                     },
                     "dependsOn": [
@@ -442,14 +446,14 @@
                     "apiVersion": "2018-06-01",
                     "properties": {
                         "folder": {
-                            "name": "CovidDefinitiveHC"
+                            "name": "CovidNewYorkTimes"
                         },
                         "type": "MappingDataFlow",
                         "typeProperties": {
                             "sources": [
                                 {
                                     "dataset": {
-                                        "referenceName": "DhcOutputDatasetSource",
+                                        "referenceName": "NytOutputDatasetSource",
                                         "type": "DatasetReference"
                                     },
                                     "name": "SourceCSV"
@@ -474,7 +478,7 @@
                     },
                     "dependsOn": [
                         "[parameters('dataFactoryName')]",
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/DhcOutputDatasetSource')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/NytOutputDatasetSource')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/AzureSynapseAnalyticsStagingTableSink')]"
                     ]
                 },
@@ -485,7 +489,7 @@
                     "apiVersion": "2018-06-01",
                     "properties": {
                         "folder": {
-                            "name": "CovidDefinitiveHC"
+                            "name": "CovidNewYorkTimes"
                         },
                         "type": "MappingDataFlow",
                         "typeProperties": {
@@ -524,14 +528,14 @@
                     "apiVersion": "2018-06-01",
                     "properties": {
                         "folder": {
-                            "name": "CovidDefinitiveHC"
+                            "name": "CovidNewYorkTimes"
                         },
                         "type": "MappingDataFlow",
                         "typeProperties": {
                             "sources": [
                                 {
                                     "dataset": {
-                                        "referenceName": "DhcOutputDatasetSource",
+                                        "referenceName": "NytOutputDatasetSource",
                                         "type": "DatasetReference"
                                     },
                                     "name": "SourceCSV"
@@ -562,7 +566,7 @@
                         }
                     },
                     "dependsOn": [
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/DhcOutputDatasetSource')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/NytOutputDatasetSource')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/AzureSynapseAnalyticsStagingTableSink')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/SqlDbStagingSink')]",
                         "[parameters('dataFactoryName')]"
@@ -575,7 +579,7 @@
                     "apiVersion": "2018-06-01",
                     "properties": {
                         "folder": {
-                            "name": "CovidDefinitiveHC"
+                            "name": "CovidNewYorkTimes"
                         },
                         "type": "MappingDataFlow",
                         "typeProperties": {
@@ -630,14 +634,14 @@
                     "apiVersion": "2018-06-01",
                     "properties": {
                         "folder": {
-                            "name": "CovidDefinitiveHC"
+                            "name": "CovidNewYorkTimes"
                         },
                         "type": "MappingDataFlow",
                         "typeProperties": {
                             "sources": [
                                 {
                                     "dataset": {
-                                        "referenceName": "DhcOutputDatasetSource",
+                                        "referenceName": "NytOutputDatasetSource",
                                         "type": "DatasetReference"
                                     },
                                     "name": "SourceCSV"
@@ -661,7 +665,7 @@
                         }
                     },
                     "dependsOn": [
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/DhcOutputDatasetSource')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/NytOutputDatasetSource')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/AzureSynapseAnalyticsStagingTableSink')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/SqlDbStagingSink')]",
                         "[parameters('dataFactoryName')]"
@@ -674,7 +678,7 @@
                     "apiVersion": "2018-06-01",
                     "properties": {
                         "folder": {
-                            "name": "CovidDefinitiveHC"
+                            "name": "CovidNewYorkTimes"
                         },
                         "type": "MappingDataFlow",
                         "typeProperties": {
@@ -714,7 +718,7 @@
                     "name": "[concat(parameters('dataFactoryName'), '/SynapseDataLoader')]",
                     "properties": {
                         "folder": {
-                            "name": "CovidDefinitiveHC"
+                            "name": "CovidNewYorkTimes"
                         },
                         "activities": [
                             {
@@ -750,13 +754,13 @@
                                 },
                                 "inputs": [
                                     {
-                                        "referenceName": "DhcInputDataset",
+                                        "referenceName": "NytInputDataset",
                                         "type": "DatasetReference"
                                     }
                                 ],
                                 "outputs": [
                                     {
-                                        "referenceName": "DhcOutputDatasetSink",
+                                        "referenceName": "NytOutputDatasetSink",
                                         "type": "DatasetReference"
                                     }
                                 ]
@@ -783,7 +787,7 @@
                                 "typeProperties": {
                                     "source": {
                                         "type": "SqlDWSource",
-                                        "sqlReaderQuery": "IF (select Count(*) from sys.symmetric_keys where name like '%DatabaseMasterKey%') = 0\n\nBEGIN\n\nCREATE master key;\n\nIF NOT EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC' )\n\n    EXEC('CREATE SCHEMA [definitive_HC] AUTHORIZATION [dbo]');\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\nIF NOT EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC' )\n\n    EXEC('CREATE SCHEMA [definitive_HC] AUTHORIZATION [dbo]');\n\nselect Count(*) from sys.symmetric_keys;\n\nEND\n",
+                                        "sqlReaderQuery": "IF (select Count(*) from sys.symmetric_keys where name like '%DatabaseMasterKey%') = 0\n\nBEGIN\n\nCREATE master key;\n\nIF NOT EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'NewYorkTimes' )\n\n    EXEC('CREATE SCHEMA [NewYorkTimes] AUTHORIZATION [dbo]');\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\nIF NOT EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'NewYorkTimes' )\n\n    EXEC('CREATE SCHEMA [NewYorkTimes] AUTHORIZATION [dbo]');\n\nselect Count(*) from sys.symmetric_keys;\n\nEND\n",
                                         "queryTimeout": "02:00:00"
                                     },
                                     "dataset": {
@@ -900,7 +904,7 @@
                                 "typeProperties": {
                                     "source": {
                                         "type": "SqlDWSource",
-                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'dhc_view')\n    EXEC('create view definitive_HC.dhc_view as select Hospital_Type, Hq_State, Hq_Zip_Code, County_Name, State_Name, Num_Licensed_Beds, Num_Staffed_Beds, Num_Icu_Beds, Adult_Icu_Beds, Pedi_Icu_Beds, Bed_Utilization, Potential_Increase_In_Bed_Capac, Avg_Ventilator_Usage from definitive_HC.operationaldhc;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'NewYorkTimes') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'Nyt_view')\n    EXEC('create view NewYorkTimes.Nyt_view as select Record_Date, County, State, Fips, Cases, Deaths, Death_rate from NewYorkTimes.operationalNyt;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
                                         "queryTimeout": "00:10:00"
                                     },
                                     "dataset": {
@@ -916,8 +920,8 @@
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/dataflows/LoadIntoStagingTable')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/dataflows/LoadIntoOperationalTable')]",
                         "[parameters('dataFactoryName')]",
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/DhcInputDataset')]",
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/DhcOutputDatasetSink')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/NytInputDataset')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/NytOutputDatasetSink')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/AzureSynapseAnalyticsStagingTableSource')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/SynapseOperationalTable_sink')]"
                     ]
@@ -929,7 +933,7 @@
                     "apiVersion": "2018-06-01",
                     "properties": {
                         "folder": {
-                            "name": "CovidDefinitiveHC"
+                            "name": "CovidNewYorkTimes"
                         },
                         "activities": [
                             {
@@ -965,13 +969,13 @@
                                 },
                                 "inputs": [
                                     {
-                                        "referenceName": "DhcInputDataset",
+                                        "referenceName": "NytInputDataset",
                                         "type": "DatasetReference"
                                     }
                                 ],
                                 "outputs": [
                                     {
-                                        "referenceName": "DhcOutputDatasetSink",
+                                        "referenceName": "NytOutputDatasetSink",
                                         "type": "DatasetReference"
                                     }
                                 ]
@@ -998,7 +1002,7 @@
                                 "typeProperties": {
                                     "source": {
                                         "type": "SqlDWSource",
-                                        "sqlReaderQuery": "IF (select Count(*) from sys.symmetric_keys where name like '%DatabaseMasterKey%') = 0\n\nBEGIN\n\nCREATE master key;\n\nIF NOT EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC' )\n\n    EXEC('CREATE SCHEMA [definitive_HC] AUTHORIZATION [dbo]');\nselect Count(*) from sys.symmetric_keys;\n\n\nEND\n\nELSE \n\nBEGIN\nIF NOT EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC' )\n\n    EXEC('CREATE SCHEMA [definitive_HC] AUTHORIZATION [dbo]');\n\nselect Count(*) from sys.symmetric_keys;\n\nEND\n",
+                                        "sqlReaderQuery": "IF (select Count(*) from sys.symmetric_keys where name like '%DatabaseMasterKey%') = 0\n\nBEGIN\n\nCREATE master key;\n\nIF NOT EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'NewYorkTimes' )\n\n    EXEC('CREATE SCHEMA [NewYorkTimes] AUTHORIZATION [dbo]');\nselect Count(*) from sys.symmetric_keys;\n\n\nEND\n\nELSE \n\nBEGIN\nIF NOT EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'NewYorkTimes' )\n\n    EXEC('CREATE SCHEMA [NewYorkTimes] AUTHORIZATION [dbo]');\n\nselect Count(*) from sys.symmetric_keys;\n\nEND\n",
                                         "queryTimeout": "00:05:00"
                                     },
                                     "dataset": {
@@ -1029,7 +1033,7 @@
                                 "typeProperties": {
                                     "source": {
                                         "type": "AzureSqlSource",
-                                        "sqlReaderQuery": "IF NOT EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC') \n\nBEGIN\n\n    EXEC('CREATE SCHEMA [definitive_HC] AUTHORIZATION [dbo]');\n\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "sqlReaderQuery": "IF NOT EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'NewYorkTimes') \n\nBEGIN\n\n    EXEC('CREATE SCHEMA [NewYorkTimes] AUTHORIZATION [dbo]');\n\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
                                         "queryTimeout": "00:05:00"
                                     },
                                     "dataset": {
@@ -1149,7 +1153,7 @@
                                 "typeProperties": {
                                     "source": {
                                         "type": "SqlDWSource",
-                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'dhc_view')\n    EXEC('create view definitive_HC.dhc_view as select Hospital_Type, Hq_State, Hq_Zip_Code, County_Name, State_Name, Num_Licensed_Beds, Num_Staffed_Beds, Num_Icu_Beds, Adult_Icu_Beds, Pedi_Icu_Beds, Bed_Utilization, Potential_Increase_In_Bed_Capac, Avg_Ventilator_Usage from definitive_HC.operationaldhc;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'NewYorkTimes') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'Nyt_view')\n    EXEC('create view NewYorkTimes.Nyt_view as select Record_Date, County, State, Fips, Cases, Deaths, Death_rate from NewYorkTimes.operationalNyt;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
                                         "queryTimeout": "00:10:00"
                                     },
                                     "dataset": {
@@ -1180,7 +1184,7 @@
                                 "typeProperties": {
                                     "source": {
                                         "type": "AzureSqlSource",
-                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'dhc_view')\n    EXEC('create view definitive_HC.dhc_view as select Hospital_Type, Hq_State, Hq_Zip_Code, County_Name, State_Name, Num_Licensed_Beds, Num_Staffed_Beds, Num_Icu_Beds, Adult_Icu_Beds, Pedi_Icu_Beds, Bed_Utilization, Potential_Increase_In_Bed_Capac, Avg_Ventilator_Usage from definitive_HC.operationaldhc;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'NewYorkTimes') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'Nyt_view')\n    EXEC('create view NewYorkTimes.Nyt_view as select Record_Date, County, State, Fips, Cases, Deaths, Death_rate from NewYorkTimes.operationalNyt;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
                                         "queryTimeout": "00:05:00"
                                     },
                                     "dataset": {
@@ -1193,8 +1197,8 @@
                         "annotations": []
                     },
                     "dependsOn": [
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/DhcInputDataset')]",
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/DhcOutputDatasetSink')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/NytInputDataset')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/NytOutputDatasetSink')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/SqlDbStagingSource')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/AzureSynapseAnalyticsStagingTableSource')]",
 
@@ -1211,7 +1215,7 @@
                     "apiVersion": "2018-06-01",
                     "properties": {
                         "folder": {
-                            "name": "CovidDefinitiveHC"
+                            "name": "CovidNewYorkTimes"
                         },
                         "activities": [
                             {
@@ -1247,13 +1251,13 @@
                                 },
                                 "inputs": [
                                     {
-                                        "referenceName": "DhcInputDataset",
+                                        "referenceName": "NytInputDataset",
                                         "type": "DatasetReference"
                                     }
                                 ],
                                 "outputs": [
                                     {
-                                        "referenceName": "DhcOutputDatasetSink",
+                                        "referenceName": "NytOutputDatasetSink",
                                         "type": "DatasetReference"
                                     }
                                 ]
@@ -1280,7 +1284,7 @@
                                 "typeProperties": {
                                     "source": {
                                         "type": "AzureSqlSource",
-                                        "sqlReaderQuery": "IF NOT EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC') \n\nBEGIN\n\n    EXEC('CREATE SCHEMA [definitive_HC] AUTHORIZATION [dbo]');\n\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "sqlReaderQuery": "IF NOT EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'NewYorkTimes') \n\nBEGIN\n\n    EXEC('CREATE SCHEMA [NewYorkTimes] AUTHORIZATION [dbo]');\n\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
                                         "queryTimeout": "00:10:00"
                                     },
                                     "dataset": {
@@ -1392,7 +1396,7 @@
                                 "typeProperties": {
                                     "source": {
                                         "type": "AzureSqlSource",
-                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'dhc_view')\n    EXEC('create view definitive_HC.dhc_view as select Hospital_Type, Hq_State, Hq_Zip_Code, County_Name, State_Name, Num_Licensed_Beds, Num_Staffed_Beds, Num_Icu_Beds, Adult_Icu_Beds, Pedi_Icu_Beds, Bed_Utilization, Potential_Increase_In_Bed_Capac, Avg_Ventilator_Usage from definitive_HC.operationaldhc;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'NewYorkTimes') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'Nyt_view')\n    EXEC('create view NewYorkTimes.Nyt_view as select Record_Date, County, State, Fips, Cases, Deaths, Death_rate from NewYorkTimes.operationalNyt;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
                                         "queryTimeout": "00:10:00"
                                     },
                                     "dataset": {
@@ -1405,8 +1409,8 @@
                         "annotations": []
                     },
                     "dependsOn": [
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/DhcInputDataset')]",
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/DhcOutputDatasetSink')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/NytInputDataset')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/NytOutputDatasetSink')]",
                         "[parameters('dataFactoryName')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/dataflows/LoadIntoStagingTable_SQL')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/customerStorageLinkedService')]",
@@ -2621,7 +2625,7 @@
                                 "typeProperties": {
                                     "source": {
                                         "type": "AzureSqlSource",
-                                        "sqlReaderQuery": "IF NOT EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC') \n\nBEGIN\n\n    EXEC('CREATE SCHEMA [definitive_HC] AUTHORIZATION [dbo]');\n\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "sqlReaderQuery": "IF NOT EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'NewYorkTimes') \n\nBEGIN\n\n    EXEC('CREATE SCHEMA [NewYorkTimes] AUTHORIZATION [dbo]');\n\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
                                         "queryTimeout": "00:10:00",
                                         "partitionOption": "None"
                                     },
@@ -2730,7 +2734,7 @@
                                 "typeProperties": {
                                     "source": {
                                         "type": "AzureSqlSource",
-                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'dhc_view')\n    EXEC('create view definitive_HC.dhc_view as select Hospital_Type, Hq_State, Hq_Zip_Code, County_Name, State_Name, Num_Licensed_Beds, Num_Staffed_Beds, Num_Icu_Beds, Adult_Icu_Beds, Pedi_Icu_Beds, Bed_Utilization, Potential_Increase_In_Bed_Capac, Avg_Ventilator_Usage from definitive_HC.operationaldhc;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'NewYorkTimes') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'Nyt_view')\n    EXEC('create view NewYorkTimes.Nyt_view as select Record_Date, County, State, Fips, Cases, Deaths, Death_rate from NewYorkTimes.operationalNyt;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
                                         "queryTimeout": "00:10:00",
                                         "partitionOption": "None"
                                     },
@@ -2743,7 +2747,7 @@
                             }
                         ],
                         "folder": {
-                            "name": "CovidDefinitiveHC"
+                            "name": "CovidNewYorkTimes"
                         },
                         "annotations": []
                     },
@@ -2769,7 +2773,7 @@
                             "type": "LinkedServiceReference"
                         },
                         "folder": {
-                            "name": "CovidDefinitiveHC/Sources"
+                            "name": "CovidNewYorkTimes/Sources"
                         },
                         "annotations": [],
                         "type": "DelimitedText",
@@ -2777,7 +2781,7 @@
                             "location": {
                                 "type": "AzureBlobStorageLocation",
                                 "fileName": "covid_tracking.csv",
-                                "folderPath": "curated/covid-19/covid_definitiveHC/latest",
+                                "folderPath": "curated/covid-19/covid_NewYorkTimes/latest",
                                 "container": "receivedcopy"
                             },
                             "columnDelimiter": ",",
@@ -2815,7 +2819,7 @@
                     "apiVersion": "2018-06-01",
                     "properties": {
                         "folder": {
-                            "name": "CovidDefinitiveHC"
+                            "name": "CovidNewYorkTimes"
                         },
                         "type": "MappingDataFlow",
                         "typeProperties": {
@@ -2904,7 +2908,7 @@
                                 "typeProperties": {
                                     "source": {
                                         "type": "SqlDWSource",
-                                        "sqlReaderQuery": "IF (select Count(*) from sys.symmetric_keys where name like '%DatabaseMasterKey%') = 0\n\nBEGIN\n\nCREATE master key;\n\nIF NOT EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC' )\n\n    EXEC('CREATE SCHEMA [definitive_HC] AUTHORIZATION [dbo]');\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\nIF NOT EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC' )\n\n    EXEC('CREATE SCHEMA [definitive_HC] AUTHORIZATION [dbo]');\n\nselect Count(*) from sys.symmetric_keys;\n\nEND\n",
+                                        "sqlReaderQuery": "IF (select Count(*) from sys.symmetric_keys where name like '%DatabaseMasterKey%') = 0\n\nBEGIN\n\nCREATE master key;\n\nIF NOT EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'NewYorkTimes' )\n\n    EXEC('CREATE SCHEMA [NewYorkTimes] AUTHORIZATION [dbo]');\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\nIF NOT EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'NewYorkTimes' )\n\n    EXEC('CREATE SCHEMA [NewYorkTimes] AUTHORIZATION [dbo]');\n\nselect Count(*) from sys.symmetric_keys;\n\nEND\n",
                                         "queryTimeout": "02:00:00",
                                         "partitionOption": "None"
                                     },
@@ -3021,7 +3025,7 @@
                                 "typeProperties": {
                                     "source": {
                                         "type": "SqlDWSource",
-                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'dhc_view')\n    EXEC('create view definitive_HC.dhc_view as select Hospital_Type, Hq_State, Hq_Zip_Code, County_Name, State_Name, Num_Licensed_Beds, Num_Staffed_Beds, Num_Icu_Beds, Adult_Icu_Beds, Pedi_Icu_Beds, Bed_Utilization, Potential_Increase_In_Bed_Capac, Avg_Ventilator_Usage from definitive_HC.operationaldhc;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'NewYorkTimes') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'Nyt_view')\n    EXEC('create view NewYorkTimes.Nyt_view as select Record_Date, County, State, Fips, Cases, Deaths, Death_rate from NewYorkTimes.operationalNyt;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
                                         "queryTimeout": "00:10:00",
                                         "partitionOption": "None"
                                     },
@@ -3034,7 +3038,7 @@
                             }
                         ],
                         "folder": {
-                            "name": "CovidDefinitiveHC"
+                            "name": "CovidNewYorkTimes"
                         },
                         "annotations": []
                     },
@@ -3054,7 +3058,7 @@
                     "apiVersion": "2018-06-01",
                     "properties": {
                         "folder": {
-                            "name": "CovidDefinitiveHC"
+                            "name": "CovidNewYorkTimes"
                         },
                         "type": "MappingDataFlow",
                         "typeProperties": {
@@ -3154,7 +3158,7 @@
                                 "typeProperties": {
                                     "source": {
                                         "type": "SqlDWSource",
-                                        "sqlReaderQuery": "IF (select Count(*) from sys.symmetric_keys where name like '%DatabaseMasterKey%') = 0\n\nBEGIN\n\nCREATE master key;\n\nIF NOT EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC' )\n\n    EXEC('CREATE SCHEMA [definitive_HC] AUTHORIZATION [dbo]');\nselect Count(*) from sys.symmetric_keys;\n\n\nEND\n\nELSE \n\nBEGIN\nIF NOT EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC' )\n\n    EXEC('CREATE SCHEMA [definitive_HC] AUTHORIZATION [dbo]');\n\nselect Count(*) from sys.symmetric_keys;\n\nEND\n",
+                                        "sqlReaderQuery": "IF (select Count(*) from sys.symmetric_keys where name like '%DatabaseMasterKey%') = 0\n\nBEGIN\n\nCREATE master key;\n\nIF NOT EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'NewYorkTimes' )\n\n    EXEC('CREATE SCHEMA [NewYorkTimes] AUTHORIZATION [dbo]');\nselect Count(*) from sys.symmetric_keys;\n\n\nEND\n\nELSE \n\nBEGIN\nIF NOT EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'NewYorkTimes' )\n\n    EXEC('CREATE SCHEMA [NewYorkTimes] AUTHORIZATION [dbo]');\n\nselect Count(*) from sys.symmetric_keys;\n\nEND\n",
                                         "queryTimeout": "00:05:00",
                                         "partitionOption": "None"
                                     },
@@ -3187,7 +3191,7 @@
                                 "typeProperties": {
                                     "source": {
                                         "type": "AzureSqlSource",
-                                        "sqlReaderQuery": "IF NOT EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC') \n\nBEGIN\n\n    EXEC('CREATE SCHEMA [definitive_HC] AUTHORIZATION [dbo]');\n\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "sqlReaderQuery": "IF NOT EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'NewYorkTimes') \n\nBEGIN\n\n    EXEC('CREATE SCHEMA [NewYorkTimes] AUTHORIZATION [dbo]');\n\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
                                         "queryTimeout": "00:05:00",
                                         "partitionOption": "None"
                                     },
@@ -3307,7 +3311,7 @@
                                 "typeProperties": {
                                     "source": {
                                         "type": "SqlDWSource",
-                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'dhc_view')\n    EXEC('create view definitive_HC.dhc_view as select Hospital_Type, Hq_State, Hq_Zip_Code, County_Name, State_Name, Num_Licensed_Beds, Num_Staffed_Beds, Num_Icu_Beds, Adult_Icu_Beds, Pedi_Icu_Beds, Bed_Utilization, Potential_Increase_In_Bed_Capac, Avg_Ventilator_Usage from definitive_HC.operationaldhc;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'NewYorkTimes') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'Nyt_view')\n    EXEC('create view NewYorkTimes.Nyt_view as select Record_Date, County, State, Fips, Cases, Deaths, Death_rate from NewYorkTimes.operationalNyt;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
                                         "queryTimeout": "00:10:00",
                                         "partitionOption": "None"
                                     },
@@ -3340,7 +3344,7 @@
                                 "typeProperties": {
                                     "source": {
                                         "type": "AzureSqlSource",
-                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'dhc_view')\n    EXEC('create view definitive_HC.dhc_view as select Hospital_Type, Hq_State, Hq_Zip_Code, County_Name, State_Name, Num_Licensed_Beds, Num_Staffed_Beds, Num_Icu_Beds, Adult_Icu_Beds, Pedi_Icu_Beds, Bed_Utilization, Potential_Increase_In_Bed_Capac, Avg_Ventilator_Usage from definitive_HC.operationaldhc;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'NewYorkTimes') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'Nyt_view')\n    EXEC('create view NewYorkTimes.Nyt_view as select Record_Date, County, State, Fips, Cases, Deaths, Death_rate from NewYorkTimes.operationalNyt;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
                                         "queryTimeout": "00:05:00",
                                         "partitionOption": "None"
                                     },
@@ -3353,7 +3357,7 @@
                             }
                         ],
                         "folder": {
-                            "name": "CovidDefinitiveHC"
+                            "name": "CovidNewYorkTimes"
                         },
                         "annotations": []
                     },
@@ -3376,7 +3380,7 @@
                     "apiVersion": "2018-06-01",
                     "properties": {
                         "folder": {
-                            "name": "CovidDefinitiveHC"
+                            "name": "CovidNewYorkTimes"
                         },
                         "type": "MappingDataFlow",
                         "typeProperties": {

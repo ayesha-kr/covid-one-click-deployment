@@ -94,7 +94,7 @@
             "location": "[parameters('location')]",
             "tags": {
                 "Environment": "Customer",
-                "AssociatedDataSet": "CovidDefinitiveHC"
+                "AssociatedDataSet": "CovidNewYorkTimes"
             },
             "properties": {
                 "administratorLogin": "[parameters('sqlAdministratorLogin')]",

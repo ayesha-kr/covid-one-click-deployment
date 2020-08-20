@@ -6,7 +6,7 @@
             "defaultValue": "demoPublicADF",
             "type": "string",
             "metadata": {
-                "description": "The name you provide will be appended with a unique sting to make it globally available. The name can contain only letters, numbers and hyphens. The first and last characters must be a letter or number. Spaces are not allowed."
+                "description": "The name you provide will append with a unique sting to make it globally available. The name can contain only letters, numbers and hyphens. The first and last characters must be a letter or number. Spaces are not allowed."
             }
         },
         "storageAccountName": {

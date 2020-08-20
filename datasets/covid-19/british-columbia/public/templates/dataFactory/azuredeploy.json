@@ -664,7 +664,7 @@
                                 "userProperties": [],
                                 "typeProperties": {
                                     "dataflow": {
-                                        "referenceName": "[variables('dataflowWithSqlName')]",
+                                        "referenceName": "[variables('dataflowWithoutSqlName')]",
                                         "type": "DataFlowReference",
                                         "parameters": {
                                             "filename": {
@@ -972,7 +972,7 @@
                         "[parameters('factoryName')]",
                         "[concat(variables('factoryId'), '/datasets/http_source_dataset')]",
                         "[concat(variables('factoryId'), '/datasets/csv_source_dataset')]",
-                        "[concat(variables('factoryId'), '/dataflows/',variables('dataflowWithSqlName'))]",
+                        "[concat(variables('factoryId'), '/dataflows/',variables('dataflowWithoutSqlName'))]",
                         "[concat(variables('factoryId'), '/datasets/json_sink_dataset')]"
                     ]
                 },

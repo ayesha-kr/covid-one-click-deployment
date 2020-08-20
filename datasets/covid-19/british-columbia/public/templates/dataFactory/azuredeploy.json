@@ -1034,7 +1034,7 @@
                     },
                     "dependsOn": [
                         "[parameters('factoryName')]",
-                        "[concat(variables('factoryId'), '/pipelines/Covid_Tracking_BritishColumbia_Trigger_Without_Sql_Sink')]"
+                        "[concat(variables('factoryId'), '/pipelines/Covid_Tracking_BritishColumbia_Without_Sql_Sink')]"
                     ]
                 },
                 {

@@ -171,7 +171,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/dev-zahid/datasets/covid-19/british-columbia/customer/templates/logicApp/azuredeploy.json"
+                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/dev-zahid/datasets/covid-19/british-columbia/public/templates/logicApp/azuredeploy.json"
                 },
                 "parameters": {
                     "location": {

@@ -23,7 +23,7 @@
         },
         "publicStorageAccountName": {
             "type": "string",
-            "defaultValue": "covidtrackingdefinitive"
+            "defaultValue": "Specify the name of public blob storage"
         },
         "sasURI": {
             "type": "string",

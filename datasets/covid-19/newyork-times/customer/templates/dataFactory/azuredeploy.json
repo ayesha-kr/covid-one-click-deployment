@@ -616,7 +616,7 @@
                                 }
                             ],
                             "transformations": [],
-                            "script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table',\n\tstaged: false) ~> sourceSynapseStagingTable\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> sourceSqlDbStaging\nsourceSynapseStagingTable sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tstaged: true,\n\tpostSQLs:['\\n'],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tt: true) ~> SynapseOperationalTable\nsourceSqlDbStaging sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SqlOperationalSink"
+                            "script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table',\n\tstaged: false) ~> sourceSynapseStagingTable\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> sourceSqlDbStaging\nsourceSynapseStagingTable sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tstaged: true,\n\tpostSQLs:['\\n'],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tt: true) ~> SynapseOperationalTable\nsourceSqlDbStaging sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SqlOperationalSink"
                         }
                     },
                     "dependsOn": [
@@ -701,7 +701,7 @@
                                 }
                             ],
                             "transformations": [],
-                            "script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> sourceSqlDbStaging\nsourceSqlDbStaging sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SqlOperationalSink"
+                            "script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> sourceSqlDbStaging\nsourceSqlDbStaging sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SqlOperationalSink"
                         }
                     },
                     "dependsOn": [
@@ -904,7 +904,7 @@
                                 "typeProperties": {
                                     "source": {
                                         "type": "SqlDWSource",
-                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'NewYorkTimes') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'Nyt_view')\n    EXEC('create view NewYorkTimes.Nyt_view as select Record_Date, County, State, Fips, Cases, Deaths, Death_rate from NewYorkTimes.operationalNyt;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'NewYorkTimes') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'Nyt_view')\n    EXEC('create view NewYorkTimes.Nyt_view as select Load_Date, Load_Time, Record_Date, County, State, Fips, Cases, Deaths, Death_rate from NewYorkTimes.operationalNyt;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
                                         "queryTimeout": "00:10:00"
                                     },
                                     "dataset": {
@@ -1153,7 +1153,7 @@
                                 "typeProperties": {
                                     "source": {
                                         "type": "SqlDWSource",
-                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'NewYorkTimes') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'Nyt_view')\n    EXEC('create view NewYorkTimes.Nyt_view as select Record_Date, County, State, Fips, Cases, Deaths, Death_rate from NewYorkTimes.operationalNyt;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'NewYorkTimes') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'Nyt_view')\n    EXEC('create view NewYorkTimes.Nyt_view as select Load_Date, Load_Time, Record_Date, County, State, Fips, Cases, Deaths, Death_rate from NewYorkTimes.operationalNyt;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
                                         "queryTimeout": "00:10:00"
                                     },
                                     "dataset": {
@@ -1184,7 +1184,7 @@
                                 "typeProperties": {
                                     "source": {
                                         "type": "AzureSqlSource",
-                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'NewYorkTimes') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'Nyt_view')\n    EXEC('create view NewYorkTimes.Nyt_view as select Record_Date, County, State, Fips, Cases, Deaths, Death_rate from NewYorkTimes.operationalNyt;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'NewYorkTimes') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'Nyt_view')\n    EXEC('create view NewYorkTimes.Nyt_view as select Load_Date, Load_Time, Record_Date, County, State, Fips, Cases, Deaths, Death_rate from NewYorkTimes.operationalNyt;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
                                         "queryTimeout": "00:05:00"
                                     },
                                     "dataset": {
@@ -1396,7 +1396,7 @@
                                 "typeProperties": {
                                     "source": {
                                         "type": "AzureSqlSource",
-                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'NewYorkTimes') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'Nyt_view')\n    EXEC('create view NewYorkTimes.Nyt_view as select Record_Date, County, State, Fips, Cases, Deaths, Death_rate from NewYorkTimes.operationalNyt;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'NewYorkTimes') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'Nyt_view')\n    EXEC('create view NewYorkTimes.Nyt_view as select Load_Date, Load_Time, Record_Date, County, State, Fips, Cases, Deaths, Death_rate from NewYorkTimes.operationalNyt;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
                                         "queryTimeout": "00:10:00"
                                     },
                                     "dataset": {
@@ -2734,7 +2734,7 @@
                                 "typeProperties": {
                                     "source": {
                                         "type": "AzureSqlSource",
-                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'NewYorkTimes') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'Nyt_view')\n    EXEC('create view NewYorkTimes.Nyt_view as select Record_Date, County, State, Fips, Cases, Deaths, Death_rate from NewYorkTimes.operationalNyt;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'NewYorkTimes') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'Nyt_view')\n    EXEC('create view NewYorkTimes.Nyt_view as select Load_Date, Load_Time, Record_Date, County, State, Fips, Cases, Deaths, Death_rate from NewYorkTimes.operationalNyt;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
                                         "queryTimeout": "00:10:00",
                                         "partitionOption": "None"
                                     },
@@ -3025,7 +3025,7 @@
                                 "typeProperties": {
                                     "source": {
                                         "type": "SqlDWSource",
-                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'NewYorkTimes') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'Nyt_view')\n    EXEC('create view NewYorkTimes.Nyt_view as select Record_Date, County, State, Fips, Cases, Deaths, Death_rate from NewYorkTimes.operationalNyt;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'NewYorkTimes') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'Nyt_view')\n    EXEC('create view NewYorkTimes.Nyt_view as select Load_Date, Load_Time, Record_Date, County, State, Fips, Cases, Deaths, Death_rate from NewYorkTimes.operationalNyt;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
                                         "queryTimeout": "00:10:00",
                                         "partitionOption": "None"
                                     },
@@ -3311,7 +3311,7 @@
                                 "typeProperties": {
                                     "source": {
                                         "type": "SqlDWSource",
-                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'NewYorkTimes') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'Nyt_view')\n    EXEC('create view NewYorkTimes.Nyt_view as select Record_Date, County, State, Fips, Cases, Deaths, Death_rate from NewYorkTimes.operationalNyt;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'NewYorkTimes') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'Nyt_view')\n    EXEC('create view NewYorkTimes.Nyt_view as select Load_Date, Load_Time, Record_Date, County, State, Fips, Cases, Deaths, Death_rate from NewYorkTimes.operationalNyt;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
                                         "queryTimeout": "00:10:00",
                                         "partitionOption": "None"
                                     },
@@ -3344,7 +3344,7 @@
                                 "typeProperties": {
                                     "source": {
                                         "type": "AzureSqlSource",
-                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'NewYorkTimes') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'Nyt_view')\n    EXEC('create view NewYorkTimes.Nyt_view as select Record_Date, County, State, Fips, Cases, Deaths, Death_rate from NewYorkTimes.operationalNyt;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'NewYorkTimes') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'Nyt_view')\n    EXEC('create view NewYorkTimes.Nyt_view as select Load_Date, Load_Time, Record_Date, County, State, Fips, Cases, Deaths, Death_rate from NewYorkTimes.operationalNyt;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
                                         "queryTimeout": "00:05:00",
                                         "partitionOption": "None"
                                     },

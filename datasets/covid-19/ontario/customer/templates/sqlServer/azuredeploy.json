@@ -94,7 +94,7 @@
             "location": "[parameters('location')]",
             "tags": {
                 "Environment": "Customer",
-                "AssociatedDataSet": "CovidDefinitiveHC"
+                "AssociatedDataSet": "CovidOntario"
             },
             "properties": {
                 "administratorLogin": "[parameters('sqlAdministratorLogin')]",
@@ -115,7 +115,7 @@
                     "location": "[parameters('location')]",
                     "tags": {
                         "Environment": "Customer",
-                        "AssociatedDataSet": "CovidDefinitiveHC"
+                        "AssociatedDataSet": "CovidOntario"
                     },
                     "properties": {
                         "collation": "[variables('databaseCollation')]"
@@ -132,7 +132,7 @@
                     "location": "[parameters('location')]",
                     "tags": {
                         "Environment": "Customer",
-                        "AssociatedDataSet": "CovidDefinitiveHC"
+                        "AssociatedDataSet": "CovidOntario"
                     },
                     "dependsOn": [
                         "[resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))]"
@@ -151,7 +151,7 @@
                     "location": "[parameters('location')]",
                     "tags": {
                         "Environment": "Customer",
-                        "AssociatedDataSet": "CovidDefinitiveHC"
+                        "AssociatedDataSet": "CovidOntario"
                     },
                     "properties": {
                         "edition": "DataWarehouse",

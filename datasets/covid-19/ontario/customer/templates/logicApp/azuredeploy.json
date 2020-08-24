@@ -23,7 +23,7 @@
             "location": "[parameters('location')]",
             "tags": {
                 "Environment": "Customer",
-                "AssociatedDataSet": "CovidDefinitiveHC"
+                "AssociatedDataSet": "CovidOntario"
             },
             "name": "msftTeamsConnectionAuth",
             "properties": {
@@ -40,7 +40,7 @@
             "location": "eastus",
             "tags": {
                 "Environment": "Customer",
-                "AssociatedDataSet": "CovidDefinitiveHC"
+                "AssociatedDataSet": "CovidOntario"
             },
             "dependsOn": [
                 "[resourceId('Microsoft.Web/connections/', 'msftTeamsConnectionAuth')]"

@@ -31,7 +31,7 @@
             "location": "[parameters('location')]",
             "tags": {
                 "Environment": "Customer",
-                "AssociatedDataSet": "CovidDefinitiveHC"
+                "AssociatedDataSet": "CovidOntario"
             },
             "sku": {
                 "name": "Standard_LRS",

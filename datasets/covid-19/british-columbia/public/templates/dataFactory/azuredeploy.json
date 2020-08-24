@@ -1625,7 +1625,8 @@
                         }
                     },
                     "dependsOn": [
-                        "[parameters('factoryName')]"
+                        "[parameters('factoryName')]",
+                        "[concat(variables('factoryId'), '/pipelines/Covid_Tracking_BritishColumbia_With_Sql_Sink')]"
                     ]
                 },
                 {

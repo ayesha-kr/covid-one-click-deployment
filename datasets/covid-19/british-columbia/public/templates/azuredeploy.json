@@ -139,6 +139,40 @@
             }
         },
         {
+            "name": "sqlServerTemplate",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments','dataShareTemplate')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/dev-zahid/datasets/covid-19/british-columbia/public/templates/sqlServer/azuredeploy.json"
+                },
+                "parameters": {
+                    "doYouWantToWriteCuratedDataToSQLDatabase": {
+                        "value": "[parameters('doYouWantToWriteCuratedDataToSQLDatabase')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "sqlAdministratorLogin": {
+                        "value": "[parameters('sqlAdministratorLogin')]"
+                    },
+                    "sqlAdministratorLoginPassword": {
+                        "value": "[parameters('sqlAdministratorLoginPassword')]"
+                    },
+                    "databaseName": {
+                        "value": "[parameters('databaseName')]"
+                    },
+                    "serverName": {
+                        "value": "[variables('serverName')]"
+                    }
+                }
+            }
+        },
+        {
             "name": "dataShareTemplate",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2018-05-01",

@@ -432,10 +432,10 @@
                     "name": "[concat(parameters('factoryName'), '/sql_sink_dataset')]",
                     "type": "Microsoft.DataFactory/factories/datasets",
                     "apiVersion": "2018-06-01",
-                    "folder": {
-                        "name": "CovidBritishColumbia/Sinks"
-                    },
                     "properties": {
+                        "folder": {
+                            "name": "CovidBritishColumbia/Sinks"
+                        },
                         "linkedServiceName": {
                             "referenceName": "covid_tracking_britishcolumbia_sql_linkedservice",
                             "type": "LinkedServiceReference"

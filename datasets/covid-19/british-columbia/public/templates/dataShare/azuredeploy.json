@@ -33,6 +33,10 @@
             "identity": {
                 "type": "SystemAssigned"
             },
+            "tags": {
+                "Environment": "Public",
+                "AssociatedDataSet": "CovidBritishColumbia"
+            },
             "properties": {}
         }
     ]

@@ -21,10 +21,6 @@
                 "description": "The name you provide will be appended with a unique sting to make it globally available. The field can contain only lowercase letters and numbers. Name must be between 1 and 11 characters."
             }
         },
-        "publicStorageAccountName": {
-            "type": "string",
-            "defaultValue": "covidtrackingdefinitive"
-        },
         "sasURI": {
             "type": "string",
             "defaultValue": "Specify the sasURI of public blob storage"
@@ -174,7 +170,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/customer/templates/storageAccount/azuredeploy.json"
+                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/british-columbia/customer/templates/storageAccount/azuredeploy.json"
                 },
                 "parameters": {
                     "storageAccountName": {
@@ -199,7 +195,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/customer/templates/sqlServer/azuredeploy.json"
+                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/british-columbia/customer/templates/sqlServer/azuredeploy.json"
                 },
                 "parameters": {
                     "sqlServerName": {
@@ -246,7 +242,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/customer/templates/logicApp/azuredeploy.json"
+                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/british-columbia/customer/templates/logicApp/azuredeploy.json"
                 },
                 "parameters": {
                     "location": {
@@ -270,7 +266,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/customer/templates/dataFactory/azuredeploy.json"
+                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/british-columbia/customer/templates/dataFactory/azuredeploy.json"
                 },
                 "parameters": {
                     "dataFactoryName": {
@@ -329,7 +325,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/customer/templates/dataFactory/azuredeploy.json"
+                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/british-columbia/customer/templates/dataFactory/azuredeploy.json"
                 },
                 "parameters": {
                     "dataFactoryName": {
@@ -386,7 +382,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/customer/templates/dataShare/azuredeploy.json"
+                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/british-columbia/customer/templates/dataShare/azuredeploy.json"
                 },
                 "parameters": {
                     "dataShareAccountName": {

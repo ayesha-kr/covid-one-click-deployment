@@ -22,6 +22,10 @@
             "apiVersion": "2018-07-01-preview",
             "location": "[parameters('location')]",
             "name": "msftTeamsConnectionAuth",
+            "tags": {
+                "Environment": "Customer",
+                "AssociatedDataSet": "CovidBritishColumbia"
+            },
             "properties": {
                 "api": {
                     "id": "[subscriptionResourceId('Microsoft.Web/locations/managedApis', parameters('location'), 'teams')]"
@@ -37,6 +41,10 @@
             "dependsOn": [
                 "[resourceId('Microsoft.Web/connections/', 'msftTeamsConnectionAuth')]"
             ],
+            "tags": {
+                "Environment": "Customer",
+                "AssociatedDataSet": "CovidBritishColumbia"
+            },
             "properties": {
                 "state": "Enabled",
                 "definition": {

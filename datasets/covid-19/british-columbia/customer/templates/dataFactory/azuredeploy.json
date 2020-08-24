@@ -107,6 +107,10 @@
             "identity": {
                 "type": "SystemAssigned"
             },
+            "tags": {
+                "Environment": "Customer",
+                "AssociatedDataSet": "CovidBritishColumbia"
+            },
             "resources": [
                 {
                     "type": "Microsoft.DataFactory/factories/linkedServices",

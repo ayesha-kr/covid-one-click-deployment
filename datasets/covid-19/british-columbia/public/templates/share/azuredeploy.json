@@ -36,6 +36,10 @@
             "apiVersion": "2019-11-01",
             "name": "[concat(parameters('dataShareAccountName'), '/', parameters('shareName'))]",
             "dependsOn": [],
+            "tags": {
+                "Environment": "Public",
+                "AssociatedDataSet": "CovidBritishColumbia"
+            },
             "properties": {
                 "shareKind": "CopyBased"
             }
@@ -48,6 +52,10 @@
             "dependsOn": [
                 "[resourceId('Microsoft.DataShare/accounts/shares',parameters('dataShareAccountName'), parameters('shareName'))]"
             ],
+            "tags": {
+                "Environment": "Public",
+                "AssociatedDataSet": "CovidBritishColumbia"
+            },
             "kind": "ScheduleBased",
             "properties": {
                 "recurrenceInterval": "Day",

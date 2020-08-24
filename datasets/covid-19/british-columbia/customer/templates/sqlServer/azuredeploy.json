@@ -94,12 +94,16 @@
             "location": "[parameters('location')]",
             "tags": {
                 "Environment": "Customer",
-                "AssociatedDataSet": "CovidDefinitiveHC"
+                "AssociatedDataSet": "CovidBritishColumbia"
             },
             "properties": {
                 "administratorLogin": "[parameters('sqlAdministratorLogin')]",
                 "administratorLoginPassword": "[parameters('sqlAdministratorLoginPassword')]",
                 "version": "12.0"
+            },
+            "tags": {
+                "Environment": "Customer",
+                "AssociatedDataSet": "CovidBritishColumbia"
             },
             "resources": [
                 {
@@ -115,7 +119,7 @@
                     "location": "[parameters('location')]",
                     "tags": {
                         "Environment": "Customer",
-                        "AssociatedDataSet": "CovidDefinitiveHC"
+                        "AssociatedDataSet": "CovidBritishColumbia"
                     },
                     "properties": {
                         "collation": "[variables('databaseCollation')]"
@@ -132,7 +136,7 @@
                     "location": "[parameters('location')]",
                     "tags": {
                         "Environment": "Customer",
-                        "AssociatedDataSet": "CovidDefinitiveHC"
+                        "AssociatedDataSet": "CovidBritishColumbia"
                     },
                     "dependsOn": [
                         "[resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))]"
@@ -151,7 +155,7 @@
                     "location": "[parameters('location')]",
                     "tags": {
                         "Environment": "Customer",
-                        "AssociatedDataSet": "CovidDefinitiveHC"
+                        "AssociatedDataSet": "CovidBritishColumbia"
                     },
                     "properties": {
                         "edition": "DataWarehouse",

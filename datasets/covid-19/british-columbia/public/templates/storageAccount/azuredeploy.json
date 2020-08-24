@@ -26,7 +26,7 @@
             "location": "[parameters('location')]",
             "tags": {
                 "Environment": "Public",
-                "AssociatedDataSet": "CovidDefinitiveHC"
+                "AssociatedDataSet": "CovidBritishColumbia"
             },
             "sku": {
                 "name": "Standard_LRS",

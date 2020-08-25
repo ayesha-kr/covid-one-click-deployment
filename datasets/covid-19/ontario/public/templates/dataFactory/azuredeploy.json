@@ -392,13 +392,13 @@
                     "name": "[concat(parameters('factoryName'), '/sql_sink_dataset')]",
                     "type": "Microsoft.DataFactory/factories/datasets",
                     "apiVersion": "2018-06-01",
-                    "folder": {
-                        "name": "CovidOntario/Sinks"
-                    },
                     "properties": {
                         "linkedServiceName": {
                             "referenceName": "covid_tracking_ontario_sql_linkedservice",
                             "type": "LinkedServiceReference"
+                        },
+                        "folder": {
+                            "name": "CovidOntario/Sinks"
                         },
                         "annotations": [],
                         "type": "AzureSqlTable",

@@ -904,7 +904,7 @@
                                 "typeProperties": {
                                     "source": {
                                         "type": "SqlDWSource",
-                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'Ontario') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'Ontario_view')\n    EXEC('create view Ontario.Ontario_view as select Load_Date, Load_Time, Accurate_Episode_Date, Case_Reported_Date, Test_Reported_Date, Specimen_Date, Reported_SpecimenDate, Age_Group, Client_Gender, Reporting_Phu, Reporting_Phu_Address, Reporting_Phu_City, Reporting_Phu_Latitude, Reporting_Phu_Longitude from Ontario.operationalOntario;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'Ontario') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'Ontario_view')\n    EXEC('create view Ontario.Ontario_view as select Load_Date, Load_Time, Accurate_Episode_Date, Case_Reported_Date, Test_Reported_Date, Specimen_Date, Age_Group, Client_Gender, Reporting_Phu, Reporting_Phu_Address, Reporting_Phu_City, Reporting_Phu_Latitude, Reporting_Phu_Longitude from Ontario.operationalOntario;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
                                         "queryTimeout": "00:10:00"
                                     },
                                     "dataset": {
@@ -1153,7 +1153,7 @@
                                 "typeProperties": {
                                     "source": {
                                         "type": "SqlDWSource",
-                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'Ontario') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'Ontario_view')\n    EXEC('create view Ontario.Ontario_view as select Load_Date, Load_Time, Accurate_Episode_Date, Case_Reported_Date, Test_Reported_Date, Specimen_Date, Reported_SpecimenDate, Age_Group, Client_Gender, Reporting_Phu, Reporting_Phu_Address, Reporting_Phu_City, Reporting_Phu_Latitude, Reporting_Phu_Longitude from Ontario.operationalOntario;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'Ontario') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'Ontario_view')\n    EXEC('create view Ontario.Ontario_view as select Load_Date, Load_Time, Accurate_Episode_Date, Case_Reported_Date, Test_Reported_Date, Specimen_Date, Age_Group, Client_Gender, Reporting_Phu, Reporting_Phu_Address, Reporting_Phu_City, Reporting_Phu_Latitude, Reporting_Phu_Longitude from Ontario.operationalOntario;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
                                         "queryTimeout": "00:10:00"
                                     },
                                     "dataset": {
@@ -1184,7 +1184,7 @@
                                 "typeProperties": {
                                     "source": {
                                         "type": "AzureSqlSource",
-                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'Ontario') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'Ontario_view')\n    EXEC('create view Ontario.Ontario_view as select Load_Date, Load_Time, Accurate_Episode_Date, Case_Reported_Date, Test_Reported_Date, Specimen_Date, Reported_SpecimenDate, Age_Group, Client_Gender, Reporting_Phu, Reporting_Phu_Address, Reporting_Phu_City, Reporting_Phu_Latitude, Reporting_Phu_Longitude from Ontario.operationalOntario;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'Ontario') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'Ontario_view')\n    EXEC('create view Ontario.Ontario_view as select Load_Date, Load_Time, Accurate_Episode_Date, Case_Reported_Date, Test_Reported_Date, Specimen_Date, Age_Group, Client_Gender, Reporting_Phu, Reporting_Phu_Address, Reporting_Phu_City, Reporting_Phu_Latitude, Reporting_Phu_Longitude from Ontario.operationalOntario;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
                                         "queryTimeout": "00:05:00"
                                     },
                                     "dataset": {
@@ -1396,7 +1396,7 @@
                                 "typeProperties": {
                                     "source": {
                                         "type": "AzureSqlSource",
-                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'Ontario') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'Ontario_view')\n    EXEC('create view Ontario.Ontario_view as select Load_Date, Load_Time, Accurate_Episode_Date, Case_Reported_Date, Test_Reported_Date, Specimen_Date, Reported_SpecimenDate, Age_Group, Client_Gender, Reporting_Phu, Reporting_Phu_Address, Reporting_Phu_City, Reporting_Phu_Latitude, Reporting_Phu_Longitude from Ontario.operationalOntario;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'Ontario') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'Ontario_view')\n    EXEC('create view Ontario.Ontario_view as select Load_Date, Load_Time, Accurate_Episode_Date, Case_Reported_Date, Test_Reported_Date, Specimen_Date, Age_Group, Client_Gender, Reporting_Phu, Reporting_Phu_Address, Reporting_Phu_City, Reporting_Phu_Latitude, Reporting_Phu_Longitude from Ontario.operationalOntario;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
                                         "queryTimeout": "00:10:00"
                                     },
                                     "dataset": {
@@ -2734,7 +2734,7 @@
                                 "typeProperties": {
                                     "source": {
                                         "type": "AzureSqlSource",
-                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'Ontario') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'Ontario_view')\n    EXEC('create view Ontario.Ontario_view as select Load_Date, Load_Time, Accurate_Episode_Date, Case_Reported_Date, Test_Reported_Date, Specimen_Date, Reported_SpecimenDate, Age_Group, Client_Gender, Reporting_Phu, Reporting_Phu_Address, Reporting_Phu_City, Reporting_Phu_Latitude, Reporting_Phu_Longitude from Ontario.operationalOntario;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'Ontario') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'Ontario_view')\n    EXEC('create view Ontario.Ontario_view as select Load_Date, Load_Time, Accurate_Episode_Date, Case_Reported_Date, Test_Reported_Date, Specimen_Date, Age_Group, Client_Gender, Reporting_Phu, Reporting_Phu_Address, Reporting_Phu_City, Reporting_Phu_Latitude, Reporting_Phu_Longitude from Ontario.operationalOntario;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
                                         "queryTimeout": "00:10:00",
                                         "partitionOption": "None"
                                     },
@@ -3025,7 +3025,7 @@
                                 "typeProperties": {
                                     "source": {
                                         "type": "SqlDWSource",
-                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'Ontario') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'Ontario_view')\n    EXEC('create view Ontario.Ontario_view as select Load_Date, Load_Time, Accurate_Episode_Date, Case_Reported_Date, Test_Reported_Date, Specimen_Date, Reported_SpecimenDate, Age_Group, Client_Gender, Reporting_Phu, Reporting_Phu_Address, Reporting_Phu_City, Reporting_Phu_Latitude, Reporting_Phu_Longitude from Ontario.operationalOntario;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'Ontario') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'Ontario_view')\n    EXEC('create view Ontario.Ontario_view as select Load_Date, Load_Time, Accurate_Episode_Date, Case_Reported_Date, Test_Reported_Date, Specimen_Date, Age_Group, Client_Gender, Reporting_Phu, Reporting_Phu_Address, Reporting_Phu_City, Reporting_Phu_Latitude, Reporting_Phu_Longitude from Ontario.operationalOntario;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
                                         "queryTimeout": "00:10:00",
                                         "partitionOption": "None"
                                     },
@@ -3311,7 +3311,7 @@
                                 "typeProperties": {
                                     "source": {
                                         "type": "SqlDWSource",
-                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'Ontario') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'Ontario_view')\n    EXEC('create view Ontario.Ontario_view as select Load_Date, Load_Time, Accurate_Episode_Date, Case_Reported_Date, Test_Reported_Date, Specimen_Date, Reported_SpecimenDate, Age_Group, Client_Gender, Reporting_Phu, Reporting_Phu_Address, Reporting_Phu_City, Reporting_Phu_Latitude, Reporting_Phu_Longitude from Ontario.operationalOntario;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'Ontario') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'Ontario_view')\n    EXEC('create view Ontario.Ontario_view as select Load_Date, Load_Time, Accurate_Episode_Date, Case_Reported_Date, Test_Reported_Date, Specimen_Date, Age_Group, Client_Gender, Reporting_Phu, Reporting_Phu_Address, Reporting_Phu_City, Reporting_Phu_Latitude, Reporting_Phu_Longitude from Ontario.operationalOntario;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
                                         "queryTimeout": "00:10:00",
                                         "partitionOption": "None"
                                     },
@@ -3344,7 +3344,7 @@
                                 "typeProperties": {
                                     "source": {
                                         "type": "AzureSqlSource",
-                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'Ontario') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'Ontario_view')\n    EXEC('create view Ontario.Ontario_view as select Load_Date, Load_Time, Accurate_Episode_Date, Case_Reported_Date, Test_Reported_Date, Specimen_Date, Reported_SpecimenDate, Age_Group, Client_Gender, Reporting_Phu, Reporting_Phu_Address, Reporting_Phu_City, Reporting_Phu_Latitude, Reporting_Phu_Longitude from Ontario.operationalOntario;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
+                                        "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'Ontario') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'Ontario_view')\n    EXEC('create view Ontario.Ontario_view as select Load_Date, Load_Time, Accurate_Episode_Date, Case_Reported_Date, Test_Reported_Date, Specimen_Date, Age_Group, Client_Gender, Reporting_Phu, Reporting_Phu_Address, Reporting_Phu_City, Reporting_Phu_Latitude, Reporting_Phu_Longitude from Ontario.operationalOntario;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
                                         "queryTimeout": "00:05:00",
                                         "partitionOption": "None"
                                     },

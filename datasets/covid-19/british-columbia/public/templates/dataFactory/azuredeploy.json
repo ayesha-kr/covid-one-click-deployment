@@ -1,0 +1,2394 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name you provide will be appended with a unique sting to make it globally available. The name can contain only letters, numbers and hyphens. The first and last characters must be a letter or number. Spaces are not allowed."
+            }
+        },
+        "storageAccountName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name you provide will be appended with a unique sting to make it globally available. The field can contain only lowercase letters and numbers. Name must be between 1 and 11 characters."
+            }
+        },
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "Location of the data factory. Currently, only East US, East US 2, and West Europe are supported. "
+            }
+        },
+        "doYouWantToWriteCuratedDataToSQLDatabase": {
+            "type": "string",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "metadata": {
+                "description": "Please specify if you want to write curated data into SQL database."
+            }
+        },
+        "serverName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name you provide will be appended with a unique sting to make it globally available. Your server name can contain only lowercase letters, numbers, and '-', but can't start or end with '-' or have more than 50 characters."
+            }
+        },
+        "databaseName": {
+            "type": "string",
+            "metadata": {
+                "description": "Value should not match special patterns. It should contain a length of maximum of 128."
+            }
+        },
+        "sqlAdministratorLogin": {
+            "type": "string",
+            "metadata": {
+                "description": "Your login name must not contain a SQL Identifier or a typical system name (like admin, administrator, sa, root, dbmanager, loginmanager, etc.) or a built-in database user or role (like dbo, guest, public, etc.)"
+            }
+        },
+        "covid_tracking_britishcolumbia_http_linkedservice_properties_typeProperties_url": {
+            "type": "string",
+            "defaultValue": "http://www.bccdc.ca/"
+        },
+        "sqlAdministratorLoginPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Your password must be at least 8 characters in length. Your password must contain characters from three of the following categories – English uppercase letters, English lowercase letters, numbers (0-9), and non-alphanumeric characters (!, $, #, %, etc.) Your password cannot contain all or part of the login name. Part of a login name is defined as three or more consecutive alphanumeric characters."
+            }
+        },
+        "currentTime": {
+            "type": "string"
+        },
+        "notificationEmail": {
+            "type": "string",
+            "metadata": {
+                "description": "Please specify comma separated email addresses on which you would like to receive the ADF pipeline alerts."
+            }
+        },
+        "webHookUri": {
+            "type": "string"
+
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]",
+        "storageAccountId": "[concat(resourceGroup().id,'/providers/Microsoft.Storage/storageAccounts/', parameters('storageAccountName'))]",
+        "dataflowWithSqlName": "Transformations_with_SQL_sink",
+        "dataflowWithoutSqlName": "Transformations_without_SQL_sink",
+        "databaseCollation": "SQL_Latin1_General_CP1_CI_AS"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.DataFactory/factories",
+            "apiVersion": "2018-06-01",
+            "name": "[parameters('factoryName')]",
+            "location": "[parameters('location')]",
+            "tags": {
+                "Environment": "Public",
+                "AssociatedDataSet": "CovidBritishColumbia"
+            },
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "resources": [
+                {
+                    "name": "[concat(parameters('factoryName'), '/covid_tracking_britishcolumbia_blobstorage_linkedservice')]",
+                    "type": "Microsoft.DataFactory/factories/linkedServices",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "annotations": [],
+                        "type": "AzureBlobStorage",
+                        "typeProperties": {
+                            "connectionString": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('storageAccountName'),';AccountKey=',concat(listKeys(variables('storageAccountId'),'2015-05-01-preview').key1))]"
+                        }
+                    },
+                    "dependsOn": [
+                        "[parameters('factoryName')]"
+                    ]
+                },
+                {
+                    "name": "[concat(parameters('factoryName'), '/covid_tracking_britishcolumbia_http_linkedservice')]",
+                    "type": "Microsoft.DataFactory/factories/linkedServices",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "annotations": [],
+                        "type": "HttpServer",
+                        "typeProperties": {
+                            "url": "[parameters('covid_tracking_britishcolumbia_http_linkedservice_properties_typeProperties_url')]",
+                            "enableServerCertificateValidation": true,
+                            "authenticationType": "Anonymous"
+                        }
+                    },
+                    "dependsOn": [
+                        "[parameters('factoryName')]"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'Yes')]",
+                    "name": "[concat(parameters('factoryName'), '/covid_tracking_britishcolumbia_sql_linkedservice')]",
+                    "type": "Microsoft.DataFactory/factories/linkedServices",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "annotations": [],
+                        "type": "AzureSqlDatabase",
+                        "typeProperties": {
+                            "connectionString": "[concat('Server=tcp:',parameters('serverName'),'.database.windows.net,1433;Initial Catalog=',parameters('databaseName'),';Persist Security Info=False;User ID=',parameters('sqlAdministratorLogin'),';Password=',parameters('sqlAdministratorLoginPassword'),';MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;')]"
+                        }
+                    },
+                    "dependsOn": [
+                        "[parameters('factoryName')]"
+                    ]
+                },
+                {
+                    "name": "[concat(parameters('factoryName'), '/parquet_sink_dataset')]",
+                    "type": "Microsoft.DataFactory/factories/datasets",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "linkedServiceName": {
+                            "referenceName": "covid_tracking_britishcolumbia_blobstorage_linkedservice",
+                            "type": "LinkedServiceReference"
+                        },
+                        "parameters": {
+                            "container": {
+                                "type": "string"
+                            },
+                            "directory": {
+                                "type": "string"
+                            },
+                            "file": {
+                                "type": "string"
+                            }
+                        },
+                        "folder": {
+                            "name": "CovidBritishColumbia/Sinks"
+                        },
+                        "annotations": [],
+                        "type": "Parquet",
+                        "typeProperties": {
+                            "location": {
+                                "type": "AzureBlobStorageLocation",
+                                "folderPath": {
+                                    "value": "@dataset().directory",
+                                    "type": "Expression"
+                                },
+                                "container": {
+                                    "value": "@dataset().container",
+                                    "type": "Expression"
+                                }
+                            },
+                            "compressionCodec": "snappy"
+                        },
+                        "schema": []
+                    },
+                    "dependsOn": [
+                        "[parameters('factoryName')]",
+                        "[concat(variables('factoryId'), '/linkedServices/covid_tracking_britishcolumbia_blobstorage_linkedservice')]"
+                    ]
+                },
+                {
+                    "name": "[concat(parameters('factoryName'), '/http_source_dataset')]",
+                    "type": "Microsoft.DataFactory/factories/datasets",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "linkedServiceName": {
+                            "referenceName": "covid_tracking_britishcolumbia_http_linkedservice",
+                            "type": "LinkedServiceReference"
+                        },
+                        "parameters": {
+                            "relativeUrl": {
+                                "type": "string"
+                            }
+                        },
+                        "folder": {
+                            "name": "CovidBritishColumbia/Sources"
+                        },
+                        "annotations": [],
+                        "type": "DelimitedText",
+                        "typeProperties": {
+                            "location": {
+                                "type": "HttpServerLocation",
+                                "relativeUrl": {
+                                    "value": "@dataset().relativeUrl",
+                                    "type": "Expression"
+                                }
+                            },
+                            "columnDelimiter": ",",
+                            "escapeChar": "\\",
+                            "firstRowAsHeader": true,
+                            "quoteChar": "\""
+                        },
+                        "schema": [
+                            {
+                                "name": "Date",
+                                "type": "String"
+                            },
+                            {
+                                "name": "Region",
+                                "type": "String"
+                            },
+                            {
+                                "name": "New_Tests",
+                                "type": "String"
+                            },
+                            {
+                                "name": "Total_Tests",
+                                "type": "String"
+                            },
+                            {
+                                "name": "Positivity",
+                                "type": "String"
+                            },
+                            {
+                                "name": "Turn_Around",
+                                "type": "String"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[parameters('factoryName')]",
+                        "[concat(variables('factoryId'), '/linkedServices/covid_tracking_britishcolumbia_http_linkedservice')]"
+                    ]
+                },
+                {
+                    "name": "[concat(parameters('factoryName'), '/csv_sink_dataset')]",
+                    "type": "Microsoft.DataFactory/factories/datasets",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "linkedServiceName": {
+                            "referenceName": "covid_tracking_britishcolumbia_blobstorage_linkedservice",
+                            "type": "LinkedServiceReference"
+                        },
+                        "parameters": {
+                            "directory": {
+                                "type": "string"
+                            },
+                            "file": {
+                                "type": "string"
+                            },
+                            "container": {
+                                "type": "string"
+                            }
+                        },
+                        "folder": {
+                            "name": "CovidBritishColumbia/Sinks"
+                        },
+                        "annotations": [],
+                        "type": "DelimitedText",
+                        "typeProperties": {
+                            "location": {
+                                "type": "AzureBlobStorageLocation",
+                                "folderPath": {
+                                    "value": "@dataset().directory",
+                                    "type": "Expression"
+                                },
+                                "container": {
+                                    "value": "@dataset().container",
+                                    "type": "Expression"
+                                }
+                            },
+                            "columnDelimiter": ",",
+                            "escapeChar": "\\",
+                            "firstRowAsHeader": true,
+                            "quoteChar": "\""
+                        },
+                        "schema": []
+                    },
+                    "dependsOn": [
+                        "[parameters('factoryName')]",
+                        "[concat(variables('factoryId'), '/linkedServices/covid_tracking_britishcolumbia_blobstorage_linkedservice')]"
+                    ]
+                },
+                {
+                    "name": "[concat(parameters('factoryName'), '/json_sink_dataset')]",
+                    "type": "Microsoft.DataFactory/factories/datasets",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "linkedServiceName": {
+                            "referenceName": "covid_tracking_britishcolumbia_blobstorage_linkedservice",
+                            "type": "LinkedServiceReference"
+                        },
+                        "parameters": {
+                            "container": {
+                                "type": "string"
+                            },
+                            "directory": {
+                                "type": "string"
+                            },
+                            "file": {
+                                "type": "string"
+                            }
+                        },
+                        "folder": {
+                            "name": "CovidBritishColumbia/Sinks"
+                        },
+                        "annotations": [],
+                        "type": "Json",
+                        "typeProperties": {
+                            "location": {
+                                "type": "AzureBlobStorageLocation",
+                                "fileName": {
+                                    "value": "@dataset().file",
+                                    "type": "Expression"
+                                },
+                                "folderPath": {
+                                    "value": "@dataset().directory",
+                                    "type": "Expression"
+                                },
+                                "container": {
+                                    "value": "@dataset().container",
+                                    "type": "Expression"
+                                }
+                            }
+                        },
+                        "schema": {}
+                    },
+                    "dependsOn": [
+                        "[parameters('factoryName')]",
+                        "[concat(variables('factoryId'), '/linkedServices/covid_tracking_britishcolumbia_blobstorage_linkedservice')]"
+                    ]
+                },
+                {
+                    "name": "[concat(parameters('factoryName'), '/csv_source_dataset')]",
+                    "type": "Microsoft.DataFactory/factories/datasets",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "linkedServiceName": {
+                            "referenceName": "covid_tracking_britishcolumbia_blobstorage_linkedservice",
+                            "type": "LinkedServiceReference"
+                        },
+                        "parameters": {
+                            "directory": {
+                                "type": "string"
+                            },
+                            "file": {
+                                "type": "string"
+                            },
+                            "container": {
+                                "type": "string"
+                            }
+                        },
+                        "folder": {
+                            "name": "CovidBritishColumbia/Sources"
+                        },
+                        "annotations": [],
+                        "type": "DelimitedText",
+                        "typeProperties": {
+                            "location": {
+                                "type": "AzureBlobStorageLocation",
+                                "fileName": {
+                                    "value": "@dataset().file",
+                                    "type": "Expression"
+                                },
+                                "folderPath": {
+                                    "value": "@dataset().directory",
+                                    "type": "Expression"
+                                },
+                                "container": {
+                                    "value": "@dataset().container",
+                                    "type": "Expression"
+                                }
+                            },
+                            "columnDelimiter": ",",
+                            "escapeChar": "\\",
+                            "firstRowAsHeader": true,
+                            "quoteChar": "\""
+                        },
+                        "schema": [
+                            {
+                                "name": "Date",
+                                "type": "String"
+                            },
+                            {
+                                "name": "Region",
+                                "type": "String"
+                            },
+                            {
+                                "name": "New_Tests",
+                                "type": "String"
+                            },
+                            {
+                                "name": "Total_Tests",
+                                "type": "String"
+                            },
+                            {
+                                "name": "Positivity",
+                                "type": "String"
+                            },
+                            {
+                                "name": "Turn_Around",
+                                "type": "String"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[parameters('factoryName')]",
+                        "[concat(variables('factoryId'), '/linkedServices/covid_tracking_britishcolumbia_blobstorage_linkedservice')]"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'Yes')]",
+                    "name": "[concat(parameters('factoryName'), '/sql_sink_dataset')]",
+                    "type": "Microsoft.DataFactory/factories/datasets",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "folder": {
+                            "name": "CovidBritishColumbia/Sinks"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "covid_tracking_britishcolumbia_sql_linkedservice",
+                            "type": "LinkedServiceReference"
+                        },
+                        "annotations": [],
+                        "type": "AzureSqlTable",
+                        "schema": [],
+                        "typeProperties": {
+                            "schema": "",
+                            "table": "covid_tracking"
+                        }
+                    },
+                    "dependsOn": [
+                        "[parameters('factoryName')]",
+                        "[concat(variables('factoryId'), '/linkedServices/covid_tracking_britishcolumbia_sql_linkedservice')]"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'No')]",
+                    "name": "[concat(parameters('factoryName'), '/',variables('dataflowWithoutSqlName'))]",
+                    "type": "Microsoft.DataFactory/factories/dataflows",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "description": "Update ISO 3166-2 code",
+                        "type": "MappingDataFlow",
+                        "folder": {
+                            "name": "CovidBritishColumbia"
+                        },
+                        "typeProperties": {
+                            "sources": [
+                                {
+                                    "dataset": {
+                                        "referenceName": "csv_source_dataset",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "sourceCSV"
+                                }
+                            ],
+                            "sinks": [
+                                {
+                                    "dataset": {
+                                        "referenceName": "csv_sink_dataset",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "SinkLatestCSV"
+                                },
+                                {
+                                    "dataset": {
+                                        "referenceName": "json_sink_dataset",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "sinkLatestJsonl"
+                                },
+                                {
+                                    "dataset": {
+                                        "referenceName": "csv_sink_dataset",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "SinkCSV"
+                                },
+                                {
+                                    "dataset": {
+                                        "referenceName": "json_sink_dataset",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "sinkJsonl"
+                                },
+                                {
+                                    "dataset": {
+                                        "referenceName": "parquet_sink_dataset",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "sinkLatestParquet"
+                                },
+                                {
+                                    "dataset": {
+                                        "referenceName": "parquet_sink_dataset",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "sinkParquet"
+                                }
+                            ],
+                            "transformations": [
+                                {
+                                    "name": "DropLineageColumn"
+                                },
+                                {
+                                    "name": "LoadDateAndISOCountry"
+                                }
+                            ],
+                            "script": "parameters{\n\tfilename as string ('covid_tracking'),\n\trunid as string ('runtime_guid')\n}\nsource(output(\n\t\tDate as string,\n\t\tRegion as string,\n\t\tNew_Tests as string,\n\t\tTotal_Tests as string,\n\t\tPositivity as string,\n\t\tTurn_Around as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\trowUrlColumn: 'lineage') ~> sourceCSV\nLoadDateAndISOCountry select(mapColumn(\n\t\tLoad_Date,\n\t\tLoad_Time,\n\t\tRecord_Date = Date,\n\t\tRegion,\n\t\tNew_Tests,\n\t\tTotal_Tests,\n\t\tPositivity,\n\t\tTurn_Around,\n\t\tIso_Country\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> DropLineageColumn\nsourceCSV derive(Load_Time = currentTimestamp(),\n\t\tLoad_Date = currentDate(),\n\t\tIso_Country = 'CAN') ~> LoadDateAndISOCountry\nDropLineageColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:[(concat($filename, '.csv'))],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SinkLatestCSV\nDropLineageColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:[(concat($filename, '.jsonl'))],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sinkLatestJsonl\nDropLineageColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:[(concat($filename,'_', $runid,'.csv'))],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SinkCSV\nDropLineageColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:[(concat($filename,'_', $runid,'.jsonl'))],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sinkJsonl\nDropLineageColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'parquet',\n\tpartitionFileNames:[(concat($filename, '.parquet'))],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sinkLatestParquet\nDropLineageColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'parquet',\n\tpartitionFileNames:[(concat($filename,'_', $runid,'.parquet'))],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sinkParquet"
+                        }
+                    },
+                    "dependsOn": [
+                        "[parameters('factoryName')]",
+                        "[concat(variables('factoryId'), '/datasets/csv_source_dataset')]",
+                        "[concat(variables('factoryId'), '/datasets/csv_sink_dataset')]",
+                        "[concat(variables('factoryId'), '/datasets/json_sink_dataset')]",
+                        "[concat(variables('factoryId'), '/datasets/parquet_sink_dataset')]"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'Yes')]",
+                    "name": "[concat(parameters('factoryName'), '/',variables('dataflowWithSqlName'))]",                    "type": "Microsoft.DataFactory/factories/dataflows",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "description": "Update ISO 3166-2 code",
+                        "folder": {
+                            "name": "CovidBritishColumbia"
+                        },
+                        "type": "MappingDataFlow",
+                        "typeProperties": {
+                            "sources": [
+                                {
+                                    "dataset": {
+                                        "referenceName": "csv_source_dataset",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "sourceCSV"
+                                }
+                            ],
+                            "sinks": [
+                                {
+                                    "dataset": {
+                                        "referenceName": "csv_sink_dataset",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "SinkLatestCSV"
+                                },
+                                {
+                                    "dataset": {
+                                        "referenceName": "json_sink_dataset",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "sinkLatestJsonl"
+                                },
+                                {
+                                    "dataset": {
+                                        "referenceName": "csv_sink_dataset",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "SinkCSV"
+                                },
+                                {
+                                    "dataset": {
+                                        "referenceName": "json_sink_dataset",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "sinkJsonl"
+                                },
+                                {
+                                    "dataset": {
+                                        "referenceName": "parquet_sink_dataset",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "sinkLatestParquet"
+                                },
+                                {
+                                    "dataset": {
+                                        "referenceName": "parquet_sink_dataset",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "sinkParquet"
+                                },
+                                {
+                                    "dataset": {
+                                        "referenceName": "sql_sink_dataset",
+                                        "type": "DatasetReference"
+                                    },
+                                    "name": "sinkSQL"
+                                }
+                            ],
+                            "transformations": [
+                                {
+                                    "name": "DropLineageColumn"
+                                },
+                                {
+                                    "name": "LoadDateAndISOCountry"
+                                }
+                            ],
+                            "script": "parameters{\n\tfilename as string ('covid_tracking'),\n\trunid as string ('runtime_guid')\n}\nsource(output(\n\t\tDate as string,\n\t\tRegion as string,\n\t\tNew_Tests as string,\n\t\tTotal_Tests as string,\n\t\tPositivity as string,\n\t\tTurn_Around as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\trowUrlColumn: 'lineage') ~> sourceCSV\nLoadDateAndISOCountry select(mapColumn(\n\t\tLoad_Date,\n\t\tLoad_Time,\n\t\tRecord_Date = Date,\n\t\tRegion,\n\t\tNew_Tests,\n\t\tTotal_Tests,\n\t\tPositivity,\n\t\tTurn_Around,\n\t\tIso_Country\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> DropLineageColumn\nsourceCSV derive(Load_Time = currentTimestamp(),\n\t\tLoad_Date = currentDate(),\n\t\tIso_Country = 'CAN') ~> LoadDateAndISOCountry\nDropLineageColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:[(concat($filename, '.csv'))],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SinkLatestCSV\nDropLineageColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:[(concat($filename, '.jsonl'))],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sinkLatestJsonl\nDropLineageColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:[(concat($filename,'_', $runid,'.csv'))],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SinkCSV\nDropLineageColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:[(concat($filename,'_', $runid,'.jsonl'))],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sinkJsonl\nDropLineageColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'parquet',\n\tpartitionFileNames:[(concat($filename, '.parquet'))],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sinkLatestParquet\nDropLineageColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'parquet',\n\tpartitionFileNames:[(concat($filename,'_', $runid,'.parquet'))],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sinkParquet\nDropLineageColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sinkSQL"
+                        }
+                    },
+                    "dependsOn": [
+                        "[parameters('factoryName')]",
+                        "[concat(variables('factoryId'), '/datasets/csv_source_dataset')]",
+                        "[concat(variables('factoryId'), '/datasets/csv_sink_dataset')]",
+                        "[concat(variables('factoryId'), '/datasets/json_sink_dataset')]",
+                        "[concat(variables('factoryId'), '/datasets/parquet_sink_dataset')]",
+                        "[concat(variables('factoryId'), '/datasets/sql_sink_dataset')]"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'No')]",
+                    "name": "[concat(parameters('factoryName'), '/Covid_Tracking_BritishColumbia_Without_Sql_Sink')]",
+                    "type": "Microsoft.DataFactory/factories/pipelines",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "activities": [
+                            {
+                                "name": "To Raw Partition",
+                                "description": "https://covidtracking.com/api/v1/states/daily.json",
+                                "type": "Copy",
+                                "dependsOn": [],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "DelimitedTextSource",
+                                        "storeSettings": {
+                                            "type": "HttpReadSettings",
+                                            "requestMethod": "GET"
+                                        },
+                                        "formatSettings": {
+                                            "type": "DelimitedTextReadSettings"
+                                        }
+                                    },
+                                    "sink": {
+                                        "type": "DelimitedTextSink",
+                                        "storeSettings": {
+                                            "type": "AzureBlobStorageWriteSettings"
+                                        },
+                                        "formatSettings": {
+                                            "type": "DelimitedTextWriteSettings",
+                                            "quoteAllText": true,
+                                            "fileExtension": ".csv"
+                                        }
+                                    },
+                                    "enableStaging": false
+                                },
+                                "inputs": [
+                                    {
+                                        "referenceName": "http_source_dataset",
+                                        "type": "DatasetReference",
+                                        "parameters": {
+                                            "relativeUrl": {
+                                                "value": "@pipeline().parameters.sourceRelativeUrl",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "referenceName": "csv_source_dataset",
+                                        "type": "DatasetReference",
+                                        "parameters": {
+                                            "directory": {
+                                                "value": "@concat(pipeline().parameters.rawBlobDirectory,'/',formatdatetime(utcnow(),'yyyy/MM/dd'))",
+                                                "type": "Expression"
+                                            },
+                                            "file": {
+                                                "value": "@concat(pipeline().parameters.sourceFilename,'_',pipeline().RunId,'.csv')",
+                                                "type": "Expression"
+                                            },
+                                            "container": {
+                                                "value": "@pipeline().parameters.blobContainer",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "To Raw Overwrite",
+                                "type": "Copy",
+                                "dependsOn": [],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "DelimitedTextSource",
+                                        "storeSettings": {
+                                            "type": "HttpReadSettings",
+                                            "requestMethod": "GET"
+                                        },
+                                        "formatSettings": {
+                                            "type": "DelimitedTextReadSettings"
+                                        }
+                                    },
+                                    "sink": {
+                                        "type": "DelimitedTextSink",
+                                        "storeSettings": {
+                                            "type": "AzureBlobStorageWriteSettings"
+                                        },
+                                        "formatSettings": {
+                                            "type": "DelimitedTextWriteSettings",
+                                            "quoteAllText": true,
+                                            "fileExtension": ".csv"
+                                        }
+                                    },
+                                    "enableStaging": false
+                                },
+                                "inputs": [
+                                    {
+                                        "referenceName": "http_source_dataset",
+                                        "type": "DatasetReference",
+                                        "parameters": {
+                                            "relativeUrl": {
+                                                "value": "@pipeline().parameters.sourceRelativeUrl",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "referenceName": "csv_source_dataset",
+                                        "type": "DatasetReference",
+                                        "parameters": {
+                                            "directory": {
+                                                "value": "@concat(pipeline().parameters.rawBlobDirectory, '/latest')",
+                                                "type": "Expression"
+                                            },
+                                            "file": {
+                                                "value": "@pipeline().parameters.sourceFilename",
+                                                "type": "Expression"
+                                            },
+                                            "container": {
+                                                "value": "@pipeline().parameters.blobContainer",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "Reformat Columns",
+                                "type": "ExecuteDataFlow",
+                                "dependsOn": [
+                                    {
+                                        "activity": "To Raw Partition",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    },
+                                    {
+                                        "activity": "To Raw Overwrite",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "dataflow": {
+                                        "referenceName": "[variables('dataflowWithoutSqlName')]",
+                                        "type": "DataFlowReference",
+                                        "parameters": {
+                                            "filename": {
+                                                "value": "'@{pipeline().parameters.filename}'",
+                                                "type": "Expression"
+                                            },
+                                            "runid": {
+                                                "value": "'@{pipeline().RunId}'",
+                                                "type": "Expression"
+                                            }
+                                        },
+                                        "datasetParameters": {
+                                            "sourceCSV": {
+                                                "directory": {
+                                                    "value": "@concat(pipeline().parameters.rawBlobDirectory, '/latest')",
+                                                    "type": "Expression"
+                                                },
+                                                "file": {
+                                                    "value": "@pipeline().parameters.sourceFilename",
+                                                    "type": "Expression"
+                                                },
+                                                "container": {
+                                                    "value": "@pipeline().parameters.blobContainer",
+                                                    "type": "Expression"
+                                                }
+                                            },
+                                            "SinkLatestCSV": {
+                                                "directory": {
+                                                    "value": "@concat(pipeline().parameters.curatedBlobDirectory,'/latest')",
+                                                    "type": "Expression"
+                                                },
+                                                "file": {
+                                                    "value": "@concat(pipeline().parameters.filename,'.csv')",
+                                                    "type": "Expression"
+                                                },
+                                                "container": {
+                                                    "value": "@pipeline().parameters.blobContainer",
+                                                    "type": "Expression"
+                                                }
+                                            },
+                                            "sinkLatestJsonl": {
+                                                "container": {
+                                                    "value": "@pipeline().parameters.blobContainer",
+                                                    "type": "Expression"
+                                                },
+                                                "directory": {
+                                                    "value": "@concat(pipeline().parameters.curatedBlobDirectory,'/latest')",
+                                                    "type": "Expression"
+                                                },
+                                                "file": {
+                                                    "value": "@concat(pipeline().parameters.filename,'.jsonl')",
+                                                    "type": "Expression"
+                                                }
+                                            },
+                                            "SinkCSV": {
+                                                "directory": {
+                                                    "value": "@concat(pipeline().parameters.curatedBlobDirectory,'/',formatdatetime(utcnow(),'yyyy/MM/dd'))",
+                                                    "type": "Expression"
+                                                },
+                                                "file": "specified in data flow",
+                                                "container": {
+                                                    "value": "@pipeline().parameters.blobContainer",
+                                                    "type": "Expression"
+                                                }
+                                            },
+                                            "sinkJsonl": {
+                                                "container": {
+                                                    "value": "@pipeline().parameters.blobContainer",
+                                                    "type": "Expression"
+                                                },
+                                                "directory": {
+                                                    "value": "@concat(pipeline().parameters.curatedBlobDirectory,'/',formatdatetime(utcnow(),'yyyy/MM/dd'))",
+                                                    "type": "Expression"
+                                                },
+                                                "file": "specified in data flow"
+                                            },
+                                            "sinkLatestParquet": {
+                                                "container": {
+                                                    "value": "@pipeline().parameters.blobContainer",
+                                                    "type": "Expression"
+                                                },
+                                                "directory": {
+                                                    "value": "@concat(pipeline().parameters.curatedBlobDirectory,'/latest')",
+                                                    "type": "Expression"
+                                                },
+                                                "file": "specified in data flow"
+                                            },
+                                            "sinkParquet": {
+                                                "container": {
+                                                    "value": "@pipeline().parameters.blobContainer",
+                                                    "type": "Expression"
+                                                },
+                                                "directory": {
+                                                    "value": "@concat(pipeline().parameters.curatedBlobDirectory,'/',formatdatetime(utcnow(),'yyyy/MM/dd'))",
+                                                    "type": "Expression"
+                                                },
+                                                "file": "specified in data flow"
+                                            }
+                                        }
+                                    },
+                                    "staging": {},
+                                    "compute": {
+                                        "coreCount": 8,
+                                        "computeType": "General"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "JSONL to JSON LATEST",
+                                "type": "Copy",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Reformat Columns",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "JsonSource",
+                                        "storeSettings": {
+                                            "type": "AzureBlobStorageReadSettings",
+                                            "recursive": true
+                                        }
+                                    },
+                                    "sink": {
+                                        "type": "JsonSink",
+                                        "storeSettings": {
+                                            "type": "AzureBlobStorageWriteSettings"
+                                        },
+                                        "formatSettings": {
+                                            "type": "JsonWriteSettings",
+                                            "quoteAllText": true,
+                                            "filePattern": "arrayOfObjects"
+                                        }
+                                    },
+                                    "enableStaging": false
+                                },
+                                "inputs": [
+                                    {
+                                        "referenceName": "json_sink_dataset",
+                                        "type": "DatasetReference",
+                                        "parameters": {
+                                            "container": {
+                                                "value": "@pipeline().parameters.blobContainer",
+                                                "type": "Expression"
+                                            },
+                                            "directory": {
+                                                "value": "@concat(pipeline().parameters.curatedBlobDirectory,'/latest')",
+                                                "type": "Expression"
+                                            },
+                                            "file": {
+                                                "value": "@concat(pipeline().parameters.filename,'.jsonl')",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "referenceName": "json_sink_dataset",
+                                        "type": "DatasetReference",
+                                        "parameters": {
+                                            "container": {
+                                                "value": "@pipeline().parameters.blobContainer",
+                                                "type": "Expression"
+                                            },
+                                            "directory": {
+                                                "value": "@concat(pipeline().parameters.curatedBlobDirectory,'/latest')",
+                                                "type": "Expression"
+                                            },
+                                            "file": {
+                                                "value": "@concat(pipeline().parameters.filename,'.json')",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "JSONL to JSON",
+                                "type": "Copy",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Reformat Columns",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "JsonSource",
+                                        "storeSettings": {
+                                            "type": "AzureBlobStorageReadSettings",
+                                            "recursive": true
+                                        }
+                                    },
+                                    "sink": {
+                                        "type": "JsonSink",
+                                        "storeSettings": {
+                                            "type": "AzureBlobStorageWriteSettings"
+                                        },
+                                        "formatSettings": {
+                                            "type": "JsonWriteSettings",
+                                            "quoteAllText": true,
+                                            "filePattern": "arrayOfObjects"
+                                        }
+                                    },
+                                    "enableStaging": false
+                                },
+                                "inputs": [
+                                    {
+                                        "referenceName": "json_sink_dataset",
+                                        "type": "DatasetReference",
+                                        "parameters": {
+                                            "container": {
+                                                "value": "@pipeline().parameters.blobContainer",
+                                                "type": "Expression"
+                                            },
+                                            "directory": {
+                                                "value": "@concat(pipeline().parameters.curatedBlobDirectory,'/latest')",
+                                                "type": "Expression"
+                                            },
+                                            "file": {
+                                                "value": "@concat(pipeline().parameters.filename,'.jsonl')",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "referenceName": "json_sink_dataset",
+                                        "type": "DatasetReference",
+                                        "parameters": {
+                                            "container": {
+                                                "value": "@pipeline().parameters.blobContainer",
+                                                "type": "Expression"
+                                            },
+                                            "directory": {
+                                                "value": "@concat(pipeline().parameters.curatedBlobDirectory,'/',formatdatetime(utcnow(),'yyyy/MM/dd'))",
+                                                "type": "Expression"
+                                            },
+                                            "file": {
+                                                "value": "@concat(pipeline().parameters.filename,'_',pipeline().RunId,'.json')",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        ],
+                        "parameters": {
+                            "sourceFilename": {
+                                "type": "string",
+                                "defaultValue": "BCCDC_COVID19_Dashboard_Lab_Information_raw.csv"
+                            },
+                            "sourceRelativeUrl": {
+                                "type": "string",
+                                "defaultValue": "/Health-Info-Site/Documents/BCCDC_COVID19_Dashboard_Lab_Information.csv"
+                            },
+                            "blobContainer": {
+                                "type": "string",
+                                "defaultValue": "public"
+                            },
+                            "rawBlobDirectory": {
+                                "type": "string",
+                                "defaultValue": "raw/covid-19/covid_BritishColumbia"
+                            },
+                            "curatedBlobDirectory": {
+                                "type": "string",
+                                "defaultValue": "curated/covid-19/covid_BritishColumbia"
+                            },
+                            "filename": {
+                                "type": "string",
+                                "defaultValue": "covid_tracking"
+                            }
+                        },
+                        "folder": {
+                            "name": "CovidBritishColumbia/BlobStorageDataExtraction"
+                        },
+                        "annotations": [
+                            "covidtracking"
+                        ]
+                    },
+                    "dependsOn": [
+                        "[parameters('factoryName')]",
+                        "[concat(variables('factoryId'), '/datasets/http_source_dataset')]",
+                        "[concat(variables('factoryId'), '/datasets/csv_source_dataset')]",
+                        "[concat(variables('factoryId'), '/dataflows/',variables('dataflowWithoutSqlName'))]",
+                        "[concat(variables('factoryId'), '/datasets/json_sink_dataset')]"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'Yes')]",
+                    "name": "[concat(parameters('factoryName'), '/Covid_Tracking_BritishColumbia_With_Sql_Sink')]",
+                    "type": "Microsoft.DataFactory/factories/pipelines",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "activities": [
+                            {
+                                "name": "To Raw Partition",
+                                "description": "https://covidtracking.com/api/v1/states/daily.json",
+                                "type": "Copy",
+                                "dependsOn": [],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "DelimitedTextSource",
+                                        "storeSettings": {
+                                            "type": "HttpReadSettings",
+                                            "requestMethod": "GET"
+                                        },
+                                        "formatSettings": {
+                                            "type": "DelimitedTextReadSettings"
+                                        }
+                                    },
+                                    "sink": {
+                                        "type": "DelimitedTextSink",
+                                        "storeSettings": {
+                                            "type": "AzureBlobStorageWriteSettings"
+                                        },
+                                        "formatSettings": {
+                                            "type": "DelimitedTextWriteSettings",
+                                            "quoteAllText": true,
+                                            "fileExtension": ".csv"
+                                        }
+                                    },
+                                    "enableStaging": false
+                                },
+                                "inputs": [
+                                    {
+                                        "referenceName": "http_source_dataset",
+                                        "type": "DatasetReference",
+                                        "parameters": {
+                                            "relativeUrl": {
+                                                "value": "@pipeline().parameters.sourceRelativeUrl",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "referenceName": "csv_source_dataset",
+                                        "type": "DatasetReference",
+                                        "parameters": {
+                                            "directory": {
+                                                "value": "@concat(pipeline().parameters.rawBlobDirectory,'/',formatdatetime(utcnow(),'yyyy/MM/dd'))",
+                                                "type": "Expression"
+                                            },
+                                            "file": {
+                                                "value": "@concat(pipeline().parameters.sourceFilename,'_',pipeline().RunId,'.csv')",
+                                                "type": "Expression"
+                                            },
+                                            "container": {
+                                                "value": "@pipeline().parameters.blobContainer",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "To Raw Overwrite",
+                                "type": "Copy",
+                                "dependsOn": [],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "DelimitedTextSource",
+                                        "storeSettings": {
+                                            "type": "HttpReadSettings",
+                                            "requestMethod": "GET"
+                                        },
+                                        "formatSettings": {
+                                            "type": "DelimitedTextReadSettings"
+                                        }
+                                    },
+                                    "sink": {
+                                        "type": "DelimitedTextSink",
+                                        "storeSettings": {
+                                            "type": "AzureBlobStorageWriteSettings"
+                                        },
+                                        "formatSettings": {
+                                            "type": "DelimitedTextWriteSettings",
+                                            "quoteAllText": true,
+                                            "fileExtension": ".csv"
+                                        }
+                                    },
+                                    "enableStaging": false
+                                },
+                                "inputs": [
+                                    {
+                                        "referenceName": "http_source_dataset",
+                                        "type": "DatasetReference",
+                                        "parameters": {
+                                            "relativeUrl": {
+                                                "value": "@pipeline().parameters.sourceRelativeUrl",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "referenceName": "csv_source_dataset",
+                                        "type": "DatasetReference",
+                                        "parameters": {
+                                            "directory": {
+                                                "value": "@concat(pipeline().parameters.rawBlobDirectory, '/latest')",
+                                                "type": "Expression"
+                                            },
+                                            "file": {
+                                                "value": "@pipeline().parameters.sourceFilename",
+                                                "type": "Expression"
+                                            },
+                                            "container": {
+                                                "value": "@pipeline().parameters.blobContainer",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "Reformat Columns",
+                                "type": "ExecuteDataFlow",
+                                "dependsOn": [
+                                    {
+                                        "activity": "To Raw Partition",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    },
+                                    {
+                                        "activity": "To Raw Overwrite",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "dataflow": {
+                                        "referenceName": "[variables('dataflowWithSqlName')]",
+                                        "type": "DataFlowReference",
+                                        "parameters": {
+                                            "filename": {
+                                                "value": "'@{pipeline().parameters.filename}'",
+                                                "type": "Expression"
+                                            },
+                                            "runid": {
+                                                "value": "'@{pipeline().RunId}'",
+                                                "type": "Expression"
+                                            }
+                                        },
+                                        "datasetParameters": {
+                                            "sourceCSV": {
+                                                "directory": {
+                                                    "value": "@concat(pipeline().parameters.rawBlobDirectory, '/latest')",
+                                                    "type": "Expression"
+                                                },
+                                                "file": {
+                                                    "value": "@pipeline().parameters.sourceFilename",
+                                                    "type": "Expression"
+                                                },
+                                                "container": {
+                                                    "value": "@pipeline().parameters.blobContainer",
+                                                    "type": "Expression"
+                                                }
+                                            },
+                                            "SinkLatestCSV": {
+                                                "directory": {
+                                                    "value": "@concat(pipeline().parameters.curatedBlobDirectory,'/latest')",
+                                                    "type": "Expression"
+                                                },
+                                                "file": {
+                                                    "value": "@concat(pipeline().parameters.filename,'.csv')",
+                                                    "type": "Expression"
+                                                },
+                                                "container": {
+                                                    "value": "@pipeline().parameters.blobContainer",
+                                                    "type": "Expression"
+                                                }
+                                            },
+                                            "sinkLatestJsonl": {
+                                                "container": {
+                                                    "value": "@pipeline().parameters.blobContainer",
+                                                    "type": "Expression"
+                                                },
+                                                "directory": {
+                                                    "value": "@concat(pipeline().parameters.curatedBlobDirectory,'/latest')",
+                                                    "type": "Expression"
+                                                },
+                                                "file": {
+                                                    "value": "@concat(pipeline().parameters.filename,'.jsonl')",
+                                                    "type": "Expression"
+                                                }
+                                            },
+                                            "SinkCSV": {
+                                                "directory": {
+                                                    "value": "@concat(pipeline().parameters.curatedBlobDirectory,'/',formatdatetime(utcnow(),'yyyy/MM/dd'))",
+                                                    "type": "Expression"
+                                                },
+                                                "file": "specified in data flow",
+                                                "container": {
+                                                    "value": "@pipeline().parameters.blobContainer",
+                                                    "type": "Expression"
+                                                }
+                                            },
+                                            "sinkJsonl": {
+                                                "container": {
+                                                    "value": "@pipeline().parameters.blobContainer",
+                                                    "type": "Expression"
+                                                },
+                                                "directory": {
+                                                    "value": "@concat(pipeline().parameters.curatedBlobDirectory,'/',formatdatetime(utcnow(),'yyyy/MM/dd'))",
+                                                    "type": "Expression"
+                                                },
+                                                "file": "specified in data flow"
+                                            },
+                                            "sinkLatestParquet": {
+                                                "container": {
+                                                    "value": "@pipeline().parameters.blobContainer",
+                                                    "type": "Expression"
+                                                },
+                                                "directory": {
+                                                    "value": "@concat(pipeline().parameters.curatedBlobDirectory,'/latest')",
+                                                    "type": "Expression"
+                                                },
+                                                "file": "specified in data flow"
+                                            },
+                                            "sinkParquet": {
+                                                "container": {
+                                                    "value": "@pipeline().parameters.blobContainer",
+                                                    "type": "Expression"
+                                                },
+                                                "directory": {
+                                                    "value": "@concat(pipeline().parameters.curatedBlobDirectory,'/',formatdatetime(utcnow(),'yyyy/MM/dd'))",
+                                                    "type": "Expression"
+                                                },
+                                                "file": "specified in data flow"
+                                            },
+                                            "sinkSQL": {}
+                                        }
+                                    },
+                                    "staging": {},
+                                    "compute": {
+                                        "coreCount": 8,
+                                        "computeType": "General"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "JSONL to JSON LATEST",
+                                "type": "Copy",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Reformat Columns",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "JsonSource",
+                                        "storeSettings": {
+                                            "type": "AzureBlobStorageReadSettings",
+                                            "recursive": true
+                                        }
+                                    },
+                                    "sink": {
+                                        "type": "JsonSink",
+                                        "storeSettings": {
+                                            "type": "AzureBlobStorageWriteSettings"
+                                        },
+                                        "formatSettings": {
+                                            "type": "JsonWriteSettings",
+                                            "filePattern": "arrayOfObjects"
+                                        }
+                                    },
+                                    "enableStaging": false
+                                },
+                                "inputs": [
+                                    {
+                                        "referenceName": "json_sink_dataset",
+                                        "type": "DatasetReference",
+                                        "parameters": {
+                                            "container": {
+                                                "value": "@pipeline().parameters.blobContainer",
+                                                "type": "Expression"
+                                            },
+                                            "directory": {
+                                                "value": "@concat(pipeline().parameters.curatedBlobDirectory,'/latest')",
+                                                "type": "Expression"
+                                            },
+                                            "file": {
+                                                "value": "@concat(pipeline().parameters.filename,'.jsonl')",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "referenceName": "json_sink_dataset",
+                                        "type": "DatasetReference",
+                                        "parameters": {
+                                            "container": {
+                                                "value": "@pipeline().parameters.blobContainer",
+                                                "type": "Expression"
+                                            },
+                                            "directory": {
+                                                "value": "@concat(pipeline().parameters.curatedBlobDirectory,'/latest')",
+                                                "type": "Expression"
+                                            },
+                                            "file": {
+                                                "value": "@concat(pipeline().parameters.filename,'.json')",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "JSONL to JSON",
+                                "type": "Copy",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Reformat Columns",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "JsonSource",
+                                        "storeSettings": {
+                                            "type": "AzureBlobStorageReadSettings",
+                                            "recursive": true
+                                        }
+                                    },
+                                    "sink": {
+                                        "type": "JsonSink",
+                                        "storeSettings": {
+                                            "type": "AzureBlobStorageWriteSettings"
+                                        },
+                                        "formatSettings": {
+                                            "type": "JsonWriteSettings",
+                                            "filePattern": "arrayOfObjects"
+                                        }
+                                    },
+                                    "enableStaging": false
+                                },
+                                "inputs": [
+                                    {
+                                        "referenceName": "json_sink_dataset",
+                                        "type": "DatasetReference",
+                                        "parameters": {
+                                            "container": {
+                                                "value": "@pipeline().parameters.blobContainer",
+                                                "type": "Expression"
+                                            },
+                                            "directory": {
+                                                "value": "@concat(pipeline().parameters.curatedBlobDirectory,'/latest')",
+                                                "type": "Expression"
+                                            },
+                                            "file": {
+                                                "value": "@concat(pipeline().parameters.filename,'.jsonl')",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "referenceName": "json_sink_dataset",
+                                        "type": "DatasetReference",
+                                        "parameters": {
+                                            "container": {
+                                                "value": "@pipeline().parameters.blobContainer",
+                                                "type": "Expression"
+                                            },
+                                            "directory": {
+                                                "value": "@concat(pipeline().parameters.curatedBlobDirectory,'/',formatdatetime(utcnow(),'yyyy/MM/dd'))",
+                                                "type": "Expression"
+                                            },
+                                            "file": {
+                                                "value": "@concat(pipeline().parameters.filename,'_',pipeline().RunId,'.json')",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        ],
+                        "parameters": {
+                            "sourceFilename": {
+                                "type": "string",
+                                "defaultValue": "BCCDC_COVID19_Dashboard_Lab_Information_raw.csv"
+                            },
+                            "sourceRelativeUrl": {
+                                "type": "string",
+                                "defaultValue": "/Health-Info-Site/Documents/BCCDC_COVID19_Dashboard_Lab_Information.csv"
+                            },
+                            "blobContainer": {
+                                "type": "string",
+                                "defaultValue": "public"
+                            },
+                            "rawBlobDirectory": {
+                                "type": "string",
+                                "defaultValue": "raw/covid-19/covid_BritishColumbia"
+                            },
+                            "curatedBlobDirectory": {
+                                "type": "string",
+                                "defaultValue": "curated/covid-19/covid_BritishColumbia"
+                            },
+                            "filename": {
+                                "type": "string",
+                                "defaultValue": "covid_tracking"
+                            }
+                        },
+                        "folder": {
+                            "name": "CovidBritishColumbia/BlobStorageAndSqlDataExtraction"
+                        },
+                        "annotations": [
+                            "covidtracking"
+                        ],
+                        "lastPublishTime": "2020-08-21T05:58:34Z"
+                    },
+                    "dependsOn": [
+                        "[parameters('factoryName')]",
+                        "[concat(variables('factoryId'), '/datasets/http_source_dataset')]",
+                        "[concat(variables('factoryId'), '/datasets/csv_source_dataset')]",
+                        "[concat(variables('factoryId'), '/dataflows/',variables('dataflowWithSqlName'))]",
+                        "[concat(variables('factoryId'), '/datasets/json_sink_dataset')]"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'Yes')]",
+                    "name": "[concat(parameters('factoryName'), '/Covid_Tracking_BritishColumbia_Trigger_With_Sql_Sink')]",
+                    "type": "Microsoft.DataFactory/factories/triggers",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "annotations": [],
+                        "runtimeState": "Started",
+                        "pipelines": [
+                            {
+                                "pipelineReference": {
+                                    "referenceName": "Covid_Tracking_BritishColumbia_With_Sql_Sink",
+                                    "type": "PipelineReference"
+                                }
+                            }
+                        ],
+                        "type": "ScheduleTrigger",
+                        "typeProperties": {
+                            "recurrence": {
+                                "frequency": "Hour",
+                                "interval": 24,
+                                "startTime": "[parameters('currentTime')]",
+                                "timeZone": "UTC"
+                            }
+                        }
+                    },
+                    "dependsOn": [
+                        "[parameters('factoryName')]",
+                        "[concat(variables('factoryId'), '/pipelines/Covid_Tracking_BritishColumbia_With_Sql_Sink')]"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'No')]",
+                    "name": "[concat(parameters('factoryName'), '/Covid_Tracking_BritishColumbia_Trigger_Without_Sql_Sink')]",
+                    "type": "Microsoft.DataFactory/factories/triggers",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "annotations": [],
+                        "runtimeState": "Started",
+                        "pipelines": [
+                            {
+                                "pipelineReference": {
+                                    "referenceName": "Covid_Tracking_BritishColumbia_Without_Sql_Sink",
+                                    "type": "PipelineReference"
+                                }
+                            }
+                        ],
+                        "type": "ScheduleTrigger",
+                        "typeProperties": {
+                            "recurrence": {
+                                "frequency": "Hour",
+                                "interval": 24,
+                                "startTime": "[parameters('currentTime')]",
+                                "timeZone": "UTC"
+                            }
+                        }
+                    },
+                    "dependsOn": [
+                        "[parameters('factoryName')]",
+                        "[concat(variables('factoryId'), '/pipelines/Covid_Tracking_BritishColumbia_Without_Sql_Sink')]"
+                    ]
+                },
+                {
+                    "type": "Microsoft.Insights/actionGroups",
+                    "apiVersion": "2018-03-01",
+                    "name": "NotificationAlertFromADF",
+                    "location": "Global",
+                    "properties": {
+                        "groupShortName": "ADFalerts",
+                        "enabled": true,
+                        "emailReceivers": [
+                            {
+                                "name": "notifEmail",
+                                "emailAddress": "[parameters('notificationEmail')]"
+                            }
+                        ],
+                        "webhookReceivers": [
+                            {
+                                "name": "msftTeamsNotify",
+                                "serviceUri": "[parameters('webHookUri')]"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[parameters('factoryName')]"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'No')]",
+                    "name": "covidTrackingWithoutSqlPipelineFailedAlertConfig",
+                    "type": "Microsoft.Insights/metricAlerts",
+                    "location": "global",
+                    "apiVersion": "2018-03-01",
+                    "tags": {},
+                    "properties": {
+                        "description": "Metric alert for pipeline failure",
+                        "severity": "0",
+                        "enabled": "true",
+                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('factoryName'))]" ],
+                        "evaluationFrequency": "PT1M",
+                        "windowSize": "PT1M",
+                        "criteria": {
+                            "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
+                            "allOf": [
+                                {
+                                    "name": "1st criterion",
+                                    "metricName": "PipelineFailedRuns",
+                                    "dimensions": [
+                                        {
+                                            "name": "Name",
+                                            "operator": "Include",
+                                            "values": [ "Covid_Tracking_BritishColumbia_Without_Sql_Sink" ]
+                                        },
+                                        {
+                                            "name": "FailureType",
+                                            "operator": "Include",
+                                            "values": [ "UserError", "SystemError", "BadGateway" ]
+                                        }
+                                    ],
+                                    "operator": "GreaterThanOrEqual",
+                                    "threshold": "0.10",
+                                    "timeAggregation": "Average"
+                                }
+                            ]
+                        },
+                        "actions": [
+                            {
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationAlertFromADF')]"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[parameters('factoryName')]",
+                        "NotificationAlertFromADF"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'No')]",
+                    "name": "covidTrackingWithoutSqlPipelineCancelledAlertConfig",
+                    "type": "Microsoft.Insights/metricAlerts",
+                    "location": "global",
+                    "apiVersion": "2018-03-01",
+                    "tags": {},
+                    "properties": {
+                        "description": "Metric alert for pipeline cancellation",
+                        "severity": "0",
+                        "enabled": "true",
+                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('factoryName'))]" ],
+                        "evaluationFrequency": "PT1M",
+                        "windowSize": "PT1M",
+                        "criteria": {
+                            "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
+                            "allOf": [
+                                {
+                                    "name": "1st criterion",
+                                    "metricName": "PipelineCancelledRuns",
+                                    "dimensions": [
+                                        {
+                                            "name": "Name",
+                                            "operator": "Include",
+                                            "values": [ "Covid_Tracking_BritishColumbia_Without_Sql_Sink" ]
+                                        }
+                                    ],
+                                    "operator": "GreaterThanOrEqual",
+                                    "threshold": "1",
+                                    "timeAggregation": "Total"
+                                }
+                            ]
+                        },
+                        "actions": [
+                            {
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationAlertFromADF')]"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[parameters('factoryName')]",
+                        "NotificationAlertFromADF"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'No')]",
+                    "name": "covidTrackingWithoutSqlActivityFailedAlertConfig",
+                    "type": "Microsoft.Insights/metricAlerts",
+                    "location": "global",
+                    "apiVersion": "2018-03-01",
+                    "tags": {},
+                    "properties": {
+                        "description": "Metric alert for activity failure in a pipeline",
+                        "severity": "0",
+                        "enabled": "true",
+                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('factoryName'))]" ],
+                        "evaluationFrequency": "PT1M",
+                        "windowSize": "PT1M",
+                        "criteria": {
+                            "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
+                            "allOf": [
+                                {
+                                    "name": "1st criterion",
+                                    "metricName": "ActivityFailedRuns",
+                                    "dimensions": [
+                                        {
+                                            "name": "ActivityType",
+                                            "operator": "Include",
+                                            "values": [ "Copy", "ExecuteDataFlow" ]
+                                        },
+                                        {
+                                            "name": "Name",
+                                            "operator": "Include",
+                                            "values": [ "To Raw Partition", "To Raw Overwrite", "Reformat Columns", "JSONL to JSON LATEST", "JSONL to JSON" ]
+                                        },
+                                        {
+                                            "name": "PipelineName",
+                                            "operator": "Include",
+                                            "values": [ "Covid_Tracking_BritishColumbia_Without_Sql_Sink" ]
+                                        },
+                                        {
+                                            "name": "FailureType",
+                                            "operator": "Include",
+                                            "values": [ "UserError", "SystemError", "BadGateway" ]
+                                        }
+                                    ],
+                                    "operator": "GreaterThanOrEqual",
+                                    "threshold": "0.10",
+                                    "timeAggregation": "Average"
+                                }
+                            ]
+                        },
+                        "actions": [
+                            {
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationAlertFromADF')]"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[parameters('factoryName')]",
+                        "NotificationAlertFromADF"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'No')]",
+                    "name": "covidTrackingWithoutSqlActivityCancelledAlertConfig",
+                    "type": "Microsoft.Insights/metricAlerts",
+                    "location": "global",
+                    "apiVersion": "2018-03-01",
+                    "tags": {},
+                    "properties": {
+                        "description": "Metric alert for activity run cancellation in a pipeline",
+                        "severity": "0",
+                        "enabled": "true",
+                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('factoryName'))]" ],
+                        "evaluationFrequency": "PT1M",
+                        "windowSize": "PT1M",
+                        "criteria": {
+                            "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
+                            "allOf": [
+                                {
+                                    "name": "1st criterion",
+                                    "metricName": "ActivityCancelledRuns",
+                                    "dimensions": [
+                                        {
+                                            "name": "ActivityType",
+                                            "operator": "Include",
+                                            "values": [ "Copy", "ExecuteDataFlow" ]
+                                        },
+                                        {
+                                            "name": "Name",
+                                            "operator": "Include",
+                                            "values": [ "To Raw Partition", "To Raw Overwrite", "Reformat Columns", "JSONL to JSON LATEST", "JSONL to JSON" ]
+                                        },
+                                        {
+                                            "name": "PipelineName",
+                                            "operator": "Include",
+                                            "values": [ "Covid_Tracking_BritishColumbia_Without_Sql_Sink" ]
+                                        }
+                                    ],
+                                    "operator": "GreaterThanOrEqual",
+                                    "threshold": "1",
+                                    "timeAggregation": "Total"
+                                }
+                            ]
+                        },
+                        "actions": [
+                            {
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationAlertFromADF')]"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[parameters('factoryName')]",
+                        "NotificationAlertFromADF"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'No')]",
+                    "name": "covidTrackingWithoutSqlTriggerCancelledAlertConfig",
+                    "type": "Microsoft.Insights/metricAlerts",
+                    "location": "global",
+                    "apiVersion": "2018-03-01",
+                    "tags": {},
+                    "properties": {
+                        "description": "Metric alert for trigger cancellation",
+                        "severity": "0",
+                        "enabled": "true",
+                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('factoryName'))]" ],
+                        "evaluationFrequency": "PT1M",
+                        "windowSize": "PT1M",
+                        "criteria": {
+                            "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
+                            "allOf": [
+                                {
+                                    "name": "1st criterion",
+                                    "metricName": "TriggerCancelledRuns",
+                                    "dimensions": [
+                                        {
+                                            "name": "Name",
+                                            "operator": "Include",
+                                            "values": [ "Covid_Tracking_BritishColumbia_Trigger_Without_Sql_Sink" ]
+                                        }
+                                    ],
+                                    "operator": "GreaterThanOrEqual",
+                                    "threshold": "1",
+                                    "timeAggregation": "Total"
+                                }
+                            ]
+                        },
+                        "actions": [
+                            {
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationAlertFromADF')]"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[parameters('factoryName')]",
+                        "NotificationAlertFromADF"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'No')]",
+                    "name": "covidTrackingWithoutSqlTriggerFailedAlertConfig",
+                    "type": "Microsoft.Insights/metricAlerts",
+                    "location": "global",
+                    "apiVersion": "2018-03-01",
+                    "tags": {},
+                    "properties": {
+                        "description": "Metric alert for trigger failed runs",
+                        "severity": "0",
+                        "enabled": "true",
+                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('factoryName'))]" ],
+                        "evaluationFrequency": "PT1M",
+                        "windowSize": "PT1M",
+                        "criteria": {
+                            "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
+                            "allOf": [
+                                {
+                                    "name": "1st criterion",
+                                    "metricName": "TriggerFailedRuns",
+                                    "dimensions": [
+                                        {
+                                            "name": "Name",
+                                            "operator": "Include",
+                                            "values": [ "Covid_Tracking_BritishColumbia_Trigger_Without_Sql_Sink" ]
+                                        },
+                                        {
+                                            "name": "FailureType",
+                                            "operator": "Include",
+                                            "values": [ "UserError", "SystemError", "BadGateway" ]
+                                        }
+                                    ],
+                                    "operator": "GreaterThanOrEqual",
+                                    "threshold": "1",
+                                    "timeAggregation": "Total"
+                                }
+                            ]
+                        },
+                        "actions": [
+                            {
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationAlertFromADF')]"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[parameters('factoryName')]",
+                        "NotificationAlertFromADF"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'No')]",
+                    "type": "Microsoft.AlertsManagement/actionRules",
+                    "apiVersion": "2019-05-05-preview",
+                    "name": "suppressResolveNotificationWithoutSQL",
+                    "location": "global",
+                    "properties": {
+                        "conditions": {
+                            "severity": {
+                                "operator": "Equals",
+                                "values": [
+                                    "Sev0"
+                                ]
+                            },
+                            "monitorCondition": {
+                                "operator": "Equals",
+                                "values": [
+                                    "Resolved"
+                                ]
+                            }
+                        },
+                        "suppressionConfig": {
+                            "recurrenceType": "always"
+                        },
+                        "status": "Enabled",
+                        "type": "Suppression",
+                        "scope": {
+                            "scopeType": "Resource",
+                            "values": [
+                                "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('factoryName'))]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/actionGroups/', 'NotificationAlertFromADF')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'covidTrackingWithoutSqlActivityFailedAlertConfig')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'covidTrackingWithoutSqlPipelineFailedAlertConfig')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'covidTrackingWithoutSqlTriggerFailedAlertConfig')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'covidTrackingWithoutSqlTriggerCancelledAlertConfig')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'covidTrackingWithoutSqlActivityCancelledAlertConfig')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'covidTrackingWithoutSqlPipelineCancelledAlertConfig')]"         
+                            ]
+                        }
+                    },
+                    "dependsOn": [
+                        "[parameters('factoryName')]",
+                        "NotificationAlertFromADF",
+                        "covidTrackingWithoutSqlPipelineFailedAlertConfig",
+                        "covidTrackingWithoutSqlActivityFailedAlertConfig",
+                        "covidTrackingWithoutSqlTriggerFailedAlertConfig",
+                        "covidTrackingWithoutSqlTriggerCancelledAlertConfig",
+                        "covidTrackingWithoutSqlActivityCancelledAlertConfig",
+                        "covidTrackingWithoutSqlPipelineCancelledAlertConfig"
+
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'Yes')]",
+                    "name": "covidTrackingWithSqlPipelineFailedAlertConfig",
+                    "type": "Microsoft.Insights/metricAlerts",
+                    "location": "global",
+                    "apiVersion": "2018-03-01",
+                    "tags": {},
+                    "properties": {
+                        "description": "Metric alert for pipeline failure",
+                        "severity": "0",
+                        "enabled": "true",
+                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('factoryName'))]" ],
+                        "evaluationFrequency": "PT1M",
+                        "windowSize": "PT1M",
+                        "criteria": {
+                            "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
+                            "allOf": [
+                                {
+                                    "name": "1st criterion",
+                                    "metricName": "PipelineFailedRuns",
+                                    "dimensions": [
+                                        {
+                                            "name": "Name",
+                                            "operator": "Include",
+                                            "values": [ "Covid_Tracking_BritishColumbia_With_Sql_Sink" ]
+                                        },
+                                        {
+                                            "name": "FailureType",
+                                            "operator": "Include",
+                                            "values": [ "UserError", "SystemError", "BadGateway" ]
+                                        }
+                                    ],
+                                    "operator": "GreaterThanOrEqual",
+                                    "threshold": "0.10",
+                                    "timeAggregation": "Average"
+                                }
+                            ]
+                        },
+                        "actions": [
+                            {
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationAlertFromADF')]"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[parameters('factoryName')]",
+                        "NotificationAlertFromADF"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'Yes')]",
+                    "name": "covidTrackingWithSqlPipelineCancelledAlertConfig",
+                    "type": "Microsoft.Insights/metricAlerts",
+                    "location": "global",
+                    "apiVersion": "2018-03-01",
+                    "tags": {},
+                    "properties": {
+                        "description": "Metric alert for pipeline cancellation",
+                        "severity": "0",
+                        "enabled": "true",
+                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('factoryName'))]" ],
+                        "evaluationFrequency": "PT1M",
+                        "windowSize": "PT1M",
+                        "criteria": {
+                            "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
+                            "allOf": [
+                                {
+                                    "name": "1st criterion",
+                                    "metricName": "PipelineCancelledRuns",
+                                    "dimensions": [
+                                        {
+                                            "name": "Name",
+                                            "operator": "Include",
+                                            "values": [ "Covid_Tracking_BritishColumbia_With_Sql_Sink" ]
+                                        }
+                                    ],
+                                    "operator": "GreaterThanOrEqual",
+                                    "threshold": "1",
+                                    "timeAggregation": "Total"
+                                }
+                            ]
+                        },
+                        "actions": [
+                            {
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationAlertFromADF')]"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[parameters('factoryName')]",
+                        "NotificationAlertFromADF"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'Yes')]",
+                    "name": "covidTrackingWithSqlActivityFailedAlertConfig",
+                    "type": "Microsoft.Insights/metricAlerts",
+                    "location": "global",
+                    "apiVersion": "2018-03-01",
+                    "tags": {},
+                    "properties": {
+                        "description": "Metric alert for activity failure in a pipeline",
+                        "severity": "0",
+                        "enabled": "true",
+                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('factoryName'))]" ],
+                        "evaluationFrequency": "PT1M",
+                        "windowSize": "PT1M",
+                        "criteria": {
+                            "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
+                            "allOf": [
+                                {
+                                    "name": "1st criterion",
+                                    "metricName": "ActivityFailedRuns",
+                                    "dimensions": [
+                                        {
+                                            "name": "ActivityType",
+                                            "operator": "Include",
+                                            "values": [ "Copy", "ExecuteDataFlow" ]
+                                        },
+                                        {
+                                            "name": "Name",
+                                            "operator": "Include",
+                                            "values": [ "To Raw Partition", "To Raw Overwrite", "Reformat Columns", "JSONL to JSON LATEST", "JSONL to JSON" ]
+                                        },
+                                        {
+                                            "name": "PipelineName",
+                                            "operator": "Include",
+                                            "values": [ "Covid_Tracking_BritishColumbia_With_Sql_Sink" ]
+                                        },
+                                        {
+                                            "name": "FailureType",
+                                            "operator": "Include",
+                                            "values": [ "UserError", "SystemError", "BadGateway" ]
+                                        }
+                                    ],
+                                    "operator": "GreaterThanOrEqual",
+                                    "threshold": "0.10",
+                                    "timeAggregation": "Average"
+                                }
+                            ]
+                        },
+                        "actions": [
+                            {
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationAlertFromADF')]"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[parameters('factoryName')]",
+                        "NotificationAlertFromADF"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'Yes')]",
+                    "name": "covidTrackingWithSqlActivityCancelledAlertConfig",
+                    "type": "Microsoft.Insights/metricAlerts",
+                    "location": "global",
+                    "apiVersion": "2018-03-01",
+                    "tags": {},
+                    "properties": {
+                        "description": "Metric alert for activity cancellation in a pipeline",
+                        "severity": "0",
+                        "enabled": "true",
+                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('factoryName'))]" ],
+                        "evaluationFrequency": "PT1M",
+                        "windowSize": "PT1M",
+                        "criteria": {
+                            "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
+                            "allOf": [
+                                {
+                                    "name": "1st criterion",
+                                    "metricName": "ActivityCancelledRuns",
+                                    "dimensions": [
+                                        {
+                                            "name": "ActivityType",
+                                            "operator": "Include",
+                                            "values": [ "Copy", "ExecuteDataFlow" ]
+                                        },
+                                        {
+                                            "name": "Name",
+                                            "operator": "Include",
+                                            "values": [ "To Raw Partition", "To Raw Overwrite", "Reformat Columns", "JSONL to JSON LATEST", "JSONL to JSON" ]
+                                        },
+                                        {
+                                            "name": "PipelineName",
+                                            "operator": "Include",
+                                            "values": [ "Covid_Tracking_BritishColumbia_With_Sql_Sink" ]
+                                        }
+                                    ],
+                                    "operator": "GreaterThanOrEqual",
+                                    "threshold": "1",
+                                    "timeAggregation": "Total"
+                                }
+                            ]
+                        },
+                        "actions": [
+                            {
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationAlertFromADF')]"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[parameters('factoryName')]",
+                        "NotificationAlertFromADF"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'Yes')]",
+                    "name": "covidTrackingWithSqlTriggerFailedAlertConfig",
+                    "type": "Microsoft.Insights/metricAlerts",
+                    "location": "global",
+                    "apiVersion": "2018-03-01",
+                    "tags": {},
+                    "properties": {
+                        "description": "Metric alert for pipeline trigger failure",
+                        "severity": "0",
+                        "enabled": "true",
+                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('factoryName'))]" ],
+                        "evaluationFrequency": "PT1M",
+                        "windowSize": "PT1M",
+                        "criteria": {
+                            "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
+                            "allOf": [
+                                {
+                                    "name": "1st criterion",
+                                    "metricName": "TriggerFailedRuns",
+                                    "dimensions": [
+                                        {
+                                            "name": "Name",
+                                            "operator": "Include",
+                                            "values": [ "Covid_Tracking_BritishColumbia_Trigger_With_Sql_Sink" ]
+                                        },
+                                        {
+                                            "name": "FailureType",
+                                            "operator": "Include",
+                                            "values": [ "UserError", "SystemError", "BadGateway" ]
+                                        }
+                                    ],
+                                    "operator": "GreaterThanOrEqual",
+                                    "threshold": "1",
+                                    "timeAggregation": "Total"
+                                }
+                            ]
+                        },
+                        "actions": [
+                            {
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationAlertFromADF')]"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[parameters('factoryName')]",
+                        "NotificationAlertFromADF"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'Yes')]",
+                    "name": "covidTrackingWithSqlTriggerCancelledAlertConfig",
+                    "type": "Microsoft.Insights/metricAlerts",
+                    "location": "global",
+                    "apiVersion": "2018-03-01",
+                    "tags": {},
+                    "properties": {
+                        "description": "Metric alert for pipeline trigger cancellation",
+                        "severity": "0",
+                        "enabled": "true",
+                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('factoryName'))]" ],
+                        "evaluationFrequency": "PT1M",
+                        "windowSize": "PT1M",
+                        "criteria": {
+                            "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
+                            "allOf": [
+                                {
+                                    "name": "1st criterion",
+                                    "metricName": "TriggerCancelledRuns",
+                                    "dimensions": [
+                                        {
+                                            "name": "Name",
+                                            "operator": "Include",
+                                            "values": [ "Covid_Tracking_BritishColumbia_Trigger_With_Sql_Sink" ]
+                                        }
+                                    ],
+                                    "operator": "GreaterThanOrEqual",
+                                    "threshold": "1",
+                                    "timeAggregation": "Total"
+                                }
+                            ]
+                        },
+                        "actions": [
+                            {
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationAlertFromADF')]"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[parameters('factoryName')]",
+                        "NotificationAlertFromADF"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'Yes')]",
+                    "type": "Microsoft.AlertsManagement/actionRules",
+                    "apiVersion": "2019-05-05-preview",
+                    "name": "suppressResolveNotificationWithSQL",
+                    "location": "global",
+                    "properties": {
+                        "conditions": {
+                            "severity": {
+                                "operator": "Equals",
+                                "values": [
+                                    "Sev0"
+                                ]
+                            },
+                            "monitorCondition": {
+                                "operator": "Equals",
+                                "values": [
+                                    "Resolved"
+                                ]
+                            }
+                        },
+                        "suppressionConfig": {
+                            "recurrenceType": "always"
+                        },
+                        "status": "Enabled",
+                        "type": "Suppression",
+                        "scope": {
+                            "scopeType": "Resource",
+                            "values": [
+                                "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('factoryName'))]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/actionGroups/', 'NotificationAlertFromADF')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'covidTrackingWithSqlActivityFailedAlertConfig')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'covidTrackingWithSqlPipelineFailedAlertConfig')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'covidTrackingWithSqlPipelineCancelledAlertConfig')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'covidTrackingWithSqlActivityCancelledAlertConfig')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'covidTrackingWithSqlTriggerFailedAlertConfig')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'covidTrackingWithSqlTriggerCancelledAlertConfig')]"
+                            ]
+                        }
+                    },
+                    "dependsOn": [
+                        "[parameters('factoryName')]",
+                        "NotificationAlertFromADF",
+                        "covidTrackingWithSqlPipelineFailedAlertConfig",
+                        "covidTrackingWithSqlActivityFailedAlertConfig",
+                        "covidTrackingWithSqlActivityCancelledAlertConfig",
+                        "covidTrackingWithSqlPipelineCancelledAlertConfig",
+                        "covidTrackingWithSqlTriggerCancelledAlertConfig",
+                        "covidTrackingWithSqlTriggerFailedAlertConfig"
+                    ]
+                }
+
+            ]
+        }
+    ],
+    "outputs": {}
+}

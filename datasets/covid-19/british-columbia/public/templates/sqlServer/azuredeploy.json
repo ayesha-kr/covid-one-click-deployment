@@ -1,0 +1,111 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "Location of the data factory. Currently, only East US, East US 2, and West Europe are supported. "
+            }
+        },
+        "doYouWantToWriteCuratedDataToSQLDatabase": {
+            "type": "string",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "metadata": {
+                "description": "Please specify if you want to write curated data into SQL database."
+            }
+        },
+        "serverName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name you provide will be appended with a unique sting to make it globally available. Your server name can contain only lowercase letters, numbers, and '-', but can't start or end with '-' or have more than 50 characters."
+            }
+        },
+        "databaseName": {
+            "type": "string",
+            "metadata": {
+                "description": "Value should not match special patterns. It should contain a length of maximum of 128."
+            }
+        },
+        "sqlAdministratorLogin": {
+            "type": "string",
+            "metadata": {
+                "description": "Your login name must not contain a SQL Identifier or a typical system name (like admin, administrator, sa, root, dbmanager, loginmanager, etc.) or a built-in database user or role (like dbo, guest, public, etc.)"
+            },
+            "defaultValue": "Specify administrator username of SQL server if selected 'Yes'"
+        },
+        "sqlAdministratorLoginPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Your password must be at least 8 characters in length. Your password must contain characters from three of the following categories – English uppercase letters, English lowercase letters, numbers (0-9), and non-alphanumeric characters (!, $, #, %, etc.) Your password cannot contain all or part of the login name. Part of a login name is defined as three or more consecutive alphanumeric characters."
+            }
+        }
+    },
+    "variables": {
+        "databaseCollation": "SQL_Latin1_General_CP1_CI_AS"
+    },
+    "resources": [
+        {
+            "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'Yes')]",
+            "name": "[parameters('serverName')]",
+            "type": "Microsoft.Sql/servers",
+            "apiVersion": "2019-06-01-preview",
+            "location": "[parameters('location')]",
+            "tags": {
+                "Environment": "Public",
+                "AssociatedDataSet": "CovidBritishColumbia"
+            },
+            "properties": {
+              "administratorLogin": "[parameters('sqlAdministratorLogin')]",
+              "administratorLoginPassword": "[parameters('sqlAdministratorLoginPassword')]",
+              "version": "12.0"
+            },
+            "resources": [
+                {
+                    "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'Yes')]",
+                    "name": "[parameters('databaseName')]",
+                    "type": "databases",
+                    "apiVersion": "2019-06-01-preview",
+                    "location": "[parameters('location')]",
+                    "tags": {
+                        "Environment": "Public",
+                        "AssociatedDataSet": "CovidBritishColumbia"
+                    },
+                    "sku": {
+                        "name": "Basic",
+                        "tier": "Basic",
+                        "capacity": 5
+                    },
+                    "properties": {
+                        "collation": "[variables('databaseCollation')]"
+                    },
+                    "dependsOn": [
+                    "[parameters('serverName')]"
+                    ]
+                },
+                {
+                    "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'Yes')]",
+                    "name": "AllowAllMicrosoftAzureIps",
+                    "type": "firewallrules",
+                    "apiVersion": "2015-05-01-preview",
+                    "location": "[parameters('location')]",
+                    "tags": {
+                        "Environment": "Public",
+                        "AssociatedDataSet": "CovidBritishColumbia"
+                    },
+                    "properties": {
+                        "endIpAddress": "0.0.0.0",
+                        "startIpAddress": "0.0.0.0"
+                    },
+                    "dependsOn": [
+                        "[parameters('serverName')]"
+                    ]
+                }
+            ]
+        
+        }
+    ]
+}

@@ -3,7 +3,6 @@
 2. Setup and Configure Alerts for Azure Data Factory
 3. Configure Data Share
 
-
 ## Deploy Data Factory with optional SQL Server and SQL Database
 
 #### Prerequisites:
@@ -59,12 +58,6 @@ After the deployment you can go in side your resource group open the ADF auther 
 If the trigger is deployed along with pipeline, you have to explicitly activate that trigger as shown below.
 
 ![Activate Trigger](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/public/images/activateTrigger.gif)
-
-
-
-
-
-
 
 
 ## Setup and Configure Alerts for Azure Data Factory
@@ -217,4 +210,3 @@ If you are using data share to get data from public environment into customer en
 ![data share customer](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/customer/images/data%20share/19.png)
 
 ![data share customer](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/customer/images/data%20share/20.png)
-

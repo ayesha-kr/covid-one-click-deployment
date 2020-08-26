@@ -2,7 +2,7 @@
 
 ## Step 1: Connect your Dev Azure Data factory with Github
  
-1. Open Azure Data Factory that you want to use with the developement environment.
+1. Open Azure Data Factory that you want to use with the development environment.
 
 2. Click on **Author & Monitor**, this will open the data factory UI's Home.
 
@@ -279,7 +279,7 @@ steps:
     e.g ProdProductName
     This should be created in the variables group and also the following snippet should be updated to use the newly created variable.
 
-*Note: You may update the value of **resourceGroupName** if the expression provided in this template does not match the name of the resource group thatt you want to create the resources in.*
+*Note: You may update the value of **resourceGroupName** if the expression provided in this template does not match the name of the resource group that you want to create the resources in.*
 
 ```
 # Step 6: Deploy a blank Azure Data Factory instance using ARM templates

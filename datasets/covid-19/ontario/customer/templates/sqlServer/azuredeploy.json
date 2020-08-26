@@ -1,0 +1,187 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "sqlServerName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name you provide will be appended with a unique sting to make it globally available. Your server name can contain only lowercase letters, numbers, and '-', but can't start or end with '-' or have more than 49 characters."
+            }
+        },
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "Location for all resources."
+            }
+        },
+        "sqlAdministratorLogin": {
+            "type": "string",
+            "metadata": {
+                "description": "Your login name must not contain a SQL Identifier or a typical system name (like admin, administrator, sa, root, dbmanager, loginmanager, etc.) or a built-in database user or role (like dbo, guest, public, etc.)"
+            }
+        },
+        "sqlAdministratorLoginPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Your password must be at least 8 characters in length. Your password must contain characters from three of the following categories – English uppercase letters, English lowercase letters, numbers (0-9), and non-alphanumeric characters (!, $, #, %, etc.) Your password cannot contain all or part of the login name. Part of a login name is defined as three or more consecutive alphanumeric characters."
+            }
+        },
+        "allowAzureServicesToAccessSqlServer": {
+            "type": "bool",
+            "metadata": {
+                "description": "Allow Azure services to access server."
+            }
+        },
+        "sqlConnectionType": {
+            "allowedValues": [
+                "Default",
+                "Redirect",
+                "Proxy"
+            ],
+            "type": "string",
+            "metadata": {
+                "description": "SQL logical server connection type."
+            }
+        },
+        "sqlDBName": {
+            "type": "string",
+            "metadata": {
+                "description": "Value should not match special patterns. It should contain a length of maximum of 128."
+            }
+        },
+        "dataWarehouseName": {
+            "type": "string",
+            "metadata": {
+                "description": "Value should not match special patterns. It should contain a length of maximum of 128."
+            }
+        },
+        "transparentDataEncryption": {
+            "type": "string",
+            "allowedValues": [
+                "Enabled",
+                "Disabled"
+            ],
+            "metadata": {
+                "description": "Enable/Disable Transparent Data Encryption"
+            }
+        },
+        "serviceLevelObjective": {
+            "type": "string",
+            "metadata": {
+                "description": "Data warehouse tier."
+            }
+        },
+        "selectDataLoader": {
+            "type": "string",
+            "allowedValues": [
+              "SQL Database",
+              "Synapse Database Warehouse",
+              "Both"
+            ],
+            "metadata": {
+                "description": "Specify if you want to write data into SQL database."
+            }
+          }
+    },
+    "variables": {
+        "databaseCollation": "SQL_Latin1_General_CP1_CI_AS"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Sql/servers",
+            "apiVersion": "2015-05-01-preview",
+            "name": "[parameters('sqlServerName')]",
+            "location": "[parameters('location')]",
+            "tags": {
+                "Environment": "Customer",
+                "AssociatedDataSet": "CovidOntario"
+            },
+            "properties": {
+                "administratorLogin": "[parameters('sqlAdministratorLogin')]",
+                "administratorLoginPassword": "[parameters('sqlAdministratorLoginPassword')]",
+                "version": "12.0"
+            },
+            "resources": [
+                {
+                    "condition": "[not(equals(parameters('selectDataLoader'),'Synapse Database Warehouse'))]",
+                    "type": "databases",
+                    "apiVersion": "2019-06-01-preview",
+                    "name": "[parameters('sqlDBName')]",
+                    "sku": {
+                        "name": "Basic",
+                        "tier": "Basic",
+                        "capacity": 5
+                    },
+                    "location": "[parameters('location')]",
+                    "tags": {
+                        "Environment": "Customer",
+                        "AssociatedDataSet": "CovidOntario"
+                    },
+                    "properties": {
+                        "collation": "[variables('databaseCollation')]"
+                    },
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Sql/servers', concat(parameters('sqlServerName')))]"
+                    ]
+                },
+                {
+                    "condition": "[parameters('allowAzureServicesToAccessSqlServer')]",
+                    "type": "firewallRules",
+                    "apiVersion": "2018-06-01-preview",
+                    "name": "AllowAllWindowsAzureIps",
+                    "location": "[parameters('location')]",
+                    "tags": {
+                        "Environment": "Customer",
+                        "AssociatedDataSet": "CovidOntario"
+                    },
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))]"
+                    ],
+                    "properties": {
+                        "endIpAddress": "0.0.0.0",
+                        "startIpAddress": "0.0.0.0"
+                    }
+                },
+                {
+                    "condition": "[not(equals(parameters('selectDataLoader'),'SQL Database'))]",
+                    "type": "databases",
+                    "kind": "v12.0,user,datawarehouse",
+                    "name": "[parameters('dataWarehouseName')]",
+                    "apiVersion": "2015-05-01-preview",
+                    "location": "[parameters('location')]",
+                    "tags": {
+                        "Environment": "Customer",
+                        "AssociatedDataSet": "CovidOntario"
+                    },
+                    "properties": {
+                        "edition": "DataWarehouse",
+                        "status": "Online",
+                        "requestedServiceObjectiveName": "[parameters('serviceLevelObjective')]",
+                        "collation": "SQL_Latin1_General_CP1_CI_AS",
+                        "readScale": "Disabled",
+                        "zoneRedundant": false,
+                        "isUpgradeRequested": false
+                    },
+                    "dependsOn": [
+                        "[parameters('sqlServerName')]"
+                    ],
+                    "resources": [
+                        {
+                            "condition": "[not(equals(parameters('selectDataLoader'),'SQL Database'))]",
+                            "comments": "Transparent Data Encryption",
+                            "name": "current",
+                            "type": "transparentDataEncryption",
+                            "apiVersion": "2017-03-01-preview",
+                            "properties": {
+                                "status": "[parameters('transparentDataEncryption')]"
+                            },
+                            "dependsOn": [
+                                "[parameters('dataWarehouseName')]"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,43 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "dataShareAccountName": {
+            "type": "String",
+            "metadata": {
+                "description": "Data share account name should have length of 1 - 77, and cannot contain <>%&:\\?/#*$^();,.|-+={}[]!~@"
+            }
+        },
+        "location": {
+            "type": "String"
+        },
+        "deployAndUseDataShare": {
+            "type": "string",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "metadata": {
+                "description": "Please specify if you want to deploy Datashare."
+            }
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "condition": "[equals(parameters('deployAndUseDataShare'),'Yes')]",
+            "type": "Microsoft.DataShare/accounts",
+            "apiVersion": "2019-11-01",
+            "name": "[parameters('dataShareAccountName')]",
+            "location": "[parameters('location')]",
+            "tags": {
+                "Environment": "Customer",
+                "AssociatedDataSet": "CovidOntario"
+            },
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {}
+        }
+    ]
+}

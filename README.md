@@ -23,7 +23,10 @@ We have published the ARM templates for utilizing the following dataset. The det
 
 Dataset | Descriptions | Link | Status
 ------- | ------------ | ---- | ------
-[Definitive Healthcare USA](https://coronavirus-resources.esri.com/datasets/definitivehc::definitive-healthcare-usa-hospital-beds?geometry=110.039%2C-16.820%2C-135.000%2C72.123) | The latest data on COVID-19 about USA Hospital Beds. | [definitive-healthcare](https://github.com/ayesha-kr/msft-covid/tree/master/datasets/covid-19/definitive-healthcare) | Available
+[Definitive Healthcare USA](https://coronavirus-resources.esri.com/datasets/definitivehc::definitive-healthcare-usa-hospital-beds?geometry=110.039%2C-16.820%2C-135.000%2C72.123) | The latest data on COVID-19 about USA Hospital Beds. | [definitive-healthcare](https://github.com/ayesha-kr/covid-one-click-deployment/tree/master/datasets/covid-19/definitive-healthcare) | Available
+[Newyork Times](https://github.com/nytimes/covid-19-data) | Daily data on COVID-19 about US counties. | [newyork-times](https://github.com/ayesha-kr/covid-one-click-deployment/tree/master/datasets/covid-19/newyork-times) | Available
+[Govt of Ontario](https://data.ontario.ca/dataset?keywords_en=COVID-19) | Compiled daily reported data from public health units on confirmed positive cases of COVID-19 in Ontario. | [ontario](https://github.com/ayesha-kr/covid-one-click-deployment/tree/master/datasets/covid-19/ontario) | Available
+[Govt of British Columbia](http://www.bccdc.ca/health-info/diseases-conditions/covid-19/data) | Daily data on COVID-19 cases in British Columbia. | [british-columbia](https://github.com/ayesha-kr/covid-one-click-deployment/tree/master/datasets/covid-19/british-columbia) | Available
 
 
 ## 3. Data Flow Architecture Diagram

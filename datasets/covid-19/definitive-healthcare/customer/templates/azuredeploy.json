@@ -21,10 +21,6 @@
                 "description": "The name you provide will be appended with a unique sting to make it globally available. The field can contain only lowercase letters and numbers. Name must be between 1 and 11 characters."
             }
         },
-        "publicStorageAccountName": {
-            "type": "string",
-            "defaultValue": "covidtrackingdefinitive"
-        },
         "sasURI": {
             "type": "string",
             "defaultValue": "Specify the sasURI of public blob storage"

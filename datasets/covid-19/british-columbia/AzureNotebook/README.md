@@ -13,6 +13,8 @@ With an Azure Synapse Studio notebook, you can:
 
 ## Steps
 
-Following is the link with detailed steps for implementing Azure Notebook:
+Following is the link with detailed steps for implementing Azure Synapse Notebook:
 
-https://github.com/ayesha-kr/covid-one-click-deployment/edit/osama-dev/datasets/covid-19/definitive-healthcare/AzureNotebook/README.md
+[Azure Synapse Notebook](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/AzureNotebook/README.md)
+
+### Note: The above link documents the implementation of Azure Synapse Notebook for a different dataset. However, you can use this dataset as well by simply updating the blob URL. Please note that this blob URL must point to the dataset that you want to analyse.

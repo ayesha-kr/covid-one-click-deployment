@@ -84,7 +84,7 @@ You can follow the instructions given in the following link to set up Data share
 
 (Description to be entered here!)
 
-Follow the instructions given in the following link to setup the (forcast model name):-
+Follow the instructions given in the following link to setup (forcast model name):-
 
 (Dataset name or environment reference here):- 
 

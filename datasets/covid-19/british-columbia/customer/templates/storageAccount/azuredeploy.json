@@ -78,7 +78,8 @@
                     "corsRules": []
                 },
                 "deleteRetentionPolicy": {
-                    "enabled": false
+                    "enabled": true,
+                    "days": 30
                 }
             }
         },

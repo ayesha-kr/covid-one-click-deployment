@@ -89,6 +89,11 @@ Follow the instructions given in the following link to setup (forcast model name
 
 [(Add heading for the hyperlink here)](./datasets/covid-19/newyork-times/DemandForcastModel/Readme.md)
 
+## Troubleshoot ADF Pipelines
+
+Pleae follow the instructions given in the link below to:-
+
+[Troubleshoot ADF Pipelines](./docs/trouebleshoot.md)
 
 ## 10. Contact us
 

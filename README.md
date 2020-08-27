@@ -8,7 +8,7 @@
 6. Connect Azure Boards with the Github Repo
 7. Add Metric Alerts to Azure Datafactory Pipelines
 8. Configure Data Share
-9. Machine leasrning forcast model
+9. Machine learning forcast model
 10. Contact us
 
 # One Click Deployment of Covid-19 Data Flow
@@ -80,13 +80,13 @@ You can follow the instructions given in the following link to set up Data share
 [Azure Data Share](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/customer/Readme.md)
 
 
-## 9. Add Metric Alerts to Azure Datafactory Pipelines
+## 9. Machine learning forcast model
 
 (Description to be entered here!)
 
 Follow the instructions given in the following link to setup the (forcast model name):-
 
-(Dataset name or environmnt reference here):- 
+(Dataset name or environment reference here):- 
 
 [(Add heading for the hyperlink here)](./datasets/covid-19/newyork-times/DemandForcastModel/Readme.md)
 

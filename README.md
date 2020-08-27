@@ -8,7 +8,8 @@
 6. Connect Azure Boards with the Github Repo
 7. Add Metric Alerts to Azure Datafactory Pipelines
 8. Configure Data Share
-9. Contact us
+9. Machine learning forcast model
+10. Contact us
 
 # One Click Deployment of Covid-19 Data Flow
 This is a guide for processing the following open Covid-19 datasets, using the Microsoft Azure data factory. 
@@ -79,7 +80,18 @@ You can follow the instructions given in the following link to set up Data share
 [Azure Data Share](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/customer/Readme.md)
 
 
-## 9. Contact us
+## 9. Machine learning forcast model
+
+(Description to be entered here!)
+
+Follow the instructions given in the following link to setup the (forcast model name):-
+
+(Dataset name or environment reference here):- 
+
+[(Add heading for the hyperlink here)](./datasets/covid-19/newyork-times/DemandForcastModel/Readme.md)
+
+
+## 10. Contact us
 
 We hope that this blog is helpful for you. In case you have any questions, feel free to reach out to us at ayesha.khaliq@emumba.com OR hamza.rashid@emumba.com.
 

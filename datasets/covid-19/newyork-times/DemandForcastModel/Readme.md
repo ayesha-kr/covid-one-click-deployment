@@ -195,7 +195,7 @@ A new table name ml_score will be created and have the results in it.
 Once the data is loaded in to SQL db power BI charts can be drawn from it.
 For power BI set up refer to the section **Load data from a Synapse table in Power BI**  (
 
-[Power BI](https://github.com/ayesha-kr/covid-one-click-deployment/tree/stage/datasets/covid-19/newyork-times/powerbi/README.md)
+[Power BI](https://github.com/ayesha-kr/covid-one-click-deployment/tree/master/datasets/covid-19/newyork-times/powerbi/README.md)
 
 Once connected, graphs can be created for this new data.
 

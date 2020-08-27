@@ -41,6 +41,7 @@
                     "defaultAction": "Allow"
                 },
                 "supportsHttpsTrafficOnly": true,
+                "allowBlobPublicAccess": false,
                 "encryption": {
                     "services": {
                         "file": {
@@ -83,7 +84,8 @@
                     "corsRules": []
                 },
                 "deleteRetentionPolicy": {
-                    "enabled": false
+                    "enabled": true,
+                    "days": 30
                 }
             }
         },

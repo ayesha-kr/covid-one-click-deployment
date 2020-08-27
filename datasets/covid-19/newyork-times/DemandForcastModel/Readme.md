@@ -48,7 +48,7 @@ Click on a Create New Dataset -> from Datastore. Fill out the basic info and sel
 
 Enter the query given below to get the data
 
-![NewYork Times datastore create2](./images/nytime-dataset-create2.png)
+![NewYork Times datastore create2](./images/nytimes-dataset-create2.png)
 
 Click next and from schema only chose three columns Record_Date, Cases, Deaths
 
@@ -110,7 +110,7 @@ Now submit the pipeline. It will start running as given below.
 Once its completed you can see a button **Create inference pipeline** gets added on the top.
 Click on the button and select the **Batch inference pipeline**
 
-![Convert to batch1](./images/convert-to-batch1.png)
+![Convert to batch1](./images/convert-to-batch-1.png)
 
 Once it's converted click on submit again and select the existing experiment.
 
@@ -145,7 +145,7 @@ Once created go to the overview and note down the Client ID value
 
 Now do the role assignment.
 Open the  machine learning work space from the resource group and set this app registration service as its owner.
-![App registeration service owner](./images/app-re-ws-permission.png)
+![App registeration service owner](./images/app-reg-ws-permission.png)
 
 Now do the same for ADF. Open ADF from the resource group and set his app registration service as its owner.
 
@@ -199,7 +199,7 @@ For power BI set up refer to the section **Load data from a Synapse table in Pow
 
 Once connected, graphs can be created for this new data.
 
-![Power BI result](./images/power-bi.png)
+![Power BI result](./images/powerbi.png)
 
 
 

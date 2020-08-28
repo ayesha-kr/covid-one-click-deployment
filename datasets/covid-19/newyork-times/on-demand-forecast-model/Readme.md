@@ -18,12 +18,12 @@ The pipeline is designed for SQL package but it can work for Synapse as well by 
 
 ### Customer package deployment
 
-Deploy the customer SQL package by following the instructions given here<hyperlink to NYtimes customer package> 
+Deploy the customer **SQL package** by following the instructions given [here]<hyperlink to NYtimes customer package> 
 You should have a resource group created having SQL DB and ADF inside along with the couple of other resources.
 
 ### Machine learning batch prediction model
 
-Goto azure portal and search for **Machine Learning**
+Goto azure portal and search for **Machine Learning**.
 It will open up the following template. Fill the template as given below.
 
 Provide the resource group name that has been created in the previous step. In this case it is **NewyorkTimes**
@@ -85,6 +85,7 @@ Next drag the **Export Data** module, connect it with **Score Model** and fill t
 ![Pipeline designer export data module](./images/pipeline-design-exportdata.png)
 
 Also in the Output settings make sure to check the regenerate output option
+
 ![Pipeline designer output](./images/pipeline-design-exp-data-output.png)
 
 
@@ -137,14 +138,17 @@ Click on new registration and do the following settings.
 ![New app registeration](./images/reg-app-create.png)
 
 Once created go to the overview and note down the Client ID value
+
 ![App registeration client](./images/app-reg-client.png)
 
 
- Now click on **Certificates and secrets**. Generate a secret and note down its value as well. 
+ Now click on **Certificates and secrets**. Generate a secret and note down its value as well.
+
 ![App registeration add secrets](./images/app-reg-add-secret.png)
 
 Now do the role assignment.
 Open the  machine learning work space from the resource group and set this app registration service as its owner.
+
 ![App registeration service owner](./images/app-reg-ws-permission.png)
 
 Now do the same for ADF. Open ADF from the resource group and set his app registration service as its owner.
@@ -160,42 +164,65 @@ Now click on the new pipeline and pick the template option
 
 ![Pipeline template option](./images/pipeline-from-template.png)
 
-Pick local template and upload the provide zip file
+Pick local template and upload the provide zip file named `MLModelRunner.zip` provided 
 
 You need to create  an **AzureMLService1**.
 Go ahead click on "Create a new" 
 Fill the appropriate values for subscription and workspace for **Service principal ID** and **Service principal key** provide the Client ID and secret key that was saved above during **App reg service** creation.
 
-Click on test connection after its successful make one
+Click on test connection, after its successful, create it. 
+
+![Create new link service](./images/new-link-srv.png)
+
 
 Once imported you can see the pipeline. 
 This pipeline is executing the sql pipeline as pre req and then invoking the ML model.
 
-Click on the **Machine learning Model execution** and go to **settings**
+You need to make some settings here.
+
+First click on the **Data Loader Pipeline** activity and pick the value for invoke pipeline as given
+
+![invoke pipeline setting](./images/invoke-pipeline.png)
+
+Next click on the **Drop Score Table** activity and pick the value for source data det as given
+
+![drop table setting](./images/drop-table.png)
 
 
-Here pick the pipeline name and pipeline ID from the drop down populated already and give the experiment name that was provided during the ML model creation
+Then Click on the **Machine learning Model execution** and go to **settings**
 
-![Machine learning activity settings](./images/ml-activity-setting.png)
+
+Here pick the pipeline name and pipeline ID from the drop down populated already and give the experiment name that was provided during the ML model creation.
+
+`If you dont see values in drop down click on text connection again`
+
+![Machine learning activity settings](./images/exec-pipeline-setting.png)
 
 
 Once done click on the publish pipeline and trigger the pipeline.
-Once pipeline has run you can check this by running the query in SQL db.
 
-A new table name ml_score will be created and have the results in it.
-
-![Machine learning results store in DB](./images/ml-results-store in db.png)
+![Publish pipeline](./images/publish-pipeline.png)
 
 
+You can check pipeline running status from the monitor tab
+![Publish pipeline](./images/pipeline-status.png)
+
+
+
+Once pipeline run has finished you can check this by running the query in SQL db.
+
+
+A new table name `ml_score` will be created and have the results in it.
+
+
+![Machine learning results store in DB](./images/ml-results-stored-in-db.png)
 
 
 
 ## Power BI 
 
 Once the data is loaded in to SQL db power BI charts can be drawn from it.
-For power BI set up refer to the section **Load data from a Synapse table in Power BI**  (
-
-[Power bi](https://github.com/ayesha-kr/covid-one-click-deployment/tree/master/datasets/covid-19/newyork-times/powerbi/README.md)
+For power BI set up refer to the section **Load data from a Synapse table in Power BI** given [here](https://github.com/ayesha-kr/covid-one-click-deployment/tree/master/datasets/covid-19/newyork-times/powerbi/README.md)
 
 Once connected, graphs can be created for this new data.
 

@@ -85,13 +85,13 @@ You can follow the instructions given in the following link to set up Data share
 You can make use of Azure synapse notebook for quick experimentation, data preparation, visualization and validation using azure notebook. Given below is the link with instruction to set up that.
 
 
-[(Azure Synapse Notebook)](./datasets/covid-19/definitive-healthcare/azure-notebook/readme.md)
+[Azure Synapse Notebook](./datasets/covid-19/definitive-healthcare/azure-notebook/readme.md)
 
 ## 10. Machine learning forecast model
 
 In order to run an ML model as part of your pipeline, using Azure machine learning, on top of curated set you can follow the instructions given below. By following the instruction you can build an ML model, make its execution part of ADF pipeline and then use power BI for visualization. 
 
-[(On Demand Forecasting)](./datasets/covid-19/newyork-times/on-demand-forecast-model/Readme.md)
+[On Demand Forecasting](./datasets/covid-19/newyork-times/on-demand-forecast-model/Readme.md)
 
 ## 11. Troubleshoot ADF Pipelines
 

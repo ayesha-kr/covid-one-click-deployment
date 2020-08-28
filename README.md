@@ -29,9 +29,8 @@ Dataset | Descriptions | Link | Status
 [Govt of Ontario](https://data.ontario.ca/dataset?keywords_en=COVID-19) | Compiled daily reported data from public health units on confirmed positive cases of COVID-19 in Ontario. | [ontario](https://github.com/ayesha-kr/covid-one-click-deployment/tree/master/datasets/covid-19/ontario) | Available
 [Govt of British Columbia](http://www.bccdc.ca/health-info/diseases-conditions/covid-19/data) | Daily data on COVID-19 cases in British Columbia. | [british-columbia](https://github.com/ayesha-kr/covid-one-click-deployment/tree/master/datasets/covid-19/british-columbia) | Available
 
-
 ## 3. Data Flow Architecture Diagram
- ![Azul_Data_Pipeline](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/images/arch.png)
+![Azul_Data_Pipeline](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/images/architectureV1.png)
 
 ## 4. Data Flow deployment steps
   You can see that the repo has three sections public, customer and power BI. Go inside each of the directory to deploy that relavent section.  
@@ -90,6 +89,11 @@ Follow the instructions given in the following link to setup (forcast model name
 
 [(Add heading for the hyperlink here)](./datasets/covid-19/newyork-times/DemandForcastModel/Readme.md)
 
+## Troubleshoot ADF Pipelines
+
+Pleae follow the instructions given in the link below to:-
+
+[Troubleshoot ADF Pipelines](./docs/trouebleshoot.md)
 
 ## 10. Contact us
 

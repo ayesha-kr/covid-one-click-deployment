@@ -1,5 +1,5 @@
 ## Table Of Contents:
-1. Deploy Data Factory with optional SQL Server and SQL Database
+1. Deploy Data Factory with sdfsfoptional SQL Server and SQL Database
 2. Setup and Configure Alerts for Azure Data Factory
 3. Configure Data Share
 

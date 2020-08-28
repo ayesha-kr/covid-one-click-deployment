@@ -47,6 +47,7 @@
                 },
                 "supportsHttpsTrafficOnly": true,
                 "allowBlobPublicAccess": false,
+                "minimumTlsVersion": "1_2",
                 "encryption": {
                     "services": {
                         "file": {

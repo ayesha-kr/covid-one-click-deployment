@@ -243,9 +243,9 @@ steps:
 
 6. To create a new pipeline navigate to Pipelines -> Pipelines and click on **New Pipeline**.
 
-[Open pipeline](../../definitive-healthcare/azure-pipelines-cicd/images/open-pipelines.png)
+![Open pipeline](../../definitive-healthcare/azure-pipelines-cicd/images/open-pipelines.png)
 
-[New pipeline](../../definitive-healthcare/azure-pipelines-cicd/images/new-pipeline.png)
+![New pipeline](../../definitive-healthcare/azure-pipelines-cicd/images/new-pipeline.png)
 
 7. Setup Pipeline
 

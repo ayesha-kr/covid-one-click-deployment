@@ -211,22 +211,22 @@ steps:
 ## Step 3. Setup CI/CD in Azure DevOps for Data factory.
 
 1. Goto Azure portal, search and open 'Azure DevOps' -> 'My Azure DevOps Organizations'.
-![Search Devops](../definitive-healthcare/images/search-azure-devops.png)
+![Search Devops](../definitive-healthcare/azure-pipelines-cicd/images/search-azure-devops.png)
 
-![My orgs](../definitive-healthcare/images/My-orgs.png)
+![My orgs](../definitive-healthcare/azure-pipelines-cicd/images/My-orgs.png)
 
 2. You can create a new organiztion choose an existing one. 
-![Create new Org](../definitive-healthcare/images/new-org.png)
+![Create new Org](../definitive-healthcare/azure-pipelines-cicd/images/new-org.png)
 
 3. Create a new project, choose *Private Visibility*.
-![new-project](../definitive-healthcare/images/new-project.png)
-![Search Devops](../definitive-healthcare/images/project-visibility.png)
+![new-project](../definitive-healthcare/azure-pipelines-cicd/images/new-project.png)
+![Search Devops](../definitive-healthcare/azure-pipelines-cicd/images/project-visibility.png)
 
 
 
 4. Open the project and navigate to **Pipelines -> library**.
 
-![open library](../definitive-healthcare/images/open-library.png)
+![open library](../definitive-healthcare/azure-pipelines-cicd/images/open-library.png)
 
 
 5. Create a new variable group in named 'stg-variables' and create the following variables in that group:-
@@ -239,24 +239,24 @@ steps:
 5. rest-url // URL for the CSV dataset source. (Leave value as blank if not required)
 6. sql-conn-string // Connection string for SQL Database
 ```
-![Create vars](../definitive-healthcare/images/create-vars.png)
+![Create vars](../definitive-healthcare/azure-pipelines-cicd/images/create-vars.png)
 
 6. To create a new pipeline navigate to Pipelines -> Pipelines and click on **New Pipeline**.
 
-[Open pipeline](../definitive-healthcare/images/open-pipelines.png)
+[Open pipeline](../definitive-healthcare/azure-pipelines-cicd/images/open-pipelines.png)
 
-[New pipeline](../definitive-healthcare/images/new-pipeline.png)
+[New pipeline](../definitive-healthcare/azure-pipelines-cicd/images/new-pipeline.png)
 
 7. Setup Pipeline
 
     - Connect: Select your 'Repository Type 
-      ![repo type](../definitive-healthcare/images/connect-github.png)
+      ![repo type](../definitive-healthcare/azure-pipelines-cicd/images/connect-github.png)
 
     - Select: Select the repository that you had previously connected the ADF with.
-      ![select repo](../definitive-healthcare/images/pipeline-select-repo.png)
+      ![select repo](../definitive-healthcare/azure-pipelines-cicd/images/pipeline-select-repo.png)
 
     - Configure: Select **Existing Azure Pipelines YAML file** 
-      ![select existing yaml](../definitive-healthcare/images/select-existingyaml-options.png)
+      ![select existing yaml](../definitive-healthcare/azure-pipelines-cicd/images/select-existingyaml-options.png)
 
     - Select **adf_publish** branch, and provide **/cicd/azure-pipelines.yml** as the path.
 
@@ -264,8 +264,8 @@ steps:
 
 8. Update the  *azureResourceManagerConnection, subscriptionId* keys for all the tasks shown in the pipeline yaml. Todo this select **Settings** shown in the top left corner of every task, this will open a visual yaml editor. Update the aforementioed keys by selecting the relevant subcription. Make sure you do this for all the tasks.
 
-![update subscription step 4](../definitive-healthcare/images/update-subscription.png)
-![update subscription step 5](../definitive-healthcare/images/update-subscription-2.png)
+![update subscription step 4](../definitive-healthcare/azure-pipelines-cicd/images/update-subscription.png)
+![update subscription step 5](../definitive-healthcare/azure-pipelines-cicd/images/update-subscription-2.png)
 
 
 9. Save and run the pipeline.

@@ -202,6 +202,6 @@ If you are using data share to get data from public environment into customer en
 
 ![data share customer](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/customer/images/data%20share/19.png)
 
-![data share customer](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/customer/images/data%20share/20.png)
+![data share customer](../../british-columbia/customer/images/data%20share/20.png)
 
 

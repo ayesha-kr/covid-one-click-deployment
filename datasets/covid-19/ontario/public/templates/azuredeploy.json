@@ -118,13 +118,20 @@
         "webHookUri": "https://null",
         "dataShareAccountName": "[concat(parameters('dataShareAccountName'), uniquestring(resourceGroup().id))]",
         "templateMainUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/ontario/",
-        "storageTemplateUri": "[uri(variables('templateMainUri'), 'public/templates/storageAccount/azuredeploy.json')]",
-        "dataShareTemplateUri": "[uri(variables('templateMainUri'), 'public/templates/dataShare/azuredeploy.json')]",
-        "sqlServerTemplateUri": "[uri(variables('templateMainUri'), 'public/templates/sqlServer/azuredeploy.json')]",
-        "logicAppTemplateUri": "[uri(variables('templateMainUri'), 'public/templates/logicApp/azuredeploy.json')",
-        "dataFactoryTemplateWithTeamsNotifUri": "[uri(variables('templateMainUri'), 'public/templates/dataFactory/azuredeploy.json')]",
-        "dataFactoryTemplateWithoutTeamsNotifUri": "[uri(variables('templateMainUri'), 'public/templates/dataFactory/azuredeploy.json')]",
-        "shareTemplateUri": "[uri(variables('templateMainUri'), 'public/templates/share/azuredeploy.json')]"
+        "storageLinkUri": "concat(variables('templateMainUri'),'public/templates/storageAccount/')",
+        "storageTemplateUri": "[uri(variables('storageLinkUri'), 'azuredeploy.json')]",
+        "dataShareLinkUri": "concat(variables('templateMainUri'),'public/templates/dataShare/')",
+        "dataShareTemplateUri": "[uri(variables('dataShareLinkUri'), 'azuredeploy.json')]",
+        "sqlServerLinkUri": "concat(variables('templateMainUri'),'public/templates/sqlServer/')",
+        "sqlServerTemplateUri": "[uri(variables('sqlServerLinkUri'), 'azuredeploy.json')]",
+        "logicAppLinkUri": "concat(variables('templateMainUri'),'public/templates/logicApp/')",
+        "logicAppTemplateUri": "[uri(variables('logicAppLinkUri'), 'azuredeploy.json')",
+        "dataFactoryTemplateWithTeamsNotifLinkUri": "concat(variables('templateMainUri'),'public/templates/dataFactory/')",
+        "dataFactoryTemplateWithTeamsNotifUri": "[uri(variables('dataFactoryTemplateWithTeamsNotifLinkUri'), 'azuredeploy.json')]",
+        "dataFactoryTemplateWithoutTeamsNotifLinkUri": "concat(variables('templateMainUri'),'public/templates/dataFactory/')",
+        "dataFactoryTemplateWithoutTeamsNotifUri": "[uri(variables('dataFactoryTemplateWithoutTeamsNotifLinkUri), 'azuredeploy.json')]",
+        "shareLinkUri": "concat(variables('templateMainUri'),'public/templates/share/')",
+        "shareTemplateUri": "[uri(variables('shareLinkUri'), 'azuredeploy.json')]"
     },
     "resources": [
         {
@@ -134,7 +141,8 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[variables('storageTemplateUri')]"
+                    "uri": "[variables('storageTemplateUri')]",
+                    "contentVersion":"1.0.0.0"
                 },
                 "parameters": {
                     "storageAccountName": {

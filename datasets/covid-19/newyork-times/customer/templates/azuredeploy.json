@@ -177,7 +177,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/newyork-times/customer/templates/storageAccount/azuredeploy.json"
+                    "uri": "[variables('storageTemplateUri')]"
                 },
                 "parameters": {
                     "storageAccountName": {
@@ -202,7 +202,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/newyork-times/customer/templates/sqlServer/azuredeploy.json"
+                    "uri": "[variables('sqlServerTemplateUri')]"
                 },
                 "parameters": {
                     "sqlServerName": {
@@ -249,7 +249,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/newyork-times/customer/templates/logicApp/azuredeploy.json"
+                    "uri": "[variables('logicAppTemplateUri')]"
                 },
                 "parameters": {
                     "location": {
@@ -273,7 +273,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/newyork-times/customer/templates/dataFactory/azuredeploy.json"
+                    "uri": "[variables('azureDataFactoryTemplateWithTeamsNotifUri')]"
                 },
                 "parameters": {
                     "dataFactoryName": {
@@ -332,7 +332,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/newyork-times/customer/templates/dataFactory/azuredeploy.json"
+                    "uri": "[variables('azureDataFactoryTemplateWithoutTeamsNotifUri')]"
                 },
                 "parameters": {
                     "dataFactoryName": {
@@ -389,7 +389,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/newyork-times/customer/templates/dataShare/azuredeploy.json"
+                    "uri": "[variables('dataShareTemplateUri')]"
                 },
                 "parameters": {
                     "dataShareAccountName": {

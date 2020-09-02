@@ -116,7 +116,16 @@
         "storageAccountName": "[concat(parameters('storageAccountName'), uniquestring(resourceGroup().id))]",
         "serverName": "[concat(parameters('serverName'), uniquestring(resourceGroup().id))]",
         "webHookUri": "https://null",
-        "dataShareAccountName": "[concat(parameters('dataShareAccountName'), uniquestring(resourceGroup().id))]"
+        "dataShareAccountName": "[concat(parameters('dataShareAccountName'), uniquestring(resourceGroup().id))]",
+        "templateMainUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/",
+        "storageTemplateUri": "concat(variables('templateMainUri'), 'public/templates/storageAccount/azuredeploy.json')",
+        "dataShareTemplateUri": "concat(variables('templateMainUri'), 'public/templates/storageAccount/azuredeploy.json')",
+        "sqlServerTemplateUri": "concat(variables('templateMainUri'), 'public/templates/storageAccount/azuredeploy.json')",
+        "logicAppTemplateUri": "concat(variables('templateMainUri'), 'public/templates/storageAccount/azuredeploy.json')",
+        "dataFactoryTemplateWithTeamsNotifUri": "concat(variables('templateMainUri'), 'public/templates/storageAccount/azuredeploy.json')",
+        "dataFactoryTemplateWithoutTeamsNotifUri": "concat(variables('templateMainUri'), 'public/templates/storageAccount/azuredeploy.json')",
+        "shareTemplateUri": "concat(variables('templateMainUri'), 'public/templates/storageAccount/azuredeploy.json')"
+
     },
     "resources": [
         {
@@ -126,7 +135,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/public/templates/storageAccount/azuredeploy.json"
+                    "uri": "[variables('storageTemplateUri')]"
                 },
                 "parameters": {
                     "storageAccountName": {
@@ -148,7 +157,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/public/templates/dataShare/azuredeploy.json"
+                    "uri": "[variables('dataShareTemplateUri')]"
                 },
                 "parameters": {
                     "dataShareAccountName": {
@@ -173,7 +182,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/public/templates/sqlServer/azuredeploy.json"
+                    "uri": "[variables('sqlServerTemplateUri')]"
                 },
                 "parameters": {
                     "doYouWantToWriteCuratedDataToSQLDatabase": {
@@ -205,7 +214,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/customer/templates/logicApp/azuredeploy.json"
+                    "uri": "[variables('logicAppTemplateUri')]"
                 },
                 "parameters": {
                     "location": {
@@ -229,7 +238,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/public/templates/dataFactory/azuredeploy.json"
+                    "uri": "[variables('dataFactoryTemplateWithTeamsNotifUri')]"
                 },
                 "parameters": {
                     "factoryName": {
@@ -279,7 +288,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/public/templates/dataFactory/azuredeploy.json"
+                    "uri": "[variables('dataFactoryTemplateWithoutTeamsNotifUri')]"
                 },
                 "parameters": {
                     "factoryName": {
@@ -328,7 +337,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/public/templates/share/azuredeploy.json"
+                    "uri": "[variables('shareTemplateUri')]"
                 },
                 "parameters": {
                     "dataShareAccountName": {

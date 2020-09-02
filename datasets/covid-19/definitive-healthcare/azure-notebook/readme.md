@@ -51,7 +51,7 @@ With an Azure Synapse Studio notebook, you can:
 
 ## Setup
 
-1. Click here to open the Azure [Synapse Notebook](https://github.com/ayesha-kr/covid-one-click-deployment/blob/4d955ae3fecc6cfaddcfffc6958fbf72ad5d857d/datasets/covid-19/definitive-healthcare/azure-notebook/AzureSynapse-pyspark-definitive-health-care.ipynb). To save the file, **right-click -> Save Link as** to save the file.
+1. Click here to open the Azure [Synapse Notebook](./AzureSynapse-pyspark-definitive-health-care.ipynb). To save the file, **right-click -> Save Link as** to save the file.
 
 
 2. Open Azure Synpase Workspaces.

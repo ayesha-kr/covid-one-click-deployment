@@ -40,7 +40,7 @@ Click the following button to deploy all the resources.
 
 After the deployment you can go in side your resource group open the ADF auther and monitor section and trigger the pipeline as given below.
 
-![Manual Pipeline Trigger](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/british-columbia/customer/images/manual-ADF-customer-trigger.png)
+![Manual Pipeline Trigger](./images/manual-ADF-customer-trigger.png)
 
 
 #### Configure Firewall Rule

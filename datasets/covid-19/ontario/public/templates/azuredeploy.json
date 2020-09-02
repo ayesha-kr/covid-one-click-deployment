@@ -118,13 +118,13 @@
         "webHookUri": "https://null",
         "dataShareAccountName": "[concat(parameters('dataShareAccountName'), uniquestring(resourceGroup().id))]",
         "templateMainUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/ontario/",
-        "storageTemplateUri": "concat(variables('templateMainUri'), 'public/templates/storageAccount/azuredeploy.json')",
-        "dataShareTemplateUri": "concat(variables('templateMainUri'), 'public/templates/dataShare/azuredeploy.json')",
-        "sqlServerTemplateUri": "concat(variables('templateMainUri'), 'public/templates/sqlServer/azuredeploy.json')",
-        "logicAppTemplateUri": "concat(variables('templateMainUri'), 'public/templates/logicApp/azuredeploy.json')",
-        "dataFactoryTemplateWithTeamsNotifUri": "concat(variables('templateMainUri'), 'public/templates/dataFactory/azuredeploy.json')",
-        "dataFactoryTemplateWithoutTeamsNotifUri": "concat(variables('templateMainUri'), 'public/templates/dataFactory/azuredeploy.json')",
-        "shareTemplateUri": "concat(variables('templateMainUri'), 'public/templates/share/azuredeploy.json')"
+        "storageTemplateUri": "[uri(variables('templateMainUri'), 'public/templates/storageAccount/azuredeploy.json')]",
+        "dataShareTemplateUri": "[uri(variables('templateMainUri'), 'public/templates/dataShare/azuredeploy.json')]",
+        "sqlServerTemplateUri": "[uri(variables('templateMainUri'), 'public/templates/sqlServer/azuredeploy.json')]",
+        "logicAppTemplateUri": "[uri(variables('templateMainUri'), 'public/templates/logicApp/azuredeploy.json')",
+        "dataFactoryTemplateWithTeamsNotifUri": "[uri(variables('templateMainUri'), 'public/templates/dataFactory/azuredeploy.json')]",
+        "dataFactoryTemplateWithoutTeamsNotifUri": "[uri(variables('templateMainUri'), 'public/templates/dataFactory/azuredeploy.json')]",
+        "shareTemplateUri": "[uri(variables('templateMainUri'), 'public/templates/share/azuredeploy.json')]"
     },
     "resources": [
         {

@@ -160,7 +160,15 @@
         "dataFactoryUniqueName": "[concat(parameters('dataFactoryName'), uniqueString(resourceGroup().id))]",
         "webHookUri": "",
         "dataShareAccountName": "[concat(parameters('dataShareAccountName'), uniquestring(resourceGroup().id))]",
-        "stagingContainer": "receivedcopy"
+        "stagingContainer": "receivedcopy",
+        "templateMainUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/ontario/",
+        "storageTemplateUri": "concat(variables('templateMainUri'), 'customer/templates/storageAccount/azuredeploy.json')",
+        "sqlServerTemplateUri": "concat(variables('templateMainUri'), 'customer/templates/sqlServer/azuredeploy.json')",
+        "logicAppTemplateUri": "concat(variables('templateMainUri'), 'customer/templates/logicApp/azuredeploy.json')",
+        "azureDataFactoryTemplateWithTeamsNotifUri": "concat(variables('templateMainUri'), 'customer/templates/dataFactory/azuredeploy.json')",
+        "azureDataFactoryTemplateWithoutTeamsNotifUri": "concat(variables('templateMainUri'), 'customer/templates/dataFactory/azuredeploy.json')",
+        "dataShareTemplateUri": "concat(variables('templateMainUri'), 'customer/templates/dataShare/azuredeploy.json')"
+
     },
     "resources": [
         {
@@ -170,7 +178,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/ontario/customer/templates/storageAccount/azuredeploy.json"
+                    "uri": "[variables('storageTemplateUri')]"
                 },
                 "parameters": {
                     "storageAccountName": {
@@ -195,7 +203,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/ontario/customer/templates/sqlServer/azuredeploy.json"
+                    "uri": "[variables('sqlServerTemplateUri')]"
                 },
                 "parameters": {
                     "sqlServerName": {
@@ -242,7 +250,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/ontario/customer/templates/logicApp/azuredeploy.json"
+                    "uri": "[variables('logicAppTemplate')]"
                 },
                 "parameters": {
                     "location": {
@@ -266,7 +274,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/ontario/customer/templates/dataFactory/azuredeploy.json"
+                    "uri": "[variables('azureDataFactoryTemplateWithTeamsNotifUri')]"
                 },
                 "parameters": {
                     "dataFactoryName": {
@@ -325,7 +333,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/ontario/customer/templates/dataFactory/azuredeploy.json"
+                    "uri": "[variables('azureDataFactoryTemplateWithoutTeamsNotifUri')]"
                 },
                 "parameters": {
                     "dataFactoryName": {
@@ -382,7 +390,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/ontario/customer/templates/dataShare/azuredeploy.json"
+                    "uri": "[variables('dataShareTemplateUri')]"
                 },
                 "parameters": {
                     "dataShareAccountName": {

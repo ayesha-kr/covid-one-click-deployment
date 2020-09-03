@@ -6,7 +6,7 @@
 
 2. Click on **Author & Monitor**, this will open the data factory UI's Home.
 
-3. Now go to **Manage** from the menu on the Left side, then click on  **Git Configuration** -> **Set Up Code Repository**. This will show a UI blade with a dropdown listing the supported repository types. As of today it only supports **Github** and **Azure DevOps Git**.
+3. Now go to **Manage** from the menu on the Left side, then click on  **Git Configuration** -> **Set Up Code Repository**. This will open a UI blade with a dropdown listing the supported repository types. As of July, 2020 it only supports **Github** and **Azure DevOps Git**.
 
 *Note: If you wish to choose a github, please create an empty repo before proceeding to the next steps.*
 
@@ -21,7 +21,7 @@
 
 6. Click on **Apply** to save the changes.
 
-Here, we have successfully connected the Azure Data factory to a Git Repo. this has saved all of the resoucres's json files in the branch that we specified. 
+Here, we have successfully connected the Azure Data factory to a Git Repo, which saved all of the resource's json files in the branch that we specified. 
 
 To be able to replicate the resources in this data factory we need the ARM templates that are generated when we publish the changes in data factory. When you click on publish, it takes the changes from the collaboration branch i.e master in this case, creates ARM templates and pushes them in the **adf_publish** branch.
 
@@ -249,7 +249,7 @@ steps:
 
 7. Setup Pipeline
 
-    - Connect: Select your 'Repository Type 
+    - Connect: Select your *Repository Type*
       ![repo type](./images/connect-github.png)
 
     - Select: Select the repository that you had previously connected the ADF with.
@@ -262,7 +262,7 @@ steps:
 
     This will load the Azure pipeline yaml.
 
-8. Update the  *azureResourceManagerConnection, subscriptionId* keys for all the tasks shown in the pipeline yaml. Todo this select **Settings** shown in the top left corner of every task, this will open a visual yaml editor. Update the aforementioed keys by selecting the relevant subcription. Make sure you do this for all the tasks.
+8. Update the *azureResourceManagerConnection, subscriptionId* keys for all the tasks shown in the pipeline yaml. To do this select **Settings** shown in the top left corner of every task, this will open a visual yaml editor. Update the aforementioned keys by selecting the relevant subcription. Make sure you do this for all of the tasks.
 
 ![update subscription step 4](./images/update-subscription.png)
 ![update subscription step 5](./images/update-subscription-2.png)
@@ -318,5 +318,5 @@ steps:
 ```
 
 
-Add the above snipped in the previously created Azure pipeline to add another environment to which the resources are deployed.
+Add the above snippet in the previously created Azure pipeline to add another environment to which the resources are deployed.
 

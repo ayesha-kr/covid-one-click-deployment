@@ -30,7 +30,7 @@ Dataset | Descriptions | Link | Status
 [Govt of British Columbia](http://www.bccdc.ca/health-info/diseases-conditions/covid-19/data) | Daily data on COVID-19 cases in British Columbia. | [british-columbia](https://github.com/ayesha-kr/covid-one-click-deployment/tree/master/datasets/covid-19/british-columbia) | Available
 
 ## 3. Data Flow Architecture Diagram
-![Azul_Data_Pipeline](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/images/architectureV1.png)
+![Azul_Data_Pipeline](./images/architectureV1.png)
 
 ## 4. Data Flow deployment steps
   You can see that the repo has three sections public, customer and power BI. Go inside each of the directory to deploy that relavent section.  
@@ -88,6 +88,70 @@ Follow the instructions given in the following link to setup (forcast model name
 (Dataset name or environment reference here):- 
 
 [(Add heading for the hyperlink here)](./datasets/covid-19/newyork-times/DemandForcastModel/Readme.md)
+
+## Security
+
+The deployed solution ensures the following security practices:-
+
+### SQL and Synapse
+
+ 
+
+#### Advanced Threat Protection
+
+By default, it is not enabled. However, this can be enabled at anytime later on using the following link.
+https://docs.microsoft.com/en-us/azure/azure-sql/database/threat-detection-configure
+
+
+#### Auditing for Azure SQL Database and Azure Synapse Analytics
+
+https://docs.microsoft.com/en-us/azure/azure-sql/database/auditing-overview
+
+#### Transparent Data Encryption (TDE)
+
+TDE is enabled by default for both SQL Db and Azure Synapse.
+
+
+https://docs.microsoft.com/en-us/sql/relational-databases/security/encryption/transparent-data-encryption?redirectedfrom=MSDN&view=sql-server-ver15
+
+ 
+
+### Firewall
+
+
+https://docs.microsoft.com/en-us/azure/azure-sql/database/firewall-configure
+
+ 
+
+ 
+
+### Storage
+
+ 
+
+#### Encryption
+
+https://docs.microsoft.com/en-us/azure/storage/common/storage-service-encryption
+
+ 
+
+#### Require secure transfer to ensure secure connections
+
+https://docs.microsoft.com/en-us/azure/storage/common/storage-require-secure-transfer
+
+ 
+
+#### Grant limited access to Azure Storage resources using shared access signatures (SAS)
+
+https://docs.microsoft.com/en-us/azure/storage/common/storage-sas-overview
+
+ 
+
+#### Minimum TLS version 
+
+TLS version s
+
+https://docs.microsoft.com/en-us/azure/storage/common/transport-layer-security-configure-minimum-version?toc=%2Fazure%2Fstorage%2Fblobs%2Ftoc.json&tabs=portal
 
 ## Troubleshoot ADF Pipelines
 

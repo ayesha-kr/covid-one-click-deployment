@@ -1,5 +1,5 @@
 ## Table Of Contents:
-1. Deploy Data Factory with sdfsfoptional SQL Server and SQL Database
+1. Deploy Data Factory with optional SQL Server and SQL Database
 2. Setup and Configure Alerts for Azure Data Factory
 3. Configure Data Share
 
@@ -47,7 +47,7 @@ After deployment, to access the newly created SQL server from your client IP, co
 
 #### Manually Trigger Pipeline
 
-After the deployment you can go in side your resource group open the ADF auther and monitor section and trigger the pipeline as given below.
+After the deployment you can go inside your resource group open the ADF author and monitor section and trigger the pipeline as given below.
 
 ![Manual Pipeline Trigger](./images/manual-ADF-public-env-trigger.png)
 
@@ -72,11 +72,11 @@ If the trigger is deployed along with pipeline, you have to explicitly activate 
 
 3. Select **"Enable Microsoft Teams Notification"** to yes if you want to send alerts to Microsoft teams too, other select no if you want Email alerts only.
 
-4. Enter your email address in the field titled **Notification Email** to send alerts notification to that email. You cant enter more than one email at the deployment time, but you can add them later on once the deployment is completed. The method for which will be elaborated below.
+4. Enter your email address in the field titled **Notification Email** to send alerts notification to that email. You can't enter more than one email at the deployment time, but you can add them later on once the deployment is completed. The method for which will be elaborated below.
 
 5. Click on **Purchase** once you are satisfied with all the parameters and wait for the deployment to end.
 
- Now once the deployment is complete, you will have alerts setup in data factory. There will be different features like send alerts to Microsoft Teams(via Logic App) etc depending on the options you selected at the deploy time.
+ Now once the deployment is completed, you will have alerts setup in data factory. There will be different features like send alerts to Microsoft Teams(via Logic App) etc depending on the options you selected at the deploy time.
 
 
 
@@ -101,7 +101,7 @@ If you have selected Microsoft Teams notification, then the Logic app needs to b
 ![designer_image](./images/logicappdesigner1.jpg)
 
 
-5. Next if the connection is successful, click on **switch** button thats in the designer panel. It will open 6 different cases, click on a case and you will see a box labeled **"Post a message (V3)"**, click on that. Next to select **"Team"** and **"Channel"**, click on the cross button at the right side of these two field to open up drop down menu for available Team and Channel in Teams account. If you cant see your "Team" and "Channel", goto step 1, there might be problem with authentication. Do this for all 6 cases.
+5. Next if the connection is successful, click on **switch** button present in the designer panel. It will open 6 different cases, click on a case and you will see a box labeled **"Post a message (V3)"**, click on that. Next to select **"Team"** and **"Channel"**, click on the cross button at the right side of these two field to open up drop down menu for available Team and Channel in Teams account. If you cant see your "Team" and "Channel", goto step 1, there might be problem with authentication. Do this for all 6 cases.
 
 ![designer_image](./images/logicappdesigner2.jpg)
 
@@ -109,8 +109,7 @@ If you have selected Microsoft Teams notification, then the Logic app needs to b
 
 With this our setup of Alerts is complete.
 
-
-Next we elaborate on how to add multiple emails in the action group.
+Below section describes the steps to add multiple emails in the action group.
 
 #### Adding multiple emails in action group
 

@@ -9,7 +9,7 @@ The following button will take you to the hosted Azure notebook project. From th
 *URL's of the curated data are to be provided by the administrator of the Public environment.*
 
 
-Download the dataset file using the built-in capability download from a http URL in Pandas. Pandas has readers for various file formats:
+Download the dataset file using the built-in capability *download from a http URL* in Pandas. Pandas has readers for various file formats:
 
 https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_parquet.html
 
@@ -24,8 +24,6 @@ This notebook loads the data from a CSV file into a dataframe and then writes it
 
 
 Note: To write the data to Azure Synapse or SQL DB, please provide the connection details in the notebook.
-
-
 
 
 

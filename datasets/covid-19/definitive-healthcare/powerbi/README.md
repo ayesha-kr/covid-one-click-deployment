@@ -14,7 +14,7 @@
 
 ![Select data source type](./images/get-data-sources.png)
 
-4. Provide the following to connect to Synapse.
+4. Provide the following credentials to connect to Synapse.
 
 - Synapse Server Name
 - Synapse Database name

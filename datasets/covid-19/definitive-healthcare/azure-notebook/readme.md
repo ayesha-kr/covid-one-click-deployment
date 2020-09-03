@@ -1,20 +1,13 @@
 # Consumption of this dataset using Azure notebook
 
-The following button will take you to the hosted Azure notebook project. From there you can click 'Clone' to clone the project into your own Azure Notebook account.
+The following button will take you to the hosted Azure notebook project. From there you can click on 'Clone' button to clone the project into your own Azure Notebook account.
 
 [![Azure Notebooks](https://notebooks.azure.com/launch.svg)](https://notebooks.azure.com/anon-cbd95a/projects/load-azure-blob-to-azure-synap)
 
 ## This notebook documents the URLs and sample code to access the COVID-19 data published by Definitive Health Care and how it can be loaded into Azure Synapse or Azure SQL DB
 
-URL's of the curated data
+*URL's of the curated data are to be provided by the administrator of the Public environment.*
 
-CSV: https://covidtrackingdefinitive.blob.core.windows.net/public/curated/covid-19/covid_tracking/latest/covid_tracking.csv?sv=2019-12-12&ss=bfqt&srt=sco&sp=rwdlacupx&se=2025-07-27T20:27:49Z&st=2020-07-27T12:27:49Z&spr=https&sig=%2ForvhRm%2BPnVJRLiocMHayJxTDozY1iCEwtBMtCEI60w%3D
-
-JSON: https://covidtrackingdefinitive.blob.core.windows.net/public/curated/covid-19/covid_tracking/latest/covid_tracking.json?sv=2019-12-12&ss=bfqt&srt=sco&sp=rwdlacupx&se=2025-07-27T20:27:49Z&st=2020-07-27T12:27:49Z&spr=https&sig=%2ForvhRm%2BPnVJRLiocMHayJxTDozY1iCEwtBMtCEI60w%3D
-
-PARQUET: https://covidtrackingdefinitive.blob.core.windows.net/public/curated/covid-19/covid_tracking/latest/covid_tracking.parquet?sv=2019-12-12&ss=bfqt&srt=sco&sp=rwdlacupx&se=2025-07-27T20:27:49Z&st=2020-07-27T12:27:49Z&spr=https&sig=%2ForvhRm%2BPnVJRLiocMHayJxTDozY1iCEwtBMtCEI60w%3D
-
-JSONL: https://covidtrackingdefinitive.blob.core.windows.net/public/curated/covid-19/covid_tracking/latest/covid_tracking.jsonl?sv=2019-12-12&ss=bfqt&srt=sco&sp=rwdlacupx&se=2025-07-27T20:27:49Z&st=2020-07-27T12:27:49Z&spr=https&sig=%2ForvhRm%2BPnVJRLiocMHayJxTDozY1iCEwtBMtCEI60w%3D
 
 Download the dataset file using the built-in capability download from a http URL in Pandas. Pandas has readers for various file formats:
 
@@ -51,7 +44,7 @@ With an Azure Synapse Studio notebook, you can:
 
 ## Setup
 
-1. Click here to open the Azure [Synapse Notebook](https://github.com/ayesha-kr/covid-one-click-deployment/blob/4d955ae3fecc6cfaddcfffc6958fbf72ad5d857d/datasets/covid-19/definitive-healthcare/azure-notebook/AzureSynapse-pyspark-definitive-health-care.ipynb). To save the file, **right-click -> Save Link as** to save the file.
+1. Click here to open the Azure [Synapse Notebook](./AzureSynapse-pyspark-definitive-health-care.ipynb). To save the file, **right-click -> Save Link as** to save the file.
 
 
 2. Open Azure Synpase Workspaces.
@@ -90,17 +83,17 @@ With an Azure Synapse Studio notebook, you can:
 
 *Note: You can not update the name of the notebook after its published. So make sure you update that before publishing the notebook.*
 
-10. To run the notebook you need to attach the Synpase notebook to a SPark SQL Pool. Go to Manage pools -> New
+10. To run the notebook you need to attach the Synpase notebook to a SPark SQL Pool. Go to **Manage pools -> New**
 
 ![Manage Spark Pool](./images/manage-pools.png)
 
 ![Create Spark Pool](./images/new-pool.png)
 
-11. The base version of the spark pool is enough to run this notebook, you can increase it later if needed.
+11. The base version of the spark pool is enough to run this notebook, you may increase it later if needed.
 
 ![Synapse Notebook](./images/create-pool-basics.png)
 
-12. Additional Settings: Keep Auto-pause enable and change the 'Number of idle minutes' to **10**, you can leave the rest of the fields as default. 
+12. Additional Settings: Keep *Auto-pause* enable and change the 'Number of idle minutes' to **10**, you can leave the rest of the fields as default. 
 
 ![Synapse Notebook](./images/create-pool-add-settings.png)
 

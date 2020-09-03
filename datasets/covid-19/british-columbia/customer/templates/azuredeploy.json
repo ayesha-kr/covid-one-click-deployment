@@ -160,7 +160,13 @@
         "dataFactoryUniqueName": "[concat(parameters('dataFactoryName'), uniqueString(resourceGroup().id))]",
         "webHookUri": "",
         "dataShareAccountName": "[concat(parameters('dataShareAccountName'), uniquestring(resourceGroup().id))]",
-        "stagingContainer": "receivedcopy"
+        "stagingContainer": "receivedcopy",
+        "storageTemplateUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/british-columbia/customer/templates/storageAccount/azuredeploy.json",
+        "sqlServerTemplateUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/british-columbia/customer/templates/sqlServer/azuredeploy.json",
+        "logicAppTemplateUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/british-columbia/customer/templates/logicApp/azuredeploy.json",
+        "azureDataFactoryTemplateWithTeamsNotifUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/british-columbia/customer/templates/dataFactory/azuredeploy.json",
+        "azureDataFactoryTemplateWithoutTeamsNotifUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/british-columbia/customer/templates/dataFactory/azuredeploy.json",
+        "dataShareTemplateUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/british-columbia/customer/templates/dataShare/azuredeploy.json"
     },
     "resources": [
         {
@@ -170,7 +176,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/british-columbia/customer/templates/storageAccount/azuredeploy.json"
+                    "uri": "[variables('storageTemplateUri')]"
                 },
                 "parameters": {
                     "storageAccountName": {
@@ -195,7 +201,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/british-columbia/customer/templates/sqlServer/azuredeploy.json"
+                    "uri": "[variables('sqlServerTemplateUri')]"
                 },
                 "parameters": {
                     "sqlServerName": {
@@ -242,7 +248,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/british-columbia/customer/templates/logicApp/azuredeploy.json"
+                    "uri": "[variables('logicAppTemplateUri')]"
                 },
                 "parameters": {
                     "location": {
@@ -266,7 +272,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/british-columbia/customer/templates/dataFactory/azuredeploy.json"
+                    "uri": "[variables('azureDataFactoryTemplateWithTeamsNotifUri')]"
                 },
                 "parameters": {
                     "dataFactoryName": {
@@ -325,7 +331,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/british-columbia/customer/templates/dataFactory/azuredeploy.json"
+                    "uri": "[variables('azureDataFactoryTemplateWithoutTeamsNotifUri')]"
                 },
                 "parameters": {
                     "dataFactoryName": {
@@ -382,7 +388,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/british-columbia/customer/templates/dataShare/azuredeploy.json"
+                    "uri": "[variables('dataShareTemplateUri')]"
                 },
                 "parameters": {
                     "dataShareAccountName": {

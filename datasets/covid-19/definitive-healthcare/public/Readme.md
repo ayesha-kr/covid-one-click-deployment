@@ -14,7 +14,7 @@
 3. Storage Account Name
 4. Location
 5. Option (Yes or No) to deploy or not to deploy SQL Server, SQL Database and SQL sink within the pipeline.
-6. If selected **Yes**, please provide
+6. If selected **Yes**, please provide the following:-
 
    - SQL Server Name 
 
@@ -42,14 +42,14 @@ Click the following button to deploy all the resources.
 #### Configure Firewall Rule
 After deployment, to access the newly created SQL server from your client IP, configure the firewall rule as described in the following GIF:
 
-![Firewall Rule](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/public/images/firewallRule.gif)
+![Firewall Rule](./images/firewallRule.gif)
 
 
 #### Manually Trigger Pipeline
 
 After the deployment you can go in side your resource group open the ADF auther and monitor section and trigger the pipeline as given below.
 
-![Manual Pipeline Trigger](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/public/images/manual-ADF-public-env-trigger.png)
+![Manual Pipeline Trigger](./images/manual-ADF-public-env-trigger.png)
 
 
 
@@ -57,7 +57,7 @@ After the deployment you can go in side your resource group open the ADF auther 
 
 If the trigger is deployed along with pipeline, you have to explicitly activate that trigger as shown below.
 
-![Activate Trigger](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/public/images/activateTrigger.gif)
+![Activate Trigger](./images/activateTrigger.gif)
 
 
 ## Setup and Configure Alerts for Azure Data Factory
@@ -80,7 +80,7 @@ If the trigger is deployed along with pipeline, you have to explicitly activate 
 
 
 
-If you have selected Microsoft Teams notification, then your Logic app needs to be authenticated to your "Microsoft Teams" account for it to be able to send notifications.
+If you have selected Microsoft Teams notification, then the Logic app needs to be authenticated to your "Microsoft Teams" account for it to be able to send notifications.
 
 
 
@@ -122,7 +122,7 @@ Follow these steps to add multiple emails to recieve alerts on.
 
 ![manageactions_image](./images/alertstopbar.jpg)
 
-3. Once in the manage actions pane, there will be list of all the action groups. Select you action group.
+3. Once in the manage actions pane, there will be list of all the action groups. Select your action group.
 
 4. Finally at the bottom in section **Notifications**, there is already an email created which is the default email you entered at the deployment time. Here you can add as many emails as you want to send alert notifications.
 
@@ -139,74 +139,74 @@ If you are using data share to get data from public environment into customer en
 
 2. Click **Start Sharing your data**.
 
-![data share public](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/customer/images/data%20share/1.png)
+![data share public](../customer/images/data%20share/1.png)
 
 3. Click on the share named **demo_public_share** (or any other name you have provided while deploying).
 
-![data share public](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/customer/images/data%20share/2.png)
+![data share public](../customer/images/data%20share/2.png)
 
 4. Under **Datasets** tab, click **Add datasets** and then select **Azure Blob Storage** as dataset type and click *Next*. Then select subscription, resource group and storage account deployed with current deployment and click *Next*.
 
-![data share public](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/customer/images/data%20share/3.png)
+![data share public](../customer/images/data%20share/3.png)
 
-![data share public](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/customer/images/data%20share/4.png)
+![data share public](../customer/images/data%20share/4.png)
 
-![data share public](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/customer/images/data%20share/5.png)
+![data share public](../customer/images/data%20share/5.png)
 
 5. Select **public** container and click *Next*. And now click **Add datasets**.
 
-![data share public](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/customer/images/data%20share/6.png)
+![data share public](../customer/images/data%20share/6.png)
 
-![data share public](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/customer/images/data%20share/7.png)
+![data share public](../customer/images/data%20share/7.png)
 
 6. Optionally you can enable the share subscription under *Settings* or *Share Subscriptions* tab.
 
-![data share public](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/customer/images/data%20share/7-a.png)
+![data share public](../customer/images/data%20share/7-a.png)
 
 
 7. Now under **Invitations** tab click **Add recipient**.
 
-![data share public](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/customer/images/data%20share/8.png)
+![data share public](../customer/images/data%20share/8.png)
 
 8. In the blade opened, click **Add recipient** and provide the customer side email and click **Add and send invitation**.
 
-![data share public](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/customer/images/data%20share/9.png)
+![data share public](../customer/images/data%20share/9.png)
 
-![data share public](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/customer/images/data%20share/10.png)
+![data share public](../customer/images/data%20share/10.png)
 
 
 ### Step 1 - Customer Side
 
 1. Go to Data Share Invitations.
 
-![data share customer](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/customer/images/data%20share/11.png)
+![data share customer](../customer/images/data%20share/11.png)
 
 2. Click on **demo_public_share** (or any other name you have provided while deploying at public side).
 
-![data share customer](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/customer/images/data%20share/12.png)
+![data share customer](../customer/images/data%20share/12.png)
 
 3. Agree to the terms of use and provide subscription, resource group, data share account and received share name. Click **Accept and configure**.
 
-![data share customer](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/customer/images/data%20share/13.png)
+![data share customer](../customer/images/data%20share/13.png)
 
 4. Under the *Datasets* tab, check mark the dataset and click **Map to target**.
 
-![data share customer](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/customer/images/data%20share/14.png)
+![data share customer](../customer/images/data%20share/14.png)
 
 5. Provide the storage account name (the one deployed currently) along with other options and give the container name or Path as **ReceivedCopy**. Click *Map to target*.
 
-![data share customer](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/customer/images/data%20share/15.png)
+![data share customer](../customer/images/data%20share/15.png)
 
-![data share customer](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/customer/images/data%20share/16.png)
+![data share customer](../customer/images/data%20share/16.png)
 
 6. Now under *Details* tab, click **Trigger snapshot** and then click **Full copy**.
 
-![data share customer](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/customer/images/data%20share/17.png)
+![data share customer](../customer/images/data%20share/17.png)
 
-![data share customer](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/customer/images/data%20share/18.png)
+![data share customer](../customer/images/data%20share/18.png)
 
 7. Optionally you can enable the snapshot schedule if configured at public side. For that, check mark the **Daily** schedule under *Snapshot schedule* tab and click *Enable*.
 
-![data share customer](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/customer/images/data%20share/19.png)
+![data share customer](../customer/images/data%20share/19.png)
 
-![data share customer](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/customer/images/data%20share/20.png)
+![data share customer](../customer/images/data%20share/20.png)

@@ -41,14 +41,14 @@ Resolution:
 
 ![Allow Azure services and resources to access this server](./images/allow-azure-services.png)
 
-3. Make sure that connection strings are correct by viewing the Linked service connections details mentioned below. The connection strings for the SQL database can be found by navigating to SQl DB -> Overview. Here, click on **Show database connection strings** link which is shown under 'Connection strings' heading.
+3. Make sure that connection strings are correct by viewing the Linked service connections' details mentioned below. The connection strings for the SQL database can be found by navigating to **SQl DB -> Overview**. Here, click on **Show database connection strings** link which is shown under 'Connection strings' heading.
 
 ![](./images/conn-string-sql.png)
 
 
 ### Linked Service: Incorrect credentials
 
-1. Navigate to ADF -> Manage -> linked Services
+1. Navigate to **ADF -> Manage -> linked Services**
 
 ![Go to ADF -> Manage](./images/goto-manage.png)
 
@@ -56,7 +56,7 @@ Resolution:
 
 ![Linked Services](./images/linked-services.png)
 
-3. To verify that if a linked service works click on the linked service, this will open a menu on the right side where all connection details can been and update.
+3. To verify if a linked service works, click on the linked service this will open a menu on the right side where all connection details can been and updated.
 
 ![](./images/linked-service-settings.png)
 
@@ -74,9 +74,9 @@ Resolution:
 
 ### Manually Trigger Pipeline
 
-After the deployment you can go in side your resource group open the ADF auther and monitor section and trigger the pipeline as given below.
+After the deployment you can go inside your resource group, open the ADF **Author and monitor** section and trigger the pipeline as shown below.
 
-![Manual Pipeline Trigger](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/public/images/manual-ADF-public-env-trigger.png)
+![Manual Pipeline Trigger](../datasets/covid-19/definitive-healthcare/public/images/manual-ADF-public-env-trigger.png)
 
 ![](./images/manually-trigger.png)
 
@@ -84,4 +84,4 @@ After the deployment you can go in side your resource group open the ADF auther 
 
 If the trigger is deployed along with pipeline, you have to explicitly activate that trigger as shown below.
 
-![Activate Trigger](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/public/images/activateTrigger.gif)
+![Activate Trigger](../datasets/covid-19/definitive-healthcare/public/images/activateTrigger.gif)

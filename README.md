@@ -1,4 +1,4 @@
-# Table Of Contents
+.# Table Of Contents
 
 1. Introduction
 2. Open COVID-19 datasets
@@ -74,7 +74,7 @@ For Customer Environment Alerts:-
 
 ## 8. Configure Data Share
 
-If you are using data share to get data from public environment into customer environment then you need setup data share account and a share on the public side and send a invite to the customer side where a data share account must be present in order to accept the invitation. To deploy the Data Share account on either of the two environments, you will need to select the option Yes/No to do so. If Yes is selected while deploying the public side, then the data share account and a share will be deployed in the public side while if you select Yes on the customer side, only a data share account will be deployed and the data pipeline that will be deployed will be the one without copy data activity that copies the data from the public storage account to the customer one.
+If you are using data share to get data from public environment into customer environment then you need to setup data share account along with share on the public side and send an invite to the customer side where a data share account must be present in order to accept the invitation. To deploy the Data Share account on either of the two environments, you will need to select the option Yes/No to do so. If Yes is selected while deploying the public side, then the data share account and a share will be deployed in the public side while if you select Yes on the customer side, a data share account will be deployed and the data pipeline that will be deployed will be the one without copy data activity that copies the data from the public storage account to the customer one.
 
 You can follow the instructions given in the following link to set up a Data share account and create/accept invitation:-
 
@@ -89,13 +89,13 @@ You can make use of Azure synapse notebook for quick experimentation, data prepa
 
 ## 10. Machine learning forecast model
 
-In order to run a ML model as part of your pipeline on top of curated dataset using Azure machine learning follow the instructions given below. By following the instructions you can build an ML model, make its execution part of the ADF pipeline and then use power BI for visualization. 
+In order to run a ML model as part of your pipeline, on top of curated dataset using Azure machine learning, follow the instructions given below. By following the instructions you can build an ML model, make its execution part of the ADF pipeline and then use power BI for visualization. 
 
 [On Demand Forecasting](./datasets/covid-19/newyork-times/on-demand-forecast-model/Readme.md)
 
 ## 11. Troubleshoot ADF Pipelines
 
-Pleae follow the instructions given in the link below:-
+Please follow the instructions given in the link below:-
 
 [Troubleshoot ADF Pipelines](./docs/trouebleshoot.md)
 

@@ -38,7 +38,7 @@ Click the following button to deploy all the resources.
 
 #### Manually Trigger Pipeline
 
-After the deployment you can go in side your resource group open the ADF auther and monitor section and trigger the pipeline as given below.
+After the deployment you can go in side your resource group open the ADF **Author and monitor** section and trigger the pipeline as given below.
 
 ![Manual Pipeline Trigger](./images/manual-ADF-customer-trigger.png)
 
@@ -65,25 +65,22 @@ After deployment, to access the newly created SQL server from your client IP, co
 
 3. Select **"Enable Microsoft Teams Notification"** to yes if you want to send alerts to Microsoft teams too, other select no if you want Email alerts only.
 
-4. Enter your email address in the field titled **Notification Email** to send alerts notification to that email. You cant enter more than one email at the deployment time, but you can add them later on once the deployment is completed. The method for which will be elaborated below.
+4. Enter your email address in the field titled **Notification Email** to send alerts notification to that email. You can not enter more than one email at the time of deployment, however, you can add them later once the deployment has completed. The method for which will be elaborated below.
 
 5. Click on **Purchase** once you are satisfied with all the parameters and wait for the deployment to end.
 
- Now once the deployment is complete, you will have alerts setup in data factory. There will be different features like send alerts to Microsoft Teams(via Logic App) etc depending on the options you selected at the deploy time.
+ Once the deployment is complete, you will have alerts setup in data factory. There will be different features like send alerts to Microsoft Teams(via Logic App) etc depending on the options you selected at the deploy time.
 
-
-
-If you have selected Microsoft Teams notification, then your Logic app needs to be authenticated to your "Microsoft Teams" account for it to be able to send notifications.
-
+If you have selected Microsoft Teams notification, then the Logic app needs to be authenticated to your "Microsoft Teams" account for it to be able to send notifications.
 
 
 ## Step 2: Authenticating Microsoft Teams account with Azure Logic App
 
-1. First navigate to the resource group that containes your deployment and find the resource titled **"msftTeamsConnectionAuth"**. Click on it and navigate to its **"Edit API connection"** option from the sidebar. 
+1. First navigate to the resource group that containes your deployment and find the resource titled **"msftTeamsConnectionAuth"**. Click on it and navigate to **"Edit API connection"** option from the sidebar. 
 
 ![connection_image](./images/editapiconnections.jpg)
 
-2. In the window there will be a button titled **"Authorize"**, click on it and it will open up Microsoft sign in page. Enter the teams account credentials and it will authorize you to your teams account.
+2. In the window, there will be a button titled **"Authorize"**, click on it and it will open up the Microsoft *Sign in* page. Enter the teams account credentials and it will authorize you to your teams account.
 
 ![authorize_image](./images/authorize.jpg)
 
@@ -94,7 +91,7 @@ If you have selected Microsoft Teams notification, then your Logic app needs to 
 ![designer_image](./images/logicappdesigner1.jpg)
 
 
-5. Next if the connection is successful, click on **switch** button thats in the designer panel. It will open 6 different cases, click on a case and you will see a box labeled **"Post a message (V3)"**, click on that. Next to select **"Team"** and **"Channel"**, click on the cross button at the right side of these two field to open up drop down menu for available Team and Channel in Teams account. If you cant see your "Team" and "Channel", goto step 1, there might be problem with authentication. Do this for all 6 cases.
+5. Next if the connection is successful, click on **switch** button thats in the designer panel. It will open 6 different cases, click on a case and you will see a box labeled **"Post a message (V3)"**, click on that. Next to select **"Team"** and **"Channel"**, click on the **cross** button at the right side of these two fields to open up  the drop down menu for available **Team and Channel** in Teams account. If you can't see your "Team" and "Channel", goto step 1, there might be problem with the authentication. Do this for all 6 cases.
 
 ![designer_image](./images/logicappdesigner2.jpg)
 
@@ -103,7 +100,7 @@ If you have selected Microsoft Teams notification, then your Logic app needs to 
 With this our setup of Alerts is complete.
 
 
-Next we elaborate on how to add multiple emails in the action group.
+Next, we elaborate on how to add multiple emails in the action group.
 
 ## Adding multiple emails in an action group
 
@@ -117,14 +114,14 @@ Follow these steps to add multiple emails to recieve alerts on.
 
 3. Once in the manage actions pane, there will be list of all the action groups. Select your action group.
 
-4. Finally at the bottom in section **Notifications**, there is already an email created which is the default email you entered at the time deployment. Here you can add as many emails as you want to send alert notifications.
+4. Finally at the bottom in section **Notifications**, there is already an email created which is the default email you entered at the time of deployment. Her,e you can add as many emails as you want to send the alert notifications to.
 
 ![email_image](./images/email.jpg)
 
 
 ## Configure Data Share
 
-If you are using data share to get data from public environment into customer environment then you need to follow the steps given below after you have run the public side pipeline:
+If you are using data share to get data from public environment into the customer environment then you need to follow the steps given below after you have run the public side pipeline:
 
 ### Data Share setup: Public Side
 

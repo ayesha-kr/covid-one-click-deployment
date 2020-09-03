@@ -117,21 +117,13 @@
         "serverName": "[concat(parameters('serverName'), uniquestring(resourceGroup().id))]",
         "webHookUri": "https://null",
         "dataShareAccountName": "[concat(parameters('dataShareAccountName'), uniquestring(resourceGroup().id))]",
-        "templateMainUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/ontario/",
-        "storageLinkUri": "concat(variables('templateMainUri'),'public/templates/storageAccount/')",
-        "storageTemplateUri": "[uri(variables('storageLinkUri'), 'azuredeploy.json')]",
-        "dataShareLinkUri": "concat(variables('templateMainUri'),'public/templates/dataShare/')",
-        "dataShareTemplateUri": "[uri(variables('dataShareLinkUri'), 'azuredeploy.json')]",
-        "sqlServerLinkUri": "concat(variables('templateMainUri'),'public/templates/sqlServer/')",
-        "sqlServerTemplateUri": "[uri(variables('sqlServerLinkUri'), 'azuredeploy.json')]",
-        "logicAppLinkUri": "concat(variables('templateMainUri'),'public/templates/logicApp/')",
-        "logicAppTemplateUri": "[uri(variables('logicAppLinkUri'), 'azuredeploy.json')",
-        "dataFactoryTemplateWithTeamsNotifLinkUri": "concat(variables('templateMainUri'),'public/templates/dataFactory/')",
-        "dataFactoryTemplateWithTeamsNotifUri": "[uri(variables('dataFactoryTemplateWithTeamsNotifLinkUri'), 'azuredeploy.json')]",
-        "dataFactoryTemplateWithoutTeamsNotifLinkUri": "concat(variables('templateMainUri'),'public/templates/dataFactory/')",
-        "dataFactoryTemplateWithoutTeamsNotifUri": "[uri(variables('dataFactoryTemplateWithoutTeamsNotifLinkUri), 'azuredeploy.json')]",
-        "shareLinkUri": "concat(variables('templateMainUri'),'public/templates/share/')",
-        "shareTemplateUri": "[uri(variables('shareLinkUri'), 'azuredeploy.json')]"
+        "storageTemplateUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/ontario/public/templates/storageAccount/azuredeploy.json",
+        "dataShareTemplateUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/ontario/public/templates/dataShare/azuredeploy.json",
+        "sqlServerTemplateUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/ontario/public/templates/sqlServer/azuredeploy.json",
+        "logicAppTemplateUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/ontario/public/templates/logicApp/azuredeploy.json",
+        "dataFactoryTemplateWithTeamsNotifUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/ontario/public/templates/dataFactory/azuredeploy.json",
+        "dataFactoryTemplateWithoutTeamsNotifUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/ontario/public/templates/dataFactory/azuredeploy.json",
+        "shareTemplateUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/ontario/public/templates/share/azuredeploy.json"
     },
     "resources": [
         {
@@ -141,8 +133,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[variables('storageTemplateUri')]",
-                    "contentVersion":"1.0.0.0"
+                    "uri": "[variables('storageTemplateUri')]"
                 },
                 "parameters": {
                     "storageAccountName": {

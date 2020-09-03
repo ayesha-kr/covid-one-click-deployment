@@ -14,7 +14,7 @@
 3. Storage Account Name
 4. Location
 5. Option (Yes or No) to deploy or not to deploy SQL Server, SQL Database and SQL sink within the pipeline.
-6. If selected **Yes**, please provide
+6. If selected **Yes**, please provide the following:-
 
    - SQL Server Name 
 
@@ -80,7 +80,7 @@ If the trigger is deployed along with pipeline, you have to explicitly activate 
 
 
 
-If you have selected Microsoft Teams notification, then your Logic app needs to be authenticated to your "Microsoft Teams" account for it to be able to send notifications.
+If you have selected Microsoft Teams notification, then the Logic app needs to be authenticated to your "Microsoft Teams" account for it to be able to send notifications.
 
 
 
@@ -122,7 +122,7 @@ Follow these steps to add multiple emails to recieve alerts on.
 
 ![manageactions_image](./images/alertstopbar.jpg)
 
-3. Once in the manage actions pane, there will be list of all the action groups. Select you action group.
+3. Once in the manage actions pane, there will be list of all the action groups. Select your action group.
 
 4. Finally at the bottom in section **Notifications**, there is already an email created which is the default email you entered at the deployment time. Here you can add as many emails as you want to send alert notifications.
 

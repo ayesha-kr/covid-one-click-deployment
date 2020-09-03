@@ -76,7 +76,7 @@ Resolution:
 
 After the deployment you can go inside your resource group, open the ADF **Author and monitor** section and trigger the pipeline as shown below.
 
-![Manual Pipeline Trigger](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/public/images/manual-ADF-public-env-trigger.png)
+![Manual Pipeline Trigger](../datasets/covid-19/definitive-healthcare/public/images/manual-ADF-public-env-trigger.png)
 
 ![](./images/manually-trigger.png)
 
@@ -84,4 +84,4 @@ After the deployment you can go inside your resource group, open the ADF **Autho
 
 If the trigger is deployed along with pipeline, you have to explicitly activate that trigger as shown below.
 
-![Activate Trigger](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/public/images/activateTrigger.gif)
+![Activate Trigger](../datasets/covid-19/definitive-healthcare/public/images/activateTrigger.gif)

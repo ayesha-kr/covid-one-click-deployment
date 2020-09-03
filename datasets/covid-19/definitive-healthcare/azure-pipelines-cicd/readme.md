@@ -243,9 +243,9 @@ steps:
 
 6. To create a new pipeline navigate to Pipelines -> Pipelines and click on **New Pipeline**.
 
-[Open pipeline](./images/open-pipelines.png)
+![Open pipeline](./images/open-pipelines.png)
 
-[New pipeline](./images/new-pipeline.png)
+![New pipeline](./images/new-pipeline.png)
 
 7. Setup Pipeline
 

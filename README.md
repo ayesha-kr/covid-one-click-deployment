@@ -8,8 +8,10 @@
 6. Connect Azure Boards with the Github Repo
 7. Add Metric Alerts to Azure Datafactory Pipelines
 8. Configure Data Share
-9. Machine learning forcast model
-10. Contact us
+9. Set up Synapse Notebook
+10. Machine learning forecast model
+11. Trouble shooting
+12. Contact us
 
 # One Click Deployment of Covid-19 Data Flow
 This is a guide for processing the following open Covid-19 datasets, using the Microsoft Azure data factory. 
@@ -41,7 +43,7 @@ We have provided an Azure pipelines yaml that can be used to set up CI/CD for Az
 
 You can follow the instructions given in the following link to set up CI/CD using Azure Pipelines:-
 
-[Azure Data Factory CICD](./datasets/covid-19/definitive-healthcare/AzurePipelines-CICD/readme.md)
+[Azure Data Factory CICD](./datasets/covid-19/definitive-healthcare/azure-pipelines-cicd/readme.md)
 
 ## 6. Connect Azure Boards with the Github Repo
 
@@ -64,96 +66,34 @@ Follow the instructions given in the following link to setup alerts:-
 
 For Public Environment Alerts:- 
 
-[Setup Metric Alerts_Public Environment](./datasets/covid-19/definitive-healthcare/customer/Readme.md)
+[Setup Metric Alerts Public Environment](./datasets/covid-19/definitive-healthcare/customer/Readme.md)
 
 For Customer Environment Alerts:- 
 
-[Setup Metric Alerts_Customer Environment](./datasets/covid-19/definitive-healthcare/public/Readme.md)
+[Setup Metric Alerts Customer Environment](./datasets/covid-19/definitive-healthcare/public/Readme.md)
 
 ## 8. Configure Data Share
 
-If you are using data share to get data from public environment into customer environment then you need setup data share account and a share on the public side and send a notification to the customer side where too a data share account must be present to accept the invitation. To deploy Data Share account on either of the two environments, you will need to select the option Yes/No to do so. If Yes is selected at public side, then the data share account and a share will be deployed at public side while if you select Yes on the customer side, only a data share account will be deployed and the data pipeline that will be deployed will be the one without copy data activity that copies data from public staorage to the customer one.
+If you are using data share to get data from public environment into customer environment then you need setup data share account and a share on the public side and send a notification to the customer side where too a data share account must be present to accept the invitation. To deploy Data Share account on either of the two environments, you will need to select the option Yes/No to do so. If Yes is selected at public side, then the data share account and a share will be deployed at public side while if you select Yes on the customer side, only a data share account will be deployed and the data pipeline that will be deployed will be the one without copy data activity that copies data from public storage to the customer one.
 
 You can follow the instructions given in the following link to set up Data share account and create/accept invitation and other configurations:-
 
 [Azure Data Share](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/covid-19/definitive-healthcare/customer/Readme.md)
 
+## 9. Set up Synapse Notebook
 
-## 9. Machine learning forcast model
-
-(Description to be entered here!)
-
-Follow the instructions given in the following link to setup (forcast model name):-
-
-(Dataset name or environment reference here):- 
-
-[(Add heading for the hyperlink here)](./datasets/covid-19/newyork-times/DemandForcastModel/Readme.md)
-
-## Security
-
-The deployed solution ensures the following security practices:-
-
-### SQL and Synapse
-
- 
-
-#### Advanced Threat Protection
-
-By default, it is not enabled. However, this can be enabled at anytime later on using the following link.
-https://docs.microsoft.com/en-us/azure/azure-sql/database/threat-detection-configure
+You can make use of Azure synapse notebook for quick experimentation, data preparation, visualization and validation using azure notebook. Given below is the link with instruction to set up that.
 
 
-#### Auditing for Azure SQL Database and Azure Synapse Analytics
+[Azure Synapse Notebook](./datasets/covid-19/definitive-healthcare/azure-notebook/readme.md)
 
-https://docs.microsoft.com/en-us/azure/azure-sql/database/auditing-overview
+## 10. Machine learning forecast model
 
-#### Transparent Data Encryption (TDE)
+In order to run an ML model as part of your pipeline, using Azure machine learning, on top of curated set you can follow the instructions given below. By following the instruction you can build an ML model, make its execution part of ADF pipeline and then use power BI for visualization. 
 
-TDE is enabled by default for both SQL Db and Azure Synapse.
+[On Demand Forecasting](./datasets/covid-19/newyork-times/on-demand-forecast-model/Readme.md)
 
-
-https://docs.microsoft.com/en-us/sql/relational-databases/security/encryption/transparent-data-encryption?redirectedfrom=MSDN&view=sql-server-ver15
-
- 
-
-### Firewall
-
-
-https://docs.microsoft.com/en-us/azure/azure-sql/database/firewall-configure
-
- 
-
- 
-
-### Storage
-
- 
-
-#### Encryption
-
-https://docs.microsoft.com/en-us/azure/storage/common/storage-service-encryption
-
- 
-
-#### Require secure transfer to ensure secure connections
-
-https://docs.microsoft.com/en-us/azure/storage/common/storage-require-secure-transfer
-
- 
-
-#### Grant limited access to Azure Storage resources using shared access signatures (SAS)
-
-https://docs.microsoft.com/en-us/azure/storage/common/storage-sas-overview
-
- 
-
-#### Minimum TLS version 
-
-TLS version s
-
-https://docs.microsoft.com/en-us/azure/storage/common/transport-layer-security-configure-minimum-version?toc=%2Fazure%2Fstorage%2Fblobs%2Ftoc.json&tabs=portal
-
-## Troubleshoot ADF Pipelines
+## 11. Troubleshoot ADF Pipelines
 
 Pleae follow the instructions given in the link below to:-
 
@@ -162,4 +102,3 @@ Pleae follow the instructions given in the link below to:-
 ## 10. Contact us
 
 We hope that this blog is helpful for you. In case you have any questions, feel free to reach out to us at ayesha.khaliq@emumba.com OR hamza.rashid@emumba.com.
-

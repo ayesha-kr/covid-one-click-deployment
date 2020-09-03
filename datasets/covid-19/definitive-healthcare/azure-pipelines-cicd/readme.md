@@ -27,7 +27,6 @@ To be able to replicate the resources in this data factory we need the ARM templ
 
 
 
-
 Now lets go ahead and publish the changes.
 
 ## Step 2: Add the azure pipelines files in the adf_publish repo

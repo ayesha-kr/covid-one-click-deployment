@@ -48,7 +48,7 @@ After deployment, to access the newly created SQL server from your client IP, co
 
 #### Manually Trigger Pipeline
 
-After the deployment you can go in side your resource group open the ADF auther and monitor section and trigger the pipeline as given below.
+After the deployment you can go inside your resource group open the ADF author and monitor section and trigger the pipeline as given below.
 
 ![Manual Pipeline Trigger](./images/manual-ADF-public-env-trigger.png)
 
@@ -59,11 +59,6 @@ After the deployment you can go in side your resource group open the ADF auther 
 If the trigger is deployed along with pipeline, you have to explicitly activate that trigger as shown below.
 
 ![Activate Trigger](./images/activateTrigger.gif)
-
-
-
-
-
 
 
 
@@ -79,7 +74,7 @@ If the trigger is deployed along with pipeline, you have to explicitly activate 
 
 3. Select **"Enable Microsoft Teams Notification"** to yes if you want to send alerts to Microsoft teams too, other select no if you want Email alerts only.
 
-4. Enter your email address in the field titled **Notification Email** to send alerts notification to that email. You cant enter more than one email at the deployment time, but you can add them later on once the deployment is completed. The method for which will be elaborated below.
+4. Enter your email address in the field titled **Notification Email** to send alerts notification to that email. You can't enter more than one email at the deployment time, but you can add them later on once the deployment is completed. The method for which will be elaborated below.
 
 5. Click on **Purchase** once you are satisfied with all the parameters and wait for the deployment to end.
 

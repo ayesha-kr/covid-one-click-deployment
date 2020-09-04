@@ -1,6 +1,6 @@
 # CI/CD Setup for Azure Data Factory
 
-## Step 1: Connect your Dev Azure Data factory with Github
+## Step 1: Connect your Dev Azure Data Factory with Github
  
 1. Open Azure Data Factory that you want to use with the development environment.
 
@@ -30,7 +30,7 @@ To be able to replicate the resources in this data factory we need the ARM templ
 
 Now let's go ahead and publish the changes.
 
-## Step 2: Add the azure pipelines files in the adf_publish repo
+## Step 2: Add the Azure Pipelines files in the adf_publish repo
 
 1. Clone the repo that you created above and checkout the **adf_publish** branch.
 

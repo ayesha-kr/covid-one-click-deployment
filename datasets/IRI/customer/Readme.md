@@ -26,7 +26,7 @@ After deployment, to access the newly created SQL server from your client IP, co
 
 #### Manually Trigger Pipeline
 
-After the deployment you can go in side your resource group open the ADF author and monitor section and trigger the pipeline as given below.
+After the deployment you can go in side your resource group open the ADF **Author and monitor** section and trigger the pipeline as shown below.
 
 ![Manual Pipeline Trigger 1](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/IRI/customer/images/manualtrigger-1.png)
 ![Manual Pipeline Trigger 2](https://github.com/ayesha-kr/covid-one-click-deployment/blob/master/datasets/IRI/customer/images/manualtrigger-2.png)

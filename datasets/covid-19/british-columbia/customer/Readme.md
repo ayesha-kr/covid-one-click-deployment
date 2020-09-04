@@ -38,7 +38,7 @@ Click the following button to deploy all the resources.
 
 #### Manually Trigger Pipeline
 
-After the deployment you can go in side your resource group open the ADF auther and monitor section and trigger the pipeline as given below.
+After the deployment you can go in side your resource group open the ADF **Author and Monitor** section and trigger the pipeline as shown below.
 
 ![Manual Pipeline Trigger](./images/manual-ADF-customer-trigger.png)
 
@@ -79,22 +79,22 @@ If you have selected Microsoft Teams notification, then your Logic app needs to 
 
 ## Step 2: Authenticating Microsoft Teams account with Azure Logic App
 
-1. First navigate to the resource group that containes your deployment and find the resource titled **"msftTeamsConnectionAuth"**. Click on it and navigate to its **"Edit API connection"** option from the sidebar. 
+1. Navigate to the resource group that contains your deployment and find the resource titled **"msftTeamsConnectionAuth"**. Click on it and navigate to its **"Edit API connection"** option from the sidebar. 
 
 ![connection_image](./images/editapiconnections.jpg)
 
-2. In the window there will be a button titled **"Authorize"**, click on it and it will open up Microsoft sign in page. Enter the teams account credentials and it will authorize you to your teams account.
+2. In the window there will be a button titled **"Authorize"**, click on it and it will open up the Microsoft sign in page. Enter the teams account credentials and it will authorize you to your teams account.
 
 ![authorize_image](./images/authorize.jpg)
 
 3. Click on **"Save"** to save the authorization information and navigate to resource group.
 
-4. Now click on the deployed logic app, the default name of which is **"TeamsNotify"**. Click on the option **"Logic app designer"** from the side bar under heading **"Development tools"**. This will open a visual editor, if there was problem connecting to teams then it will display connection error. In that case, refer back to step 1.
+4. Now click on the deployed logic app, the default name of which is **"TeamsNotify"**. Click on the option **"Logic app designer"** from the side bar under heading **"Development tools"**. This will open a visual editor, if there was problem connecting to teams then it will display a connection error. In that case, refer back to step 1.
 
 ![designer_image](./images/logicappdesigner1.jpg)
 
 
-5. Next if the connection is successful, click on **switch** button thats in the designer panel. It will open 6 different cases, click on a case and you will see a box labeled **"Post a message (V3)"**, click on that. Next to select **"Team"** and **"Channel"**, click on the cross button at the right side of these two field to open up drop down menu for available Team and Channel in Teams account. If you cant see your "Team" and "Channel", goto step 1, there might be problem with authentication. Do this for all 6 cases.
+5. If the connection is successful, click on **switch** button thats in the designer panel. It will open 6 different cases, click on a case and you will see a box labeled **"Post a message (V3)"**, click on that. Next to select **"Team"** and **"Channel"**, click on the **cross** button at the right side of these two fields to open up drop down menu for available Team and Channel in Teams account. If you cant see your **Team** and **Channel**, goto step 1, there might be problem with authentication. Do this for all 6 cases.
 
 ![designer_image](./images/logicappdesigner2.jpg)
 
@@ -109,7 +109,7 @@ Next we elaborate on how to add multiple emails in the action group.
 
 Follow these steps to add multiple emails to recieve alerts on.
 
-1. First type "Alerts" in the Azure search bar. Click on "Alerts" and it will take you to main alerts dashboard.
+1. First type "Alerts" in the Azure search bar. Click on "Alerts" and it will take you to the main alerts dashboard.
 
 2. In the top buttons, there is a button **"Manage actions"**, click on that.
 
@@ -117,7 +117,7 @@ Follow these steps to add multiple emails to recieve alerts on.
 
 3. Once in the manage actions pane, there will be list of all the action groups. Select your action group.
 
-4. Finally at the bottom in section **Notifications**, there is already an email created which is the default email you entered at the time deployment. Here you can add as many emails as you want to send alert notifications.
+4. Finally at the bottom in section **Notifications**, there is already an email created which is the default email you entered at the time deployment. Here, you may add as many emails as you want to send alert notifications to.
 
 ![email_image](./images/email.jpg)
 

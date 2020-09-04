@@ -1,8 +1,8 @@
 # Power BI
 
-PowerBI can help connect disparate data sets, transform and clean the data into a data model and create charts or graphs to provide visuals of the data.
+Power BI can help connect disparate data sets, transform and clean the data into a data model and create charts or graphs to provide visuals of the data.
 
-Following link provides detailed steps to configure PowerBI to get useful graphs and charts:
+The following link provides detailed steps to configure PowerBI to get useful graphs and charts:-
 
 [Azure PowerBI](../../definitive-healthcare/powerbi/README.md)
 

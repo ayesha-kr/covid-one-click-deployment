@@ -3,7 +3,7 @@
 ## Introduction
 
 
-In order to run an ML model as part of your pipeline, using Azure machine learning, on top of curated set you can follow the instructions given below. By following the instruction you can build an ML model, make its execution part of ADF pipeline and then use power BI for visualization. 
+In order to run an ML model as part of your pipeline, using Azure machine learning, on top of curated set you can follow the instructions given below. By following the instruction you can build an ML model, make its execution part of ADF pipeline and then use power BI for visualization.
 
 ## Steps
 

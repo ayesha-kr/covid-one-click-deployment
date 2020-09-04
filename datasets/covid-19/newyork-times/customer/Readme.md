@@ -38,13 +38,13 @@ Click the following button to deploy all the resources.
 
 #### Manually Trigger Pipeline
 
-After the deployment, you can go inside your resource group open the ADF **Author and Monitor** section and trigger the pipeline as given below.
+After the deployment, you can go inside your resource group open the ADF **Author and Monitor** section and trigger the pipeline as shown below:-
 
 ![Manual Pipeline Trigger](./images/manual-ADF-customer-trigger.png)
 
 
 #### Configure Firewall Rule
-After deployment, to access the newly created SQL server from your client IP, configure the firewall rule as described in the following GIF:
+After deployment, to access the newly created SQL server from your client IP, configure the firewall rule as described in the following GIF:-
 
 ![Firewall Rule](./images/firewallRule.gif)
 
@@ -103,9 +103,9 @@ If you have selected Microsoft Teams notification, then your Logic app needs to 
 With this our setup of Alerts is complete.
 
 
-Next, we elaborate on how to add multiple emails in the action group.
+Next, we elaborate on how to add multiple emails to the action group.
 
-## Adding multiple emails in an action group
+## Adding multiple emails to action group
 
 Follow these steps to add multiple emails to receive alerts on.
 

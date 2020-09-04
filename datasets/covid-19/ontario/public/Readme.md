@@ -41,14 +41,14 @@ Click the following button to deploy all the resources:-
 
 
 #### Configure Firewall Rule
-After deployment, to access the newly created SQL server from your client IP, configure the firewall rule as described in the following GIF:
+After deployment, to access the newly created SQL server from your client IP, configure the firewall rule as described in the following GIF:-
 
 ![Firewall Rule](./images/firewallRule.gif)
 
 
 #### Manually Trigger Pipeline
 
-After the deployment, you can go inside your resource group open the ADF author and monitor section and trigger the pipeline as given below.
+After the deployment, you can go inside your resource group open the ADF author and monitor section and trigger the pipeline as shown below.
 
 ![Manual Pipeline Trigger](./images/manual-ADF-public-env-trigger.png)
 

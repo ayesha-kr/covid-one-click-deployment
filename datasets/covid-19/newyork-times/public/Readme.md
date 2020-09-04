@@ -41,14 +41,14 @@ Click the following button to deploy all the resources.
 
 
 #### Configure Firewall Rule
-After deployment, to access the newly created SQL server from your client IP, configure the firewall rule as described in the following GIF:
+After deployment, to access the newly created SQL server from your client IP, configure the firewall rule as described in the following GIF:-
 
 ![Firewall Rule](./images/firewallRule.gif)
 
 
 #### Manually Trigger Pipeline
 
-After the deployment, you can go inside your resource group open the ADF author and monitor section and trigger the pipeline as given below.
+After the deployment, you can go inside your resource group open the ADF author and monitor section and trigger the pipeline as shown below:-
 
 ![Manual Pipeline Trigger](./images/manual-ADF-public-env-trigger.png)
 
@@ -56,7 +56,7 @@ After the deployment, you can go inside your resource group open the ADF author 
 
 #### Activate Trigger for the Pipeline
 
-If the trigger is deployed along with the pipeline, you have to explicitly activate that trigger as shown below.
+If the trigger is deployed along with the pipeline, you have to explicitly activate that trigger as shown below:-
 
 ![Activate Trigger](./images/activateTrigger.gif)
 
@@ -78,7 +78,7 @@ If the trigger is deployed along with the pipeline, you have to explicitly activ
 
 5. Click on **Purchase** once you are satisfied with all the parameters and wait for the deployment to end.
 
- Now once the deployment is complete, you will have alerts set up in Azure Data Factory. There will be different features like send alerts to Microsoft Teams(via Logic App) etc depending on the options you selected at the deploy time.
+ Now once the deployment is complete, you will have alerts set up in Azure Data Factory. There will be different features like send alerts to Microsoft Teams (via Logic App) etc. depending on the options you selected at deployment time.
 
 
 
@@ -112,9 +112,9 @@ If you have selected Microsoft Teams notification, then your Logic app needs to 
 With this our setup of Alerts is complete.
 
 
-Next, we elaborate on how to add multiple emails in the action group.
+Next, we elaborate on how to add multiple emails to the action group.
 
-#### Adding multiple emails in the action group
+#### Adding multiple emails to the action group
 
 Follow these steps to add multiple emails to receive alerts on.
 
@@ -133,7 +133,7 @@ Follow these steps to add multiple emails to receive alerts on.
 
 ## Configure Data Share
 
-If you are using data share to get data from the public environment into the customer environment then you need to follow the steps given below after you have run the public side pipeline:
+If you are using Data Share to get data from the public environment into the customer environment then you need to follow the steps given below after you have run the public side pipeline:-
 
 ### Step 1 - Public Side
 
@@ -177,7 +177,7 @@ If you are using data share to get data from the public environment into the cus
 ![data share public](../customer/images/data%20share/10.png)
 
 
-### Step 1 - Customer Side
+### Step 2 - Customer Side
 
 1. Go to Data Share Invitations.
 
@@ -207,7 +207,7 @@ If you are using data share to get data from the public environment into the cus
 
 ![data share customer](../customer/images/data%20share/18.png)
 
-7. Optionally you can enable the snapshot schedule, if configured at the public side. For that, checkmark the **Daily** schedule under *Snapshot schedule* tab and click *Enable*.
+7. Optionally you can enable the snapshot schedule if configured at the public side. For that, checkmark the **Daily** schedule under *Snapshot schedule* tab and click *Enable*.
 
 ![data share customer](../customer/images/data%20share/19.png)
 

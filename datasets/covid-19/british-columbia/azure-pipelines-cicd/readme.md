@@ -6,29 +6,34 @@
 
 2. Click on **Author & Monitor**, this will open the data factory UI's Home.
 
-3. Now go to **Manage** from the menu on the Left side, then click on  **Git Configuration** -> **Set Up Code Repository**. This will show a UI blade with a dropdown listing the supported repository types. As of today it only supports **Github** and **Azure DevOps Git**.
+3. Now go to **Manage** from the menu on the left side, then click on  **Git Configuration** -> **Set Up Code Repository**. 
 
-*Note: If you wish to choose a github, please create an empty repo before proceeding to the next steps.*
+![Select Repo type](../../definitive-healthcare/azure-pipelines-cicd/images/set-up-code-repo.png)
+
+This will show a UI blade with a dropdown listing the supported repository types. As of today it only supports **Github** and **Azure DevOps Git**.
+
+![Select Repo type](../../definitive-healthcare/azure-pipelines-cicd/images/repo-type.png)
+
+*Note: If you wish to choose Github, please create an empty repo before proceeding to the next steps.*
 
 4. Select the repository type of your choice and provide the required credentials.
+
 
 5. 
     - Now we have to select a repo to connect this data factory to. Select the repo from the **Git Repository Name** dropdown. (You may create a new one if using Azure DevOps Git)
     
-    - Select **master** as the collaboration branch. This branch will be used for publishing to Data factory. By default it is master. Change this if you want to deploy/publish resources from another branch.
+    - Select **master** as the collaboration branch. This branch will be used for publishing to Azure Data factory. By default it is master. Change this if you want to deploy/publish resources from another branch.
     
-    - **Root Folder** is the directory where all of the Data factory resources's json files will be copied to. Leave it as '**/**'.
-
+    - **Root Folder** is the directory where all of the Data factory resource's JSON files will be copied to. Leave it as '**/**'.
+![Select Repo type](../../definitive-healthcare/azure-pipelines-cicd/images/repo-settings.png)
 6. Click on **Apply** to save the changes.
 
-Here, we have successfully connected the Azure Data factory to a Git Repo. this has saved all of the resoucres's json files in the branch that we specified. 
+Here, we have successfully connected the Azure Data factory to a Git Repo. this has saved all of the resource's JSON files in the branch that we specified. 
 
-To be able to replicate the resources in this data factory we need the ARM templates that are generated when we publish the changes in data factory. When you click on publish, it takes the changes from the collaboration branch i.e master in this case, creates ARM templates and pushes them in the **adf_publish** branch.
-
-
+To be able to replicate the resources in this data factory we need the ARM templates that are generated when we publish the changes in the Azure Data Factory. When you click on publish, it takes the changes from the collaboration branch i.e master in this case, creates ARM templates, and pushes them in the **adf_publish** branch.
 
 
-Now lets go ahead and publish the changes.
+Now let's go ahead and publish the changes.
 
 ## Step 2: Add the azure pipelines files in the adf_publish repo
 
@@ -140,7 +145,7 @@ steps:
   path: src
 
 
-# Step 2a: Find arm json files for a deployment of blank adf in a src and copy them into the artifact staging folder
+# Step 2a: Find arm JSON files for deployment of a blank ADF in src and copy them into the artifact staging folder
 - task: CopyFiles@2  
   inputs:
     SourceFolder: '$(Pipeline.Workspace)\src\resources\arm\blank-adf'
@@ -151,7 +156,7 @@ steps:
   displayName: 'Extra ARM - Blank ADF Service'
   enabled: true
 
-# Step 2b: Find other adf files, which will deploy pipelines, datasets and so on  in a folder adf_publish and copy them into the artifact folder
+# Step 2b: Find other ADF files, which will deploy pipelines, datasets and so on  in a folder adf_publish and copy them into the artifact folder
 - task: CopyFiles@2  
   inputs:
     SourceFolder: '$(Pipeline.Workspace)\src'
@@ -208,14 +213,14 @@ steps:
   enabled: true
 ```
 
-## Step 3. Setup CI/CD in Azure DevOps for Data factory.
+## Step 3. Set up CI/CD in Azure DevOps for Data factory.
 
-1. Goto Azure portal, search and open 'Azure DevOps' -> 'My Azure DevOps Organizations'.
+1. Navigate to Azure portal, search and open 'Azure DevOps' -> 'My Azure DevOps Organizations'.
 ![Search Devops](../../definitive-healthcare/azure-pipelines-cicd/images/search-azure-devops.png)
 
 ![My orgs](../../definitive-healthcare/azure-pipelines-cicd/images/My-orgs.png)
 
-2. You can create a new organiztion choose an existing one. 
+2. You can create a new organization or choose an existing one. 
 ![Create new Org](../../definitive-healthcare/azure-pipelines-cicd/images/new-org.png)
 
 3. Create a new project, choose *Private Visibility*.
@@ -229,12 +234,12 @@ steps:
 ![open library](../../definitive-healthcare/azure-pipelines-cicd/images/open-library.png)
 
 
-5. Create a new variable group in named 'stg-variables' and create the following variables in that group:-
+5. Create a new variable group named 'stg-variables' and create the following variables in that group:-
 
 ```
-1. customer-sa-conn-string // Set the connection string for customer storage account
+1. customer-sa-conn-string // Set the connection string for the customer storage account
 2. Environment // Name of the environment
-3. ProductName // Name of the service, in this case it will be the name of the data factory
+3. ProductName // Name of the service, in this case, it will be the name of the data factory
 4. public-sa-sas-uri // SAS URI of the public storage account
 5. rest-url // URL for the CSV dataset source. (Leave value as blank if not required)
 6. sql-conn-string // Connection string for SQL Database
@@ -243,9 +248,9 @@ steps:
 
 6. To create a new pipeline navigate to Pipelines -> Pipelines and click on **New Pipeline**.
 
-![Open pipeline](../../definitive-healthcare/azure-pipelines-cicd/images/open-pipelines.png)
+[Open pipeline](../../definitive-healthcare/azure-pipelines-cicd/images/open-pipelines.png)
 
-![New pipeline](../../definitive-healthcare/azure-pipelines-cicd/images/new-pipeline.png)
+[New pipeline](../../definitive-healthcare/azure-pipelines-cicd/images/new-pipeline.png)
 
 7. Setup Pipeline
 
@@ -260,9 +265,9 @@ steps:
 
     - Select **adf_publish** branch, and provide **/cicd/azure-pipelines.yml** as the path.
 
-    This will load the Azure pipeline yaml.
+    This will load the Azure pipeline YAML.
 
-8. Update the  *azureResourceManagerConnection, subscriptionId* keys for all the tasks shown in the pipeline yaml. Todo this select **Settings** shown in the top left corner of every task, this will open a visual yaml editor. Update the aforementioed keys by selecting the relevant subcription. Make sure you do this for all the tasks.
+8. Update the  *azureResourceManagerConnection, subscriptionId* keys for all the tasks shown in the pipeline YAML. Todo this select **Settings** shown in the top left corner of every task, this will open a visual YAML editor. Update the aforementioned keys by selecting the relevant subscription. Make sure you do this for all the tasks.
 
 ![update subscription step 4](../../definitive-healthcare/azure-pipelines-cicd/images/update-subscription.png)
 ![update subscription step 5](../../definitive-healthcare/azure-pipelines-cicd/images/update-subscription-2.png)
@@ -275,7 +280,7 @@ steps:
 
 - For adding an extra stage simply repeat the **steps 4 and 5** given in the **azure-pipeline.yml** file and update the following fields:
 
--  Here, make sure that you create a new variable for each enviroment that you want to create/add in this pipeline. 
+-  Here, make sure that you create a new variable for each environment that you want to create/add in this pipeline. 
     e.g ProdProductName
     This should be created in the variables group and also the following snippet should be updated to use the newly created variable.
 
@@ -318,5 +323,5 @@ steps:
 ```
 
 
-Add the above snipped in the previously created Azure pipeline to add another environment to which the resources are deployed.
+Add the above snippet in the previously created Azure pipeline to add another environment to which the resources are deployed.
 

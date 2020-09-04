@@ -1,6 +1,6 @@
 # Consumption of this dataset using Azure notebook
 
-The following button will take you to the hosted Azure notebook project. From there you can click on 'Clone' button to clone the project into your own Azure Notebook account.
+The following button will take you to the hosted Azure notebook project. From there you can click on 'Clone' button to clone the project into your  Azure Notebook account.
 
 [![Azure Notebooks](https://notebooks.azure.com/launch.svg)](https://notebooks.azure.com/anon-cbd95a/projects/load-azure-blob-to-azure-synap)
 
@@ -9,7 +9,7 @@ The following button will take you to the hosted Azure notebook project. From th
 *URL's of the curated data are to be provided by the administrator of the Public environment.*
 
 
-Download the dataset file using the built-in capability *download from a http URL* in Pandas. Pandas has readers for various file formats:
+Download the dataset file using the built-in capability *download from an HTTP URL* in Pandas. Pandas has readers for various file formats:
 
 https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_parquet.html
 
@@ -20,7 +20,7 @@ https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_json.html
 
 ## Introduction
 
-This notebook loads the data from a CSV file into a dataframe and then writes it to Azure Synapse /Azure SQL DB.
+This notebook loads the data from a CSV file into a data frame and then writes it to Azure Synapse /Azure SQL DB.
 
 
 Note: To write the data to Azure Synapse or SQL DB, please provide the connection details in the notebook.
@@ -53,15 +53,15 @@ With an Azure Synapse Studio notebook, you can:
 
 ![Add Synapse workspace](./images/add-synapse-workspace.png)
 
-4. Fill in the required values, you may use exisng ADlS Gen 2 storage account or create a new one.
+4. Fill in the required values, you may use existing ADlS Gen 2 storage account or create a new one.
 
 ![Create Synapse Workspace](./images/create-synpase-workspace.png)
 
-5. Create SQl credentials.
+5. Create SQL credentials.
 
 ![Fill SQl credentials](./images/create-synapse-sql-credentials.png)
 
-6. Create worskpace.
+6. Create workspace.
 
 ![Review and create workspace](./images/create-synapse-final.png)
 
@@ -81,13 +81,13 @@ With an Azure Synapse Studio notebook, you can:
 
 *Note: You can not update the name of the notebook after its published. So make sure you update that before publishing the notebook.*
 
-10. To run the notebook you need to attach the Synpase notebook to a SPark SQL Pool. Go to **Manage pools -> New**
+10. To run the notebook you need to attach the Synapse notebook to a Spark SQL Pool. Go to **Manage pools -> New**
 
 ![Manage Spark Pool](./images/manage-pools.png)
 
 ![Create Spark Pool](./images/new-pool.png)
 
-11. The base version of the spark pool is enough to run this notebook, you may increase it later if needed.
+11. The base version of the Spark pool is enough to run this notebook, you may increase it later if needed.
 
 ![Synapse Notebook](./images/create-pool-basics.png)
 
@@ -99,11 +99,11 @@ With an Azure Synapse Studio notebook, you can:
 
 ![Synapse Notebook](./images/create-pool-final.png)
 
-14. Go to Develop and Open the imported notebook.
+14. Go to Develop and open the imported notebook.
 
 ![Synapse Notebook](./images/goto-develop.png)
 
-15. Attach notebook to the Spark Pool you have created above.
+15. Attach the notebook to the Spark Pool you have created above.
 
 ![Synapse Notebook](./images/attach-spark-pool.png)
 

@@ -1,11 +1,11 @@
 ## Introduction:
 
-This section describes the complete procedure to execute a machine learning pipeline as part of Azure datafactory all the way from creating the ML pipeline incorporating it to Azure datafactory and making power BI charts out it 
+This section describes the complete procedure to execute a machine learning pipeline as part of Azure Data Factory from creating the ML pipeline incorporating it to Azure Data Factory and making power BI charts out of it.
 
 ## Prerequisites
 
-This pipeline assumes that you already have the customer SQL packaged deployed via Azure one click deployment. 
-The pipeline is designed for SQL package but it can work for Synapse as well by replacing the SQL db with synapse in all the places.
+This pipeline assumes that you already have the customer SQL packaged deployed via Azure one-click deployment. 
+The pipeline is designed for the SQL package but it can work for Synapse as well by replacing the SQL DB with synapse in all the places.
 
 ## Resources Needed
   - Machine learning workspace
@@ -19,14 +19,14 @@ The pipeline is designed for SQL package but it can work for Synapse as well by 
 ### Customer package deployment
 
 Deploy the customer **SQL package** by following the instructions given [here]<hyperlink to NYtimes customer package> 
-You should have a resource group created having SQL DB and ADF inside along with the couple of other resources.
+You should have a resource group created having SQL DB and ADF inside along with a couple of other resources.
 
 ### Machine learning batch prediction model
 
-Goto azure portal and search for **Machine Learning**.
+Navigate to Azure portal and search for **Machine Learning**.
 It will open up the following template. Fill the template as given below.
 
-Provide the resource group name that has been created in the previous step. In this case it is **NewyorkTimes**
+Provide the resource group name that has been created in the previous step. In this case, it is **NewyorkTimes**
 
 ![Machine Learning workspace create](./images/ML-ws-create.png)
 
@@ -36,7 +36,7 @@ Once the workspace is created, open the resource and launch it by clicking the *
 
 
 Now go to the left panel and click **Dataset** and click on **New Datastore**.
-Provide the parameters as given below and choose the Server name / database name as the one created as part of one click deployment
+Provide the parameters as given below and choose the Server name/database name as the one created as part of one-click deployment
 
 ![NewYork Times datastore creation](./images/nytimes-datastore-creation.png)
 
@@ -57,7 +57,7 @@ Click next and from schema only chose three columns Record_Date, Cases, Deaths
 Click next and confirm.
 
 Now select **Designer (preview)** from the left panel and start designing the model
-First drag and drop the nytimes-dataset that is created earlier 
+First, drag and drop the nytimes-dataset that is created earlier 
 
 ![Machine learning pipeline drag/drop dataset](./images/designer-pipeline-drag-dataset.png)
 
@@ -80,7 +80,7 @@ Next drag the **Evaluate Model** and connect it with **Score Model**
 
 ![Pipeline designer connect with score model](./images/pipeline-design-score-eval.png)
 
-Next drag the **Export Data** module, connect it with **Score Model** and fill the values as given below. 
+Next drag the **Export Data** module, connect it with **Score Model**, and fill the values as given below. 
 
 ![Pipeline designer export data module](./images/pipeline-design-exportdata.png)
 
@@ -132,7 +132,7 @@ You can check the endpoint created from the **Pipeline** section
 
 Now create the Azure **App reg service** that is needed for azure ADF and ML workspace communication and connection. 
 
-To do this click on the **App registration** from azure portal menu.
+To do this click on the **App registration** from the Azure portal menu.
 Click on new registration and do the following settings.
 
 ![New app registeration](./images/reg-app-create.png)
@@ -147,7 +147,7 @@ Once created go to the overview and note down the Client ID value
 ![App registeration add secrets](./images/app-reg-add-secret.png)
 
 Now do the role assignment.
-Open the  machine learning work space from the resource group and set this app registration service as its owner.
+Open the machine learning workspace from the resource group and set this app registration service as its owner.
 
 ![App registeration service owner](./images/app-reg-ws-permission.png)
 
@@ -158,43 +158,43 @@ Now do the same for ADF. Open ADF from the resource group and set his app regist
 
 ### Azure Data Factory Pipeline
 
-Now open the ADF pipeline created as part of one click deployment. This should have an existing pipeline.
+Now open the ADF pipeline created as part of one-click deployment. This should have an existing pipeline.
 
 Now click on the new pipeline and pick the template option
 
 ![Pipeline template option](./images/pipeline-from-template.png)
 
-Pick local template and upload the provide zip file named `MLModelRunner.zip` provided 
+Pick a local template and upload the provide zip file named `MLModelRunner.zip` provided 
 
-You need to create  an **AzureMLService1**.
+You need to create an **AzureMLService1**.
 Go ahead click on "Create a new" 
 Fill the appropriate values for subscription and workspace for **Service principal ID** and **Service principal key** provide the Client ID and secret key that was saved above during **App reg service** creation.
 
-Click on test connection, after its successful, create it. 
+Click on test connection, after it's successful, create it. 
 
 ![Create new link service](./images/new-link-srv.png)
 
 
 Once imported you can see the pipeline. 
-This pipeline is executing the sql pipeline as pre req and then invoking the ML model.
+This pipeline is executing the SQL pipeline as prereq and then invoking the ML model.
 
 You need to make some settings here.
 
-First click on the **Data Loader Pipeline** activity and pick the value for invoke pipeline as given
+First, click on the **Data Loader Pipeline** activity and pick the value for invoke pipeline as given
 
 ![invoke pipeline setting](./images/invoke-pipeline.png)
 
-Next click on the **Drop Score Table** activity and pick the value for source data det as given
+Next, click on the **Drop Score Table** activity and pick the value for source dataset as given
 
 ![drop table setting](./images/drop-table.png)
 
 
-Then Click on the **Machine learning Model execution** and go to **settings**
+Then click on the **Machine learning Model execution** and go to **settings**
 
 
-Here pick the pipeline name and pipeline ID from the drop down populated already and give the experiment name that was provided during the ML model creation.
+Here pick the pipeline name and pipeline ID from the drop-down populated already and give the experiment name that was provided during the ML model creation.
 
-`If you dont see values in drop down click on text connection again`
+`If you don't see values in drop-down click on text connection again`
 
 ![Machine learning activity settings](./images/exec-pipeline-setting.png)
 
@@ -209,10 +209,10 @@ You can check pipeline running status from the monitor tab
 
 
 
-Once pipeline run has finished you can check this by running the query in SQL db.
+Once the pipeline run has finished you can check this by running the query in SQL db.
 
 
-A new table name `ml_score` will be created and have the results in it.
+A new table named `ml_score` will be created and have the results in it.
 
 
 ![Machine learning results store in DB](./images/ml-results-stored-in-db.png)
@@ -221,12 +221,9 @@ A new table name `ml_score` will be created and have the results in it.
 
 ## Power BI 
 
-Once the data is loaded in to SQL db power BI charts can be drawn from it.
+Once the data is loaded into SQL DB power BI charts can be drawn from it.
 For power BI set up refer to the section **Load data from a Synapse table in Power BI** given [here](../powerbi/README.md)
 
 Once connected, graphs can be created for this new data.
 
 ![Power BI result](./images/powerbi.png)
-
-
-

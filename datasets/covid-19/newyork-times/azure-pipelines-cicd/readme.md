@@ -318,5 +318,5 @@ steps:
 ```
 
 
-Add the above snipped in the previously created Azure pipeline to add another environment to which the resources are deployed.
+Add the above snippet in the previously created Azure pipeline to add another environment to which the resources are deployed.
 

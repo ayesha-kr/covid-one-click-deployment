@@ -6,11 +6,18 @@
 
 2. Click on **Author & Monitor**, this will open the data factory UI's Home.
 
-3. Now go to **Manage** from the menu on the left side, then click on  **Git Configuration** -> **Set Up Code Repository**. This will show a UI blade with a dropdown listing the supported repository types. As of today it only supports **Github** and **Azure DevOps Git**.
+3. Now go to **Manage** from the menu on the left side, then click on  **Git Configuration** -> **Set Up Code Repository**. 
+
+![Select Repo type](./images/set-up-code-repo.png)
+
+This will show a UI blade with a dropdown listing the supported repository types. As of today it only supports **Github** and **Azure DevOps Git**.
+
+![Select Repo type](./images/repo-type.png)
 
 *Note: If you wish to choose Github, please create an empty repo before proceeding to the next steps.*
 
 4. Select the repository type of your choice and provide the required credentials.
+
 
 5. 
     - Now we have to select a repo to connect this data factory to. Select the repo from the **Git Repository Name** dropdown. (You may create a new one if using Azure DevOps Git)
@@ -18,7 +25,7 @@
     - Select **master** as the collaboration branch. This branch will be used for publishing to Azure Data factory. By default it is master. Change this if you want to deploy/publish resources from another branch.
     
     - **Root Folder** is the directory where all of the Data factory resource's JSON files will be copied to. Leave it as '**/**'.
-
+![Select Repo type](./images/repo-settings.png)
 6. Click on **Apply** to save the changes.
 
 Here, we have successfully connected the Azure Data factory to a Git Repo. this has saved all of the resource's JSON files in the branch that we specified. 

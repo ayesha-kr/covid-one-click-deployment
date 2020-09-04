@@ -48,7 +48,7 @@ After deployment, to access the newly created SQL server from your client IP, co
 
 #### Manually Trigger Pipeline
 
-After the deployment you can go inside your resource group open the ADF author and monitor section and trigger the pipeline as given below.
+After the deployment you can go inside your resource group open the ADF **Author and Monitor** section and trigger the pipeline as shown below.
 
 ![Manual Pipeline Trigger](./images/manual-ADF-public-env-trigger.png)
 
@@ -78,7 +78,7 @@ If the trigger is deployed along with pipeline, you have to explicitly activate 
 
 5. Click on **Purchase** once you are satisfied with all the parameters and wait for the deployment to end.
 
- Now once the deployment is complete, you will have alerts setup in data factory. There will be different features like send alerts to Microsoft Teams(via Logic App) etc depending on the options you selected at the deploy time.
+Once the deployment is complete, you will have alerts setup in the Azure Data Factory. There will be different features like send alerts to Microsoft Teams(via Logic App) etc depending on the options you selected at the time of deployment.
 
 
 
@@ -126,14 +126,14 @@ Follow these steps to add multiple emails to recieve alerts on.
 
 3. Once in the manage actions pane, there will be list of all the action groups. Select you action group.
 
-4. Finally at the bottom in section **Notifications**, there is already an email created which is the default email you entered at the deployment time. Here you can add as many emails as you want to send alert notifications.
+4. Finally at the bottom in section **Notifications**, there is already an email created which is the default email you entered at the deployment time. Here, you may add as many emails as you want to send alert notifications to.
 
 ![email_image](./images/email.jpg)
 
 
 ## Configure Data Share
 
-If you are using data share to get data from public environment into customer environment then you need to follow the steps given below after you have run the public side pipeline:
+If you are using data share to get data from public environment into customer environment then you need to follow the steps given below after you have run the public side pipeline:-
 
 ### Step 1 - Public Side
 

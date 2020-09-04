@@ -48,7 +48,7 @@ After deployment, to access the newly created SQL server from your client IP, co
 
 #### Manually Trigger Pipeline
 
-After the deployment, you can go inside your resource group open the ADF author and monitor section and trigger the pipeline as shown below.
+After the deployment, you can go inside your resource group open the ADF author and monitor section and trigger the pipeline as shown below:-
 
 ![Manual Pipeline Trigger](./images/manual-ADF-public-env-trigger.png)
 
@@ -56,7 +56,7 @@ After the deployment, you can go inside your resource group open the ADF author 
 
 #### Activate Trigger for the Pipeline
 
-If the trigger is deployed along with the pipeline, you have to explicitly activate that trigger as shown below.
+If the trigger is deployed along with the pipeline, you have to explicitly activate that trigger as shown below:-
 
 ![Activate Trigger](./images/activateTrigger.gif)
 

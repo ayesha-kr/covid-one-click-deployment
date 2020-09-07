@@ -69,7 +69,7 @@ After deployment, to access the newly created SQL server from your client IP, co
 
 5. Click on **Purchase** once you are satisfied with all the parameters and wait for the deployment to end.
 
- Now once the deployment is complete, you will have alerts set up in Data Factory. There will be different features like send alerts to Microsoft Teams (via Logic App) etc depending on the options you selected at the deployment time.
+ Now once the deployment is complete, you will have alerts set up in Data Factory. There will be different features like send alerts to Microsoft Teams (via Logic App) etc. depending on the options you selected at deployment time.
 
 
 

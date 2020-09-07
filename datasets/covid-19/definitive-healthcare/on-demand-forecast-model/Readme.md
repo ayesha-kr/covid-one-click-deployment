@@ -9,7 +9,7 @@ To run an ML model as part of your pipeline, using Azure machine learning, on to
 
 Following is the link with detailed steps for implementing on-demand machine learning model:
 
-[On demand forecast model](../../newyork-times/on-demand-forecast-model/Readme.md)
+[On-demand forecast model](../../newyork-times/on-demand-forecast-model/Readme.md)
 
 
 ### Note: The above link documents the implementation of on-demand forecast model for a different dataset. However, you can follow the instructions to build a similar model for this dataset set as well. 

@@ -41,14 +41,14 @@ Click the following button to deploy all the resources.
 
 
 #### Configure Firewall Rule
-After deployment, to access the newly created SQL server from your client IP, configure the firewall rule as described in the following GIF:
+After deployment, to access the newly created SQL server from your client IP, configure the firewall rule as described in the following GIF:-
 
 ![Firewall Rule](./images/firewallRule.gif)
 
 
 #### Manually Trigger Pipeline
 
-After the deployment you can go inside your resource group open the ADF **Author and Monitor** section and trigger the pipeline as shown below.
+After the deployment, you can go inside your resource group open the ADF **Author and Monitor** section and trigger the pipeline as shown below:-
 
 ![Manual Pipeline Trigger](./images/manual-ADF-public-env-trigger.png)
 
@@ -56,7 +56,7 @@ After the deployment you can go inside your resource group open the ADF **Author
 
 #### Activate Trigger for the Pipeline
 
-If the trigger is deployed along with pipeline, you have to explicitly activate that trigger as shown below.
+If trigger is deployed along with the pipeline, you have to explicitly activate that trigger as shown below:-
 
 ![Activate Trigger](./images/activateTrigger.gif)
 
@@ -70,15 +70,15 @@ If the trigger is deployed along with pipeline, you have to explicitly activate 
 
 1. Open git repository for the project and click on **Deploy to Azure**, this will open up a new window.
 
-2. Select your default Azure account(the one you want to deploy Data factory into), and it will take you to parameters dashboard.
+2. Select your default Azure account (the one you want to deploy Data factory into), and it will take you to the parameters dashboard.
 
-3. Select **"Enable Microsoft Teams Notification"** to yes if you want to send alerts to Microsoft teams too, other select no if you want Email alerts only.
+3. Select yes for **"Enable Microsoft Teams Notification"** option if you want to send alerts to Microsoft teams too, otherwise select no if you want Email alerts only.
 
 4. Enter your email address in the field titled **Notification Email** to send alerts notification to that email. You can't enter more than one email at the deployment time, but you can add them later on once the deployment is completed. The method for which will be elaborated below.
 
 5. Click on **Purchase** once you are satisfied with all the parameters and wait for the deployment to end.
 
-Once the deployment is complete, you will have alerts setup in the Azure Data Factory. There will be different features like send alerts to Microsoft Teams(via Logic App) etc depending on the options you selected at the time of deployment.
+Once the deployment is complete, you will have alerts set up in the Azure Data Factory. There will be different features like send alerts to Microsoft Teams(via Logic App) etc depending on the options you selected at the time of deployment.
 
 
 
@@ -88,43 +88,43 @@ If you have selected Microsoft Teams notification, then your Logic app needs to 
 
 #### Step 2: Authenticating Microsoft Teams account with Azure Logic App
 
-1. First navigate to the resource group that containes your deployment and find the resource titled **"msftTeamsConnectionAuth"**. Click on it and navigate to its **"Edit API connection"** option from the sidebar. 
+1. First, navigate to the resource group that contains your deployment and find the resource titled **"msftTeamsConnectionAuth"**. Click on it and navigate to its **"Edit API connection"** option from the sidebar. 
 
 ![connection_image](./images/editapiconnections.jpg)
 
-2. In the window there will be a button titled **"Authorize"**, click on it and it will open up Microsoft sign in page. Enter the teams account credentials and it will authorize you to your teams account.
+2. In the window there will be a button titled **"Authorize"**, click on it and it will open up Microsoft sign-in page. Enter the team account credentials and it will authorize you to your team's account.
 
 ![authorize_image](./images/authorize.jpg)
 
 3. Click on **"Save"** to save the authorization information and navigate to resource group.
 
-4. Now click on the deployed logic app, the default name of which is **"TeamsNotify"**. Click on the option **"Logic app designer"** from the side bar under heading **"Development tools"**. This will open a visual editor, if there was problem connecting to teams then it will display connection error. In that case, refer back to step 1.
+4. Now click on the deployed logic app, the default name of which is **"TeamsNotify"**. Click on the option **"Logic app designer"** from the sidebar under heading **"Development tools"**. This will open a visual editor, if there was problem connecting to teams then it will display connection error. In that case, refer back to step 1.
 
 ![designer_image](./images/logicappdesigner1.jpg)
 
 
-5. Next if the connection is successful, click on **switch** button thats in the designer panel. It will open 6 different cases, click on a case and you will see a box labeled **"Post a message (V3)"**, click on that. Next to select **"Team"** and **"Channel"**, click on the cross button at the right side of these two field to open up drop down menu for available Team and Channel in Teams account. If you cant see your "Team" and "Channel", goto step 1, there might be problem with authentication. Do this for all 6 cases.
+5. Next if the connection is successful, click on **switch** button thats in the designer panel. It will open 6 different cases, click on a case and you will see a box labeled **"Post a message (V3)"**, click on that. Next to select **"Team"** and **"Channel"**, click on the cross button at the right side of these two fields to open up the drop-down menu for available Team and Channel in Teams account. If you cant see your "Team" and "Channel", goto step 1, there might be problem with authentication. Do this for all 6 cases.
 
 ![designer_image](./images/logicappdesigner2.jpg)
 
-6. Finally click on save and your logic app setup is completed.
+6. Finally, click on save and your logic app setup is completed.
 
 With this our setup of Alerts is complete.
 
 
-Next we elaborate on how to add multiple emails in the action group.
+Next, we elaborate on how to add multiple emails to the action group.
 
-#### Adding multiple emails in action group
+#### Adding multiple emails to action group
 
-Follow these steps to add multiple emails to recieve alerts on.
+Follow these steps to add multiple emails to receive alerts on.
 
-1. First type "Alerts" in the Azure search bar. Click on "Alerts" and it will take you to main alerts dashboard.
+1. First, type "Alerts" in the Azure search bar. Click on "Alerts" and it will take you to main alerts dashboard.
 
 2. In the top buttons, there is a button **"Manage actions"**, click on that.
 
 ![manageactions_image](./images/alertstopbar.jpg)
 
-3. Once in the manage actions pane, there will be list of all the action groups. Select you action group.
+3. Once in the manage actions pane, there will be a list of all the action groups. Select your action group.
 
 4. Finally at the bottom in section **Notifications**, there is already an email created which is the default email you entered at the deployment time. Here, you may add as many emails as you want to send alert notifications to.
 
@@ -133,7 +133,7 @@ Follow these steps to add multiple emails to recieve alerts on.
 
 ## Configure Data Share
 
-If you are using data share to get data from public environment into customer environment then you need to follow the steps given below after you have run the public side pipeline:-
+If you are using data share to get data from a public environment into the customer environment, you need to follow the steps given below after you have run the public side pipeline:-
 
 ### Step 1 - Public Side
 
@@ -191,7 +191,7 @@ If you are using data share to get data from public environment into customer en
 
 ![data share customer](../customer/images/data%20share/13.png)
 
-4. Under the *Datasets* tab, check mark the dataset and click **Map to target**.
+4. Under the *Datasets* tab, checkmark the dataset and click **Map to target**.
 
 ![data share customer](../customer/images/data%20share/14.png)
 
@@ -207,7 +207,7 @@ If you are using data share to get data from public environment into customer en
 
 ![data share customer](../customer/images/data%20share/18.png)
 
-7. Optionally you can enable the snapshot schedule if configured at public side. For that, check mark the **Daily** schedule under *Snapshot schedule* tab and click *Enable*.
+7. Optionally you can enable the snapshot schedule if configured at the public side. For that, checkmark the **Daily** schedule under *Snapshot schedule* tab and click *Enable*.
 
 ![data share customer](../customer/images/data%20share/19.png)
 

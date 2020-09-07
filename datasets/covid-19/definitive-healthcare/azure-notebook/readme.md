@@ -9,7 +9,7 @@ The following button will take you to the hosted Azure notebook project. From th
 *URL's of the curated data are to be provided by the administrator of the Public environment.*
 
 
-Download the dataset file using the built-in capability *download from an HTTP URL* in Pandas. Pandas has readers for various file formats:
+Download the dataset file using the built-in capability *download from an HTTP URL* in Pandas. Pandas has readers for various file formats:-
 
 https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.read_parquet.html
 
@@ -33,7 +33,7 @@ Note: To write the data to Azure Synapse or SQL DB, please provide the connectio
 
 A Synapse Studio (preview) notebook is a web interface for you to create files that contain live code, visualizations, and narrative text. Notebooks are a good place to validate ideas and use quick experiments to get insights from your data. Notebooks are also widely used in data preparation, data visualization, machine learning, and other Big Data scenarios.
 
-With an Azure Synapse Studio notebook, you can:
+With an Azure Synapse Studio notebook, you can:-
 
 - Get started with zero setup effort.
 - Keep data secure with built-in enterprise security features.
@@ -115,7 +115,7 @@ With an Azure Synapse Studio notebook, you can:
 
 ![Synapse Notebook](./images/run-all.png)
 
-18. After you have run the notebook, to view the data that has been loaded in to Synapse, Go to **Data** -> **Databases** -> **covid19** -> **Tables** -> **definitivehealthcare**. Right-Click on the table name i.e. **definitivehealthcare** -> **New Notebook** -> **Load to DataFrame**. This will open a new notebook pre-filled with code that loads the data from table into data frame
+18. After you have run the notebook, to view the data that has been loaded in to Synapse, Go to **Data** -> **Databases** -> **covid19** -> **Tables** -> **definitivehealthcare**. Right-Click on the table name i.e. **definitivehealthcare** -> **New Notebook** -> **Load to DataFrame**. This will open a new notebook pre-filled with code that loads the data from table into data frame:-
 
 ![Load data frame](./images/goto-data-load-frame.png)
 

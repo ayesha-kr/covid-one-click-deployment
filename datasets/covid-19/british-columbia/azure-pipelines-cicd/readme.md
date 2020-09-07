@@ -28,9 +28,9 @@ This will show a UI blade with a dropdown listing the supported repository types
 ![Select Repo type](../../definitive-healthcare/azure-pipelines-cicd/images/repo-settings.png)
 6. Click on **Apply** to save the changes.
 
-Here, we have successfully connected the Azure Data factory to a Git Repo. this has saved all of the resource's JSON files in the branch that we specified. 
+Here, we have successfully connected the Azure Data factory to a Git Repo. This has saved all of the resource's JSON files in the branch that we specified. 
 
-To be able to replicate the resources in this data factory we need the ARM templates that are generated when we publish the changes in the Azure Data Factory. When you click on publish, it takes the changes from the collaboration branch i.e master in this case, creates ARM templates, and pushes them in the **adf_publish** branch.
+To be able to replicate the resources in this data factory we need the ARM templates that are generated when we publish the changes in the Azure Data Factory. When you click on publish, it takes the changes from the collaboration branch i.e. master in this case, creates ARM templates, and pushes them in the **adf_publish** branch.
 
 
 Now let's go ahead and publish the changes.
@@ -278,7 +278,7 @@ steps:
 ## Adding another environment to the above pipeline
 
 
-- For adding an extra stage simply repeat the **steps 4 and 5** given in the **azure-pipeline.yml** file and update the following fields:
+- For adding an extra stage simply repeat the **steps 4 and 5** given in the **azure-pipeline.yml** file and update the following fields:-
 
 -  Here, make sure that you create a new variable for each environment that you want to create/add in this pipeline. 
     e.g ProdProductName
@@ -323,5 +323,5 @@ steps:
 ```
 
 
-Add the above snippet in the previously created Azure pipeline to add another environment to which the resources are deployed.
+Add the above snippet in the previously created Azure pipeline, to add another environment to which the resources are deployed.
 

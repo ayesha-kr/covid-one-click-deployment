@@ -100,11 +100,11 @@ If you have selected Microsoft Teams notification, then the Logic app needs to b
 With this our setup of Alerts is complete.
 
 
-Next, we elaborate on how to add multiple emails the the action group.
+Next, we elaborate on how to add multiple emails to the action group.
 
 ## Adding multiple emails to an action group
 
-Follow these steps to add multiple emails to receive alerts on.
+Follow these steps to add multiple emails to receive alerts on:-
 
 1. First, type "Alerts" in the Azure search bar. Click on "Alerts" and it will take you to main alerts dashboard.
 

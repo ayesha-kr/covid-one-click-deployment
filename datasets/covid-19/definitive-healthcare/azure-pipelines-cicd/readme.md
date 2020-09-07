@@ -37,7 +37,7 @@ To be able to replicate the resources in this data factory we need the ARM templ
 
 Now let's go ahead and publish the changes.
 
-## Step 2: Add the azure pipelines files in the adf_publish repo
+## Step 2: Add the Azure pipelines files in the adf_publish repo
 
 1. Clone the repo that you created above and checkout the **adf_publish** branch.
 
@@ -280,7 +280,7 @@ steps:
 ## Adding another environment to the above pipeline
 
 
-- For adding an extra stage simply repeat the **steps 4 and 5** given in the **azure-pipeline.yml** file and update the following fields:
+- For adding an extra stage, simply repeat the **steps 4 and 5** given in the **azure-pipeline.yml** file and update the following fields:
 
 -  Here, make sure that you create a new variable for each environment that you want to create/add in this pipeline. 
     e.g ProdProductName
@@ -325,5 +325,5 @@ steps:
 ```
 
 
-Add the above snippet in the previously created Azure pipeline to add another environment to which the resources are deployed.
+Add the above snippet in the previously created Azure pipeline, to add another environment to which the resources are deployed.
 

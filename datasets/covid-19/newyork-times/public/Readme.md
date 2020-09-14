@@ -169,12 +169,8 @@ If you are using Data Share to get data from the public environment into the cus
 
 ![data share public](../customer/images/data%20share/9.png)
 
-![data share pub
+![data share public](../customer/images/data%20share/10.png)
 
-6. Optionally you can enable the share subscription under *Settings* or *Share Subscriptions* tab.
-
-![data share public](../customer/images/data%20share/7-a.png)
-lic](../customer/images/data%20share/10.png)
 
 
 ### Step 2 - Customer Side

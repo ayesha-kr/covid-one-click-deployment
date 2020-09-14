@@ -190,7 +190,7 @@ If you are using data share to get data from a public environment into the custo
 
 ![data share customer](../customer/images/data%20share/14.png)
 
-5. Provide the storage account name (the one deployed currently) along with other options and give the Path as **receivedcopy**. Click *Map to target*. **Note** that the Path is the container name and cannot contain capital letters.
+5. Provide the storage account name (the one deployed currently) along with other options and give the Path as **receivedcopy**. Click *Map to target*. *Note* that the Path is the container name and cannot contain capital letters.
 
 ![data share customer](../customer/images/data%20share/15.png)
 

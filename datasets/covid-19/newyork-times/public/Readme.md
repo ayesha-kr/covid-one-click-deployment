@@ -161,20 +161,20 @@ If you are using Data Share to get data from the public environment into the cus
 
 ![data share public](../customer/images/data%20share/7.png)
 
-6. Optionally you can enable the share subscription under *Settings* or *Share Subscriptions* tab.
-
-![data share public](../customer/images/data%20share/7-a.png)
-
-
-7. Now under **Invitations** tab click **Add recipient**.
+6. Now under **Invitations** tab click **Add recipient**.
 
 ![data share public](../customer/images/data%20share/8.png)
 
-8. In the blade opened, click **Add recipient** and provide the customer side email and click **Add and send invitation**.
+7. In the blade opened, click **Add recipient** and provide the customer side email and click **Add and send invitation**.
 
 ![data share public](../customer/images/data%20share/9.png)
 
-![data share public](../customer/images/data%20share/10.png)
+![data share pub
+
+6. Optionally you can enable the share subscription under *Settings* or *Share Subscriptions* tab.
+
+![data share public](../customer/images/data%20share/7-a.png)
+lic](../customer/images/data%20share/10.png)
 
 
 ### Step 2 - Customer Side
@@ -195,7 +195,7 @@ If you are using Data Share to get data from the public environment into the cus
 
 ![data share customer](../customer/images/data%20share/14.png)
 
-5. Provide the storage account name (the one deployed currently) along with other options and give the container name or Path as **ReceivedCopy**. Click *Map to target*.
+5. Provide the storage account name (the one deployed currently) along with other options and give the Path as **receivedcopy**. Click *Map to target*. **Note** that the Path is the container name and cannot contain capital letters.
 
 ![data share customer](../customer/images/data%20share/15.png)
 

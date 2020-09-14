@@ -73,11 +73,51 @@ With an Azure Synapse Studio notebook, you can:-
 
 ![Launch Synapse studio](./images/luanch-synapse-studio.png)
 
-9. Import notebook, open the file downloaded in **Step 1**.
+9. Create New Notebook: Navigate to **Develop -> Notebooks -> Actions -> New notebook** and add the following code.
 
-![Import Synapse notebook](./images/import-notebook.png)
 
-![Import Synapse notebook](./images/select-ipynb-file.png)
+Add new code blocks (Total=6) in the notebook for each of the following code blocks:-
+
+```
+# Azure storage access info
+blob_account_name = "covidtrackingdefinitive"
+blob_container_name = "public"
+blob_relative_path = "curated/covid-19/covid_definitiveHC/latest/covid_tracking.csv"
+blob_sas_token = r"sp=r&st=2020-09-07T07:40:15Z&se=2020-09-08T15:40:15Z&spr=https&sv=2019-12-12&sr=b&sig=%2F1%2FjjFQu5x7A3TC3MLDCDoAddt%2BIUlBeKTb%2FU1yobsI%3D"
+```
+
+```
+# Allow SPARK to read from Blob remotely
+wasbs_path = 'wasbs://%s@%s.blob.core.windows.net/%s' % (blob_container_name, blob_account_name, blob_relative_path)
+spark.conf.set(
+  'fs.azure.sas.%s.%s.blob.core.windows.net' % (blob_container_name, blob_account_name),
+  blob_sas_token)
+print('Remote blob path: ' + wasbs_path)
+```
+
+```
+# SPARK read parquet, note that it won't load any data yet by now
+df = spark.read.load(wasbs_path, format="csv", inferSchema="true", header="true")
+print('Register the DataFrame as a SQL temporary view: source')
+df.createOrReplaceTempView('source')
+```
+
+```
+# Display top 10 rows
+print('Displaying top 10 rows: ')
+display(spark.sql('SELECT * FROM source LIMIT 10'))
+```
+
+```
+spark.sql("CREATE DATABASE IF NOT EXISTS Covid19")
+df.write.mode("overwrite").saveAsTable("Covid19.definitiveHealthCare")
+```
+
+```
+#View the Count of records that have been added to the table.
+display(spark.sql("SELECT count(*) FROM covid19.definitivehealthcare"))
+```
+
 
 *Note: You can not update the name of the notebook after its published. So make sure you update that before publishing the notebook.*
 

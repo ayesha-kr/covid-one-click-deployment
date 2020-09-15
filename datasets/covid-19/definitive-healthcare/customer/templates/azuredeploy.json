@@ -25,18 +25,29 @@
             "type": "string",
             "defaultValue": "Specify the sasURI of public blob storage"
         },
-        "sqlServerName": {
-            "type": "string",
-            "defaultValue": "democustomerdbserver",
-            "metadata": {
-                "description": "The name you provide will be appended with a unique sting to make it globally available. Your server name can contain only lowercase letters, numbers, and '-', but can't start or end with '-' or have more than 49 characters."
-            }
-        },
         "location": {
             "type": "string",
             "defaultValue": "eastus",
             "metadata": {
                 "description": "Deployment region for all resources."
+            }
+        },
+        "selectDataLoader": {
+            "type": "string",
+            "allowedValues": [
+                "SQL Database",
+                "Synapse Database Warehouse",
+                "Both"
+            ],
+            "metadata": {
+                "description": "Specify if you want to write the data into SQL database."
+            }
+          },
+        "sqlServerName": {
+            "type": "string",
+            "defaultValue": "democustomerdbserver",
+            "metadata": {
+                "description": "The name you provide will be appended with a unique sting to make it globally available. Your server name can contain only lowercase letters, numbers, and '-', but can't start or end with '-' or have more than 49 characters."
             }
         },
         "sqlAdministratorLogin": {
@@ -104,27 +115,12 @@
                 "description": "DW100c is the most basic/smallest data warehouse compute tier. Max value can be upto DW30000c"
             }
         },
-        "selectDataLoader": {
-            "type": "string",
-            "allowedValues": [
-                "SQL Database",
-                "Synapse Database Warehouse",
-                "Both"
-            ],
-            "metadata": {
-                "description": "Specify if you want to write the data into SQL database."
-            }
-          },
           "notificationEmail": {
             "type": "string",
             "defaultValue": "",
             "metadata": {
                 "description": "Please specify a single email address where you would like to receive ADF Pipeline alerts."
             }
-        },
-        "logicAppName": {
-            "defaultValue": "TeamsNotify",
-            "type": "String"
         },
         "enableMicrosoftTeamsNotification": {
             "defaultValue": "Yes",
@@ -134,12 +130,9 @@
             ],
             "type": "string"
         },
-        "dataShareAccountName": {
-            "type": "string",
-            "defaultValue": "demo_customer_datashare",
-            "metadata": {
-                "description": "Data share account name should have length of 1 - 77, and cannot contain <>%&:\\?/#*$^();,.|-+={}[]!~@"
-            }
+        "logicAppName": {
+            "defaultValue": "TeamsNotify",
+            "type": "String"
         },
         "deployAndUseDataShare": {
             "type": "string",
@@ -151,6 +144,13 @@
                 "description": "Please select Yes if you have enabled/deployed data share in public environment."
             },
             "defaultValue": "No"
+        },
+        "dataShareAccountName": {
+            "type": "string",
+            "defaultValue": "demo_customer_datashare",
+            "metadata": {
+                "description": "Data share account name should have length of 1 - 77, and cannot contain <>%&:\\?/#*$^();,.|-+={}[]!~@"
+            }
         }
     },
     "variables": {

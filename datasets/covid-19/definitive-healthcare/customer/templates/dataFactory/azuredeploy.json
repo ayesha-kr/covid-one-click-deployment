@@ -440,7 +440,7 @@
                     ]
                 },
                 {
-                    "name": "[concat(parameters('factoryName'), '/schema_change_test_dataset')]",
+                    "name": "[concat(parameters('dataFactoryName'), '/schema_change_test_dataset')]",
                     "type": "Microsoft.DataFactory/factories/datasets",
                     "apiVersion": "2018-06-01",
                     "properties": {

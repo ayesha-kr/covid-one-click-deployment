@@ -128,9 +128,9 @@ If you are using data share to get data from a public environment into the custo
 
 ### Pre-Requisites
 
-#### The user at sending side as well as receiving side must have 'Owner' role for the data share workflow to function successfully.
+#### The user at sending side (public) as well as receiving side (customer) must have 'Owner' role for the data share workflow to function successfully. All the tasks from beginning of the data share workflow at sending side till triggering the snapshot must be performed by the users having 'Owner' role.
 
-### Data Share setup: Public Side
+### Step 1 - Public Side
 
 1. Open the Data Share Account.
 
@@ -167,7 +167,7 @@ If you are using data share to get data from a public environment into the custo
 ![data share public](./images/data%20share/10.png)
 
 
-### Step 1 - Customer Side
+### Step 2 - Customer Side
 
 1. Go to Data Share Invitations.
 

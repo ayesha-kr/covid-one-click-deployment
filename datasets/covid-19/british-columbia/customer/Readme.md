@@ -126,6 +126,10 @@ Follow these steps to add multiple emails to receive alerts on.
 
 If you are using data share to get data from a public environment into the customer environment, you need to follow the steps given below after you have run the public side pipeline:-
 
+### Pre-Requisites
+
+#### The user at sending side as well as receiving side must have 'Owner' role for the data share workflow to function successfully.
+
 ### Data Share setup: Public Side
 
 1. Open the Data Share Account.

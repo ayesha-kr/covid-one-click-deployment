@@ -440,6 +440,35 @@
                     ]
                 },
                 {
+                    "name": "[concat(parameters('factoryName'), '/schema_change_test_dataset')]",
+                    "type": "Microsoft.DataFactory/factories/datasets",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "linkedServiceName": {
+                            "referenceName": "customerStorageLinkedService",
+                            "type": "LinkedServiceReference"
+                        },
+                        "annotations": [],
+                        "type": "DelimitedText",
+                        "typeProperties": {
+                            "location": {
+                                "type": "AzureBlobStorageLocation",
+                                "fileName": "last_covid_tracking.csv",
+                                "container": "schema-change-test"
+                            },
+                            "columnDelimiter": ",",
+                            "escapeChar": "\\",
+                            "firstRowAsHeader": true,
+                            "quoteChar": "\""
+                        },
+                        "schema": []
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/customerStorageLinkedService')]"
+                    ]
+                },
+                {
                     "condition": "[and(equals(parameters('selectDataLoader'),'Synapse Database Warehouse'),equals(parameters('deployAndUseDataShare'),'No'))]",
                     "name": "[concat(parameters('dataFactoryName'), '/LoadIntoStagingTable')]",
                     "type": "Microsoft.DataFactory/factories/dataflows",
@@ -895,7 +924,7 @@
                                 ],
                                 "policy": {
                                     "timeout": "7.00:00:00",
-                                    "retry": 0,
+                                    "retry": 3,
                                     "retryIntervalInSeconds": 30,
                                     "secureOutput": false,
                                     "secureInput": false
@@ -1144,7 +1173,7 @@
                                 ],
                                 "policy": {
                                     "timeout": "0.00:10:00",
-                                    "retry": 0,
+                                    "retry": 3,
                                     "retryIntervalInSeconds": 30,
                                     "secureOutput": false,
                                     "secureInput": false
@@ -1252,13 +1281,15 @@
                                 "inputs": [
                                     {
                                         "referenceName": "DhcInputDataset",
-                                        "type": "DatasetReference"
+                                        "type": "DatasetReference",
+                                        "parameters": {}
                                     }
                                 ],
                                 "outputs": [
                                     {
                                         "referenceName": "DhcOutputDatasetSink",
-                                        "type": "DatasetReference"
+                                        "type": "DatasetReference",
+                                        "parameters": {}
                                     }
                                 ]
                             },
@@ -1267,15 +1298,27 @@
                                 "type": "Lookup",
                                 "dependsOn": [
                                     {
-                                        "activity": "Copy latest data",
+                                        "activity": "Current Scema Has More Columns",
                                         "dependencyConditions": [
-                                            "Succeeded"
+                                            "Completed"
+                                        ]
+                                    },
+                                    {
+                                        "activity": "Current Scema Has Same Columns",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    },
+                                    {
+                                        "activity": "Current Scema Has Less Columns",
+                                        "dependencyConditions": [
+                                            "Completed"
                                         ]
                                     }
                                 ],
                                 "policy": {
                                     "timeout": "7.00:00:00",
-                                    "retry": 0,
+                                    "retry": 3,
                                     "retryIntervalInSeconds": 30,
                                     "secureOutput": false,
                                     "secureInput": false
@@ -1285,11 +1328,13 @@
                                     "source": {
                                         "type": "AzureSqlSource",
                                         "sqlReaderQuery": "IF NOT EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC') \n\nBEGIN\n\n    EXEC('CREATE SCHEMA [definitive_HC] AUTHORIZATION [dbo]');\n\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
-                                        "queryTimeout": "00:10:00"
+                                        "queryTimeout": "00:10:00",
+                                        "partitionOption": "None"
                                     },
                                     "dataset": {
                                         "referenceName": "SqlDbStagingSource",
-                                        "type": "DatasetReference"
+                                        "type": "DatasetReference",
+                                        "parameters": {}
                                     }
                                 }
                             },
@@ -1302,8 +1347,7 @@
                                         "dependencyConditions": [
                                             "Succeeded"
                                         ]
-                                    },
-                                    "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/customerStorageLinkedService')]"
+                                    }
                                 ],
                                 "policy": {
                                     "timeout": "7.00:00:00",
@@ -1320,13 +1364,10 @@
                                         "parameters": {},
                                         "datasetParameters": {
                                             "SourceCSV": {},
-                                            "SynapseStagingSink": {},
                                             "SQLStagingSink": {}
                                         }
                                     },
-                                    "staging": {
-                                        "folderPath": "receivedcopy"
-                                    },
+                                    "staging": {},
                                     "compute": {
                                         "coreCount": 8,
                                         "computeType": "General"
@@ -1342,8 +1383,7 @@
                                         "dependencyConditions": [
                                             "Succeeded"
                                         ]
-                                    },
-                                    "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/customerStorageLinkedService')]"
+                                    }
                                 ],
                                 "policy": {
                                     "timeout": "7.00:00:00",
@@ -1359,15 +1399,11 @@
                                         "type": "DataFlowReference",
                                         "parameters": {},
                                         "datasetParameters": {
-                                            "sourceSynapseStagingTable": {},
                                             "sourceSqlDbStaging": {},
-                                            "SynapseOperationalTable": {},
                                             "SqlOperationalSink": {}
                                         }
                                     },
-                                    "staging": {
-                                        "folderPath": "receivedcopy"
-                                    },
+                                    "staging": {},
                                     "compute": {
                                         "coreCount": 8,
                                         "computeType": "General"
@@ -1387,7 +1423,7 @@
                                 ],
                                 "policy": {
                                     "timeout": "7.00:00:00",
-                                    "retry": 0,
+                                    "retry": 3,
                                     "retryIntervalInSeconds": 30,
                                     "secureOutput": false,
                                     "secureInput": false
@@ -1397,12 +1433,301 @@
                                     "source": {
                                         "type": "AzureSqlSource",
                                         "sqlReaderQuery": "IF EXISTS ( SELECT  * FROM sys.schemas WHERE name = N'definitive_HC') \n\nBEGIN\nIF NOT EXISTS (select * from sys.views where name = N'dhc_view')\n    EXEC('create view definitive_HC.dhc_view as select Hospital_Type, Hq_State, Hq_Zip_Code, County_Name, State_Name, Num_Licensed_Beds, Num_Staffed_Beds, Num_Icu_Beds, Adult_Icu_Beds, Pedi_Icu_Beds, Bed_Utilization, Potential_Increase_In_Bed_Capac, Avg_Ventilator_Usage from definitive_HC.operationaldhc;')\nselect Count(*) from sys.symmetric_keys;\n\nEND\n\nELSE \n\nBEGIN\n\nselect Count(*) from sys.symmetric_keys;\n\nEND",
-                                        "queryTimeout": "00:10:00"
+                                        "queryTimeout": "00:10:00",
+                                        "partitionOption": "None"
                                     },
                                     "dataset": {
                                         "referenceName": "SqlOperationalSink",
-                                        "type": "DatasetReference"
+                                        "type": "DatasetReference",
+                                        "parameters": {}
                                     }
+                                }
+                            },
+                            {
+                                "name": "Schema Change Test",
+                                "type": "Copy",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Current Scema Has More Columns",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    },
+                                    {
+                                        "activity": "Current Scema Has Same Columns",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    },
+                                    {
+                                        "activity": "Current Scema Has Less Columns",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "DelimitedTextSource",
+                                        "storeSettings": {
+                                            "type": "AzureBlobStorageReadSettings",
+                                            "recursive": true
+                                        },
+                                        "formatSettings": {
+                                            "type": "DelimitedTextReadSettings"
+                                        }
+                                    },
+                                    "sink": {
+                                        "type": "DelimitedTextSink",
+                                        "storeSettings": {
+                                            "type": "AzureBlobStorageWriteSettings"
+                                        },
+                                        "formatSettings": {
+                                            "type": "DelimitedTextWriteSettings",
+                                            "quoteAllText": true,
+                                            "fileExtension": ".txt"
+                                        }
+                                    },
+                                    "enableStaging": false
+                                },
+                                "inputs": [
+                                    {
+                                        "referenceName": "DhcOutputDatasetSource",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "referenceName": "schema_change_test_dataset",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "Get_Metadata_Of_Last_CSV",
+                                "type": "GetMetadata",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Copy latest data",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "dataset": {
+                                        "referenceName": "schema_change_test_dataset",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    },
+                                    "fieldList": [
+                                        "structure",
+                                        "columnCount"
+                                    ],
+                                    "storeSettings": {
+                                        "type": "AzureBlobStorageReadSettings",
+                                        "recursive": true
+                                    },
+                                    "formatSettings": {
+                                        "type": "DelimitedTextReadSettings"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "Get_Metadata_Of_Current_CSV",
+                                "type": "GetMetadata",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Copy latest data",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "dataset": {
+                                        "referenceName": "DhcOutputDatasetSource",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    },
+                                    "fieldList": [
+                                        "structure",
+                                        "columnCount"
+                                    ],
+                                    "storeSettings": {
+                                        "type": "AzureBlobStorageReadSettings",
+                                        "recursive": true
+                                    },
+                                    "formatSettings": {
+                                        "type": "DelimitedTextReadSettings"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "Current Scema Has Less Columns",
+                                "type": "IfCondition",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Get_Metadata_Of_Last_CSV",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    },
+                                    {
+                                        "activity": "Get_Metadata_Of_Current_CSV",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "expression": {
+                                        "value": "@greater(activity('Get_Metadata_Of_Last_CSV').output.columnCount,activity('Get_Metadata_Of_Current_CSV').output.columnCount)",
+                                        "type": "Expression"
+                                    },
+                                    "ifFalseActivities": [
+                                        {
+                                            "name": "Wait And Continue 2",
+                                            "type": "Wait",
+                                            "dependsOn": [],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "waitTimeInSeconds": 1
+                                            }
+                                        }
+                                    ],
+                                    "ifTrueActivities": [
+                                        {
+                                            "name": "Alert Current Schema Has Less Columns",
+                                            "type": "Wait",
+                                            "dependsOn": [],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "waitTimeInSeconds": 1
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "Current Scema Has More Columns",
+                                "type": "IfCondition",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Get_Metadata_Of_Last_CSV",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    },
+                                    {
+                                        "activity": "Get_Metadata_Of_Current_CSV",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "expression": {
+                                        "value": "@greater(activity('Get_Metadata_Of_Current_CSV').output.columnCount,activity('Get_Metadata_Of_Last_CSV').output.columnCount)",
+                                        "type": "Expression"
+                                    },
+                                    "ifFalseActivities": [
+                                        {
+                                            "name": "Wait And Continue 3",
+                                            "type": "Wait",
+                                            "dependsOn": [],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "waitTimeInSeconds": 1
+                                            }
+                                        }
+                                    ],
+                                    "ifTrueActivities": [
+                                        {
+                                            "name": "Alert Current Schema Has More Columns",
+                                            "type": "Wait",
+                                            "dependsOn": [],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "waitTimeInSeconds": 1
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "Current Scema Has Same Columns",
+                                "type": "IfCondition",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Get_Metadata_Of_Last_CSV",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    },
+                                    {
+                                        "activity": "Get_Metadata_Of_Current_CSV",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "expression": {
+                                        "value": "@and(equals(activity('Get_Metadata_Of_Last_CSV').output.columnCount,activity('Get_Metadata_Of_Current_CSV').output.columnCount),not(equals(activity('Get_Metadata_Of_Last_CSV').output.structure,activity('Get_Metadata_Of_Current_CSV').output.structure)))",
+                                        "type": "Expression"
+                                    },
+                                    "ifFalseActivities": [
+                                        {
+                                            "name": "Wait And Continue 4",
+                                            "type": "Wait",
+                                            "dependsOn": [],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "waitTimeInSeconds": 1
+                                            }
+                                        }
+                                    ],
+                                    "ifTrueActivities": [
+                                        {
+                                            "name": "Alert Equal Number But Different Names Or Arrangement",
+                                            "type": "Wait",
+                                            "dependsOn": [],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "waitTimeInSeconds": 1
+                                            }
+                                        }
+                                    ]
                                 }
                             }
                         ],
@@ -1414,7 +1739,8 @@
                         "[parameters('dataFactoryName')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/dataflows/LoadIntoStagingTable_SQL')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/customerStorageLinkedService')]",
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/dataflows/LoadIntoOperationalTable_SQL')]"
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/dataflows/LoadIntoOperationalTable_SQL')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/schema_change_test_dataset')]"
                     ]
                 },
                 {
@@ -1539,6 +1865,27 @@
                                 "serviceUri": "[parameters('webHookUri')]"
                             }
                         ]
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]"
+                    ]
+                },
+                {
+                    "type": "Microsoft.Insights/actionGroups",
+                    "apiVersion": "2018-03-01",
+                    "name": "SchemaChangeNotification",
+                    "location": "Global",
+                    "properties": {
+                        "groupShortName": "schemaNotify",
+                        "enabled": true,
+                        "emailReceivers": [
+                            {
+                                "name": "notifySchemaChangeEmail",
+                                "emailAddress": "[parameters('notificationEmail')]",
+                                "useCommonAlertSchema": false
+                            }
+                        ],
+                        "webhookReceivers": []
                     },
                     "dependsOn": [
                         "[parameters('dataFactoryName')]"
@@ -1841,6 +2188,210 @@
                     "dependsOn": [
                         "[parameters('dataFactoryName')]",
                         "NotificationAlertFromADF"
+                    ]
+                },
+                {
+                    "type": "Microsoft.Insights/metricalerts",
+                    "apiVersion": "2018-03-01",
+                    "name": "SourceCurrentSchemaWithLessColumnsAlert",
+                    "location": "global",
+                    "properties": {
+                        "description": "It is to notify that the current schema of the source has less column(s) than the schema of the same source previously detected.",
+                        "severity": 0,
+                        "enabled": true,
+                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]" ],
+                        "evaluationFrequency": "PT1M",
+                        "windowSize": "PT1M",
+                        "criteria": {
+                            "allOf": [
+                                {
+                                    "threshold": 1,
+                                    "name": "35d4fcba-be7c-43ab-b89e-c107b19258ce",
+                                    "metricNamespace": "Microsoft.DataFactory/factories",
+                                    "metricName": "ActivitySucceededRuns",
+                                    "dimensions": [
+                                        {
+                                            "name": "ActivityType",
+                                            "operator": "Include",
+                                            "values": [
+                                                "Wait"
+                                            ]
+                                        },
+                                        {
+                                            "name": "Name",
+                                            "operator": "Include",
+                                            "values": [
+                                                "Alert Current Schema Has Less Columns"
+                                            ]
+                                        },
+                                        {
+                                            "name": "PipelineName",
+                                            "operator": "Include",
+                                            "values": [
+                                                "SqlDataLoader"
+                                            ]
+                                        },
+                                        {
+                                            "name": "FailureType",
+                                            "operator": "Include",
+                                            "values": [
+                                                "none"
+                                            ]
+                                        }
+                                    ],
+                                    "operator": "GreaterThanOrEqual",
+                                    "timeAggregation": "Average",
+                                    "criterionType": "StaticThresholdCriterion"
+                                }
+                            ],
+                            "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria"
+                        },
+                        "targetResourceType": "microsoft.datafactory/factories",
+                        "actions": [
+                            {
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','schemaChangeNotification')]"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "schemaChangeNotification"
+                    ]
+                },
+                {
+                    "type": "Microsoft.Insights/metricalerts",
+                    "apiVersion": "2018-03-01",
+                    "name": "SourceCurrentSchemaWithMoreColumnsAlert",
+                    "location": "global",
+                    "properties": {
+                        "description": "It is to notify that the current schema of the source has more column(s) than the schema of the same source previously detected.",
+                        "severity": 0,
+                        "enabled": true,
+                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]" ],
+                        "evaluationFrequency": "PT1M",
+                        "windowSize": "PT1M",
+                        "criteria": {
+                            "allOf": [
+                                {
+                                    "threshold": 1,
+                                    "name": "35d4fcba-be7c-43ab-b89e-c107b19258ce",
+                                    "metricNamespace": "Microsoft.DataFactory/factories",
+                                    "metricName": "ActivitySucceededRuns",
+                                    "dimensions": [
+                                        {
+                                            "name": "ActivityType",
+                                            "operator": "Include",
+                                            "values": [
+                                                "Wait"
+                                            ]
+                                        },
+                                        {
+                                            "name": "Name",
+                                            "operator": "Include",
+                                            "values": [
+                                                "Alert Current Schema Has More Columns"
+                                            ]
+                                        },
+                                        {
+                                            "name": "PipelineName",
+                                            "operator": "Include",
+                                            "values": [
+                                                "SqlDataLoader"
+                                            ]
+                                        },
+                                        {
+                                            "name": "FailureType",
+                                            "operator": "Include",
+                                            "values": [
+                                                "none"
+                                            ]
+                                        }
+                                    ],
+                                    "operator": "GreaterThanOrEqual",
+                                    "timeAggregation": "Average",
+                                    "criterionType": "StaticThresholdCriterion"
+                                }
+                            ],
+                            "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria"
+                        },
+                        "targetResourceType": "microsoft.datafactory/factories",
+                        "actions": [
+                            {
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','schemaChangeNotification')]"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "schemaChangeNotification"
+                    ]
+                },
+                {
+                    "type": "Microsoft.Insights/metricalerts",
+                    "apiVersion": "2018-03-01",
+                    "name": "SourceCurrentSchemaWithSameNumberOfColumnsButDifferentNamesOrArrangementAlert",
+                    "location": "global",
+                    "properties": {
+                        "description": "It is to notify that the current schema of the source has same number of columns as the schema of the same source previously detected but either the arrangement of the columns is different or one or more columns have different names.",
+                        "severity": 0,
+                        "enabled": true,
+                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]" ],
+                        "evaluationFrequency": "PT1M",
+                        "windowSize": "PT1M",
+                        "criteria": {
+                            "allOf": [
+                                {
+                                    "threshold": 1,
+                                    "name": "35d4fcba-be7c-43ab-b89e-c107b19258ce",
+                                    "metricNamespace": "Microsoft.DataFactory/factories",
+                                    "metricName": "ActivitySucceededRuns",
+                                    "dimensions": [
+                                        {
+                                            "name": "ActivityType",
+                                            "operator": "Include",
+                                            "values": [
+                                                "Wait"
+                                            ]
+                                        },
+                                        {
+                                            "name": "Name",
+                                            "operator": "Include",
+                                            "values": [
+                                                "Alert Equal Number But Different Names Or Arrangement"
+                                            ]
+                                        },
+                                        {
+                                            "name": "PipelineName",
+                                            "operator": "Include",
+                                            "values": [
+                                                "SqlDataLoader"
+                                            ]
+                                        },
+                                        {
+                                            "name": "FailureType",
+                                            "operator": "Include",
+                                            "values": [
+                                                "none"
+                                            ]
+                                        }
+                                    ],
+                                    "operator": "GreaterThanOrEqual",
+                                    "timeAggregation": "Average",
+                                    "criterionType": "StaticThresholdCriterion"
+                                }
+                            ],
+                            "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria"
+                        },
+                        "targetResourceType": "microsoft.datafactory/factories",
+                        "actions": [
+                            {
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','schemaChangeNotification')]"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "schemaChangeNotification"
                     ]
                 },
                 {
@@ -2616,7 +3167,7 @@
                                 "dependsOn": [],
                                 "policy": {
                                     "timeout": "7.00:00:00",
-                                    "retry": 0,
+                                    "retry": 3,
                                     "retryIntervalInSeconds": 30,
                                     "secureOutput": false,
                                     "secureInput": false
@@ -2725,7 +3276,7 @@
                                 ],
                                 "policy": {
                                     "timeout": "7.00:00:00",
-                                    "retry": 0,
+                                    "retry": 3,
                                     "retryIntervalInSeconds": 30,
                                     "secureOutput": false,
                                     "secureInput": false
@@ -3016,7 +3567,7 @@
                                 ],
                                 "policy": {
                                     "timeout": "7.00:00:00",
-                                    "retry": 0,
+                                    "retry": 3,
                                     "retryIntervalInSeconds": 30,
                                     "secureOutput": false,
                                     "secureInput": false
@@ -3302,7 +3853,7 @@
                                 ],
                                 "policy": {
                                     "timeout": "0.00:10:00",
-                                    "retry": 0,
+                                    "retry": 3,
                                     "retryIntervalInSeconds": 30,
                                     "secureOutput": false,
                                     "secureInput": false

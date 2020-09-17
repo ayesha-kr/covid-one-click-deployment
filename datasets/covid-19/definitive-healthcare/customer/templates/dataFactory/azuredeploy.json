@@ -457,7 +457,7 @@
                             "location": {
                                 "type": "AzureBlobStorageLocation",
                                 "fileName": "last_covid_tracking.csv",
-                                "container": "lastSchema"
+                                "container": "last-schema"
                             },
                             "columnDelimiter": ",",
                             "escapeChar": "\\",

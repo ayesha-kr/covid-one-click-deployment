@@ -440,10 +440,13 @@
                     ]
                 },
                 {
-                    "name": "[concat(parameters('dataFactoryName'), '/schema_change_test_dataset')]",
+                    "name": "[concat(parameters('dataFactoryName'), '/last_schema_dataset')]",
                     "type": "Microsoft.DataFactory/factories/datasets",
                     "apiVersion": "2018-06-01",
                     "properties": {
+                        "folder": {
+                            "name": "CovidDefinitiveHC/Schema"
+                        },
                         "linkedServiceName": {
                             "referenceName": "customerStorageLinkedService",
                             "type": "LinkedServiceReference"
@@ -454,7 +457,7 @@
                             "location": {
                                 "type": "AzureBlobStorageLocation",
                                 "fileName": "last_covid_tracking.csv",
-                                "container": "schema-change-test"
+                                "container": "lastSchema"
                             },
                             "columnDelimiter": ",",
                             "escapeChar": "\\",
@@ -1298,19 +1301,19 @@
                                 "type": "Lookup",
                                 "dependsOn": [
                                     {
-                                        "activity": "Current Scema Has More Columns",
+                                        "activity": "Current schema Has More Columns",
                                         "dependencyConditions": [
                                             "Completed"
                                         ]
                                     },
                                     {
-                                        "activity": "Current Scema Has Same Columns",
+                                        "activity": "Current schema Has Same Columns",
                                         "dependencyConditions": [
                                             "Completed"
                                         ]
                                     },
                                     {
-                                        "activity": "Current Scema Has Less Columns",
+                                        "activity": "Current schema Has Less Columns",
                                         "dependencyConditions": [
                                             "Completed"
                                         ]
@@ -1444,23 +1447,23 @@
                                 }
                             },
                             {
-                                "name": "Schema Change Test",
+                                "name": "Store Schema for Comparison",
                                 "type": "Copy",
                                 "dependsOn": [
                                     {
-                                        "activity": "Current Scema Has More Columns",
+                                        "activity": "Current schema Has More Columns",
                                         "dependencyConditions": [
                                             "Completed"
                                         ]
                                     },
                                     {
-                                        "activity": "Current Scema Has Same Columns",
+                                        "activity": "Current schema Has Same Columns",
                                         "dependencyConditions": [
                                             "Completed"
                                         ]
                                     },
                                     {
-                                        "activity": "Current Scema Has Less Columns",
+                                        "activity": "Current schema Has Less Columns",
                                         "dependencyConditions": [
                                             "Completed"
                                         ]
@@ -1507,7 +1510,7 @@
                                 ],
                                 "outputs": [
                                     {
-                                        "referenceName": "schema_change_test_dataset",
+                                        "referenceName": "last_schema_dataset",
                                         "type": "DatasetReference",
                                         "parameters": {}
                                     }
@@ -1534,7 +1537,7 @@
                                 "userProperties": [],
                                 "typeProperties": {
                                     "dataset": {
-                                        "referenceName": "schema_change_test_dataset",
+                                        "referenceName": "last_schema_dataset",
                                         "type": "DatasetReference",
                                         "parameters": {}
                                     },
@@ -1590,7 +1593,7 @@
                                 }
                             },
                             {
-                                "name": "Current Scema Has Less Columns",
+                                "name": "Current schema Has Less Columns",
                                 "type": "IfCondition",
                                 "dependsOn": [
                                     {
@@ -1637,7 +1640,7 @@
                                 }
                             },
                             {
-                                "name": "Current Scema Has More Columns",
+                                "name": "Current schema Has More Columns",
                                 "type": "IfCondition",
                                 "dependsOn": [
                                     {
@@ -1684,7 +1687,7 @@
                                 }
                             },
                             {
-                                "name": "Current Scema Has Same Columns",
+                                "name": "Current schema Has Same Columns",
                                 "type": "IfCondition",
                                 "dependsOn": [
                                     {
@@ -1740,7 +1743,7 @@
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/dataflows/LoadIntoStagingTable_SQL')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/customerStorageLinkedService')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/dataflows/LoadIntoOperationalTable_SQL')]",
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/schema_change_test_dataset')]"
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/last_schema_dataset')]"
                     ]
                 },
                 {

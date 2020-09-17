@@ -1301,19 +1301,19 @@
                                 "type": "Lookup",
                                 "dependsOn": [
                                     {
-                                        "activity": "Current schema Has More Columns",
+                                        "activity": "Current Schema Has More Columns",
                                         "dependencyConditions": [
                                             "Completed"
                                         ]
                                     },
                                     {
-                                        "activity": "Current schema Has Same Columns",
+                                        "activity": "Current Schema Has Same Columns",
                                         "dependencyConditions": [
                                             "Completed"
                                         ]
                                     },
                                     {
-                                        "activity": "Current schema Has Less Columns",
+                                        "activity": "Current Schema Has Less Columns",
                                         "dependencyConditions": [
                                             "Completed"
                                         ]
@@ -1451,19 +1451,19 @@
                                 "type": "Copy",
                                 "dependsOn": [
                                     {
-                                        "activity": "Current schema Has More Columns",
+                                        "activity": "Current Schema Has More Columns",
                                         "dependencyConditions": [
                                             "Completed"
                                         ]
                                     },
                                     {
-                                        "activity": "Current schema Has Same Columns",
+                                        "activity": "Current Schema Has Same Columns",
                                         "dependencyConditions": [
                                             "Completed"
                                         ]
                                     },
                                     {
-                                        "activity": "Current schema Has Less Columns",
+                                        "activity": "Current Schema Has Less Columns",
                                         "dependencyConditions": [
                                             "Completed"
                                         ]
@@ -1593,7 +1593,7 @@
                                 }
                             },
                             {
-                                "name": "Current schema Has Less Columns",
+                                "name": "Current Schema Has Less Columns",
                                 "type": "IfCondition",
                                 "dependsOn": [
                                     {
@@ -1640,7 +1640,7 @@
                                 }
                             },
                             {
-                                "name": "Current schema Has More Columns",
+                                "name": "Current Schema Has More Columns",
                                 "type": "IfCondition",
                                 "dependsOn": [
                                     {
@@ -1687,7 +1687,7 @@
                                 }
                             },
                             {
-                                "name": "Current schema Has Same Columns",
+                                "name": "Current Schema Has Same Columns",
                                 "type": "IfCondition",
                                 "dependsOn": [
                                     {

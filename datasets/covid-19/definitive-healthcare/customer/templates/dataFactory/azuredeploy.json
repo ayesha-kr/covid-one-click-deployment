@@ -472,7 +472,7 @@
                     ]
                 },
                 {
-                    "name": "[concat(parameters('factoryName'), '/retain_last_schema_dataset')]",
+                    "name": "[concat(parameters('dataFactoryName'), '/retain_last_schema_dataset')]",
                     "type": "Microsoft.DataFactory/factories/datasets",
                     "apiVersion": "2018-06-01",
                     "properties": {

@@ -440,7 +440,7 @@
                     ]
                 },
                 {
-                    "name": "[concat(parameters('dataFactoryName'), '/last_schema_dataset')]",
+                    "name": "[concat(parameters('dataFactoryName'), '/save_current_schema_dataset')]",
                     "type": "Microsoft.DataFactory/factories/datasets",
                     "apiVersion": "2018-06-01",
                     "properties": {
@@ -456,8 +456,40 @@
                         "typeProperties": {
                             "location": {
                                 "type": "AzureBlobStorageLocation",
-                                "fileName": "last_covid_tracking.csv",
-                                "container": "last-schema"
+                                "fileName": "to_detect_schema_change.csv",
+                                "container": "schemas-for-comparison"
+                            },
+                            "columnDelimiter": ",",
+                            "escapeChar": "\\",
+                            "firstRowAsHeader": true,
+                            "quoteChar": "\""
+                        },
+                        "schema": []
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/customerStorageLinkedService')]"
+                    ]
+                },
+                {
+                    "name": "[concat(parameters('factoryName'), '/retain_last_schema_dataset')]",
+                    "type": "Microsoft.DataFactory/factories/datasets",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "linkedServiceName": {
+                            "referenceName": "customerStorageLinkedService",
+                            "type": "LinkedServiceReference"
+                        },
+                        "folder": {
+                            "name": "CovidDefinitiveHC/Schema"
+                        },
+                        "annotations": [],
+                        "type": "DelimitedText",
+                        "typeProperties": {
+                            "location": {
+                                "type": "AzureBlobStorageLocation",
+                                "fileName": "to_compare_schema.csv",
+                                "container": "schemas-for-comparison"
                             },
                             "columnDelimiter": ",",
                             "escapeChar": "\\",
@@ -958,7 +990,7 @@
                                 }
                             },
                             {
-                                "name": "Store Schema for Comparison",
+                                "name": "Retain Previous Schema",
                                 "type": "Copy",
                                 "dependsOn": [
                                     {
@@ -975,6 +1007,72 @@
                                     },
                                     {
                                         "activity": "Current Schema Has Less Columns",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 0,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "DelimitedTextSource",
+                                        "storeSettings": {
+                                            "type": "AzureBlobStorageReadSettings",
+                                            "recursive": true
+                                        },
+                                        "formatSettings": {
+                                            "type": "DelimitedTextReadSettings"
+                                        }
+                                    },
+                                    "sink": {
+                                        "type": "DelimitedTextSink",
+                                        "storeSettings": {
+                                            "type": "AzureBlobStorageWriteSettings"
+                                        },
+                                        "formatSettings": {
+                                            "type": "DelimitedTextWriteSettings",
+                                            "quoteAllText": true,
+                                            "fileExtension": ".txt"
+                                        }
+                                    },
+                                    "enableStaging": false,
+                                    "translator": {
+                                        "type": "TabularTranslator",
+                                        "typeConversion": true,
+                                        "typeConversionSettings": {
+                                            "allowDataTruncation": true,
+                                            "treatBooleanAsNumber": false
+                                        }
+                                    }
+                                },
+                                "inputs": [
+                                    {
+                                        "referenceName": "save_current_schema_dataset",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "referenceName": "retain_last_schema_dataset",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "Save Current Schema",
+                                "type": "Copy",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Retain Previous Schema",
                                         "dependencyConditions": [
                                             "Completed"
                                         ]
@@ -1021,7 +1119,7 @@
                                 ],
                                 "outputs": [
                                     {
-                                        "referenceName": "last_schema_dataset",
+                                        "referenceName": "save_current_schema_dataset",
                                         "type": "DatasetReference",
                                         "parameters": {}
                                     }
@@ -1048,7 +1146,7 @@
                                 "userProperties": [],
                                 "typeProperties": {
                                     "dataset": {
-                                        "referenceName": "last_schema_dataset",
+                                        "referenceName": "save_current_schema_dataset",
                                         "type": "DatasetReference",
                                         "parameters": {}
                                     },
@@ -1255,7 +1353,8 @@
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/DhcOutputDatasetSink')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/AzureSynapseAnalyticsStagingTableSource')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/SynapseOperationalTable_sink')]",
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/last_schema_dataset')]"
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/save_current_schema_dataset')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/retain_last_schema_dataset')]"
                     ]
                 },
                 {
@@ -1747,7 +1846,7 @@
                                 }
                             },
                             {
-                                "name": "Store Schema for Comparison",
+                                "name": "Retain Previous Schema",
                                 "type": "Copy",
                                 "dependsOn": [
                                     {
@@ -1764,6 +1863,72 @@
                                     },
                                     {
                                         "activity": "Current Schema Has Less Columns",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 0,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "DelimitedTextSource",
+                                        "storeSettings": {
+                                            "type": "AzureBlobStorageReadSettings",
+                                            "recursive": true
+                                        },
+                                        "formatSettings": {
+                                            "type": "DelimitedTextReadSettings"
+                                        }
+                                    },
+                                    "sink": {
+                                        "type": "DelimitedTextSink",
+                                        "storeSettings": {
+                                            "type": "AzureBlobStorageWriteSettings"
+                                        },
+                                        "formatSettings": {
+                                            "type": "DelimitedTextWriteSettings",
+                                            "quoteAllText": true,
+                                            "fileExtension": ".txt"
+                                        }
+                                    },
+                                    "enableStaging": false,
+                                    "translator": {
+                                        "type": "TabularTranslator",
+                                        "typeConversion": true,
+                                        "typeConversionSettings": {
+                                            "allowDataTruncation": true,
+                                            "treatBooleanAsNumber": false
+                                        }
+                                    }
+                                },
+                                "inputs": [
+                                    {
+                                        "referenceName": "save_current_schema_dataset",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "referenceName": "retain_last_schema_dataset",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "Save Current Schema",
+                                "type": "Copy",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Retain Previous Schema",
                                         "dependencyConditions": [
                                             "Completed"
                                         ]
@@ -1810,7 +1975,7 @@
                                 ],
                                 "outputs": [
                                     {
-                                        "referenceName": "last_schema_dataset",
+                                        "referenceName": "save_current_schema_dataset",
                                         "type": "DatasetReference",
                                         "parameters": {}
                                     }
@@ -1837,7 +2002,7 @@
                                 "userProperties": [],
                                 "typeProperties": {
                                     "dataset": {
-                                        "referenceName": "last_schema_dataset",
+                                        "referenceName": "save_current_schema_dataset",
                                         "type": "DatasetReference",
                                         "parameters": {}
                                     },
@@ -2043,7 +2208,8 @@
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/dataflows/LoadIntoStagingTable_SQL')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/customerStorageLinkedService')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/dataflows/LoadIntoOperationalTable_SQL')]",
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/last_schema_dataset')]"
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/save_current_schema_dataset')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/retain_last_schema_dataset')]"
                     ]
                 },
                 {

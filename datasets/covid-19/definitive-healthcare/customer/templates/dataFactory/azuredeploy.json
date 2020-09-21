@@ -3066,7 +3066,10 @@
                                             "values": [
                                                 "SqlDataLoader",
                                                 "SynapseDataLoader",
-                                                "SynapseAndSqlDataLoader"
+                                                "SynapseAndSqlDataLoader",
+                                                "SqlDataLoaderWithDataShare",
+                                                "SynapseDataLoaderWithDataShare",
+                                                "SynapseAndSqlDataLoaderWithDataShare"
                                             ]
                                         },
                                         {
@@ -3136,7 +3139,10 @@
                                             "values": [
                                                 "SqlDataLoader",
                                                 "SynapseDataLoader",
-                                                "SynapseAndSqlDataLoader"
+                                                "SynapseAndSqlDataLoader",
+                                                "SqlDataLoaderWithDataShare",
+                                                "SynapseDataLoaderWithDataShare",
+                                                "SynapseAndSqlDataLoaderWithDataShare"
                                             ]
                                         },
                                         {
@@ -3206,7 +3212,10 @@
                                             "values": [
                                                 "SqlDataLoader",
                                                 "SynapseDataLoader",
-                                                "SynapseAndSqlDataLoader"
+                                                "SynapseAndSqlDataLoader",
+                                                "SqlDataLoaderWithDataShare",
+                                                "SynapseDataLoaderWithDataShare",
+                                                "SynapseAndSqlDataLoaderWithDataShare"
                                             ]
                                         },
                                         {
@@ -4006,7 +4015,26 @@
                             {
                                 "name": "Verify Schema in SQL DB",
                                 "type": "Lookup",
-                                "dependsOn": [],
+                                "dependsOn": [
+                                    {
+                                        "activity": "Current Schema Has More Columns",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    },
+                                    {
+                                        "activity": "Current Schema Has Same Columns",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    },
+                                    {
+                                        "activity": "Current Schema Has Less Columns",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
                                 "policy": {
                                     "timeout": "7.00:00:00",
                                     "retry": 3,
@@ -4137,6 +4165,345 @@
                                         "parameters": {}
                                     }
                                 }
+                            },
+                            {
+                                "name": "Retain Previous Schema",
+                                "type": "Copy",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Current Schema Has More Columns",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    },
+                                    {
+                                        "activity": "Current Schema Has Same Columns",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    },
+                                    {
+                                        "activity": "Current Schema Has Less Columns",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 0,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "DelimitedTextSource",
+                                        "storeSettings": {
+                                            "type": "AzureBlobStorageReadSettings",
+                                            "recursive": true
+                                        },
+                                        "formatSettings": {
+                                            "type": "DelimitedTextReadSettings"
+                                        }
+                                    },
+                                    "sink": {
+                                        "type": "DelimitedTextSink",
+                                        "storeSettings": {
+                                            "type": "AzureBlobStorageWriteSettings"
+                                        },
+                                        "formatSettings": {
+                                            "type": "DelimitedTextWriteSettings",
+                                            "quoteAllText": true,
+                                            "fileExtension": ".txt"
+                                        }
+                                    },
+                                    "enableStaging": false,
+                                    "translator": {
+                                        "type": "TabularTranslator",
+                                        "typeConversion": true,
+                                        "typeConversionSettings": {
+                                            "allowDataTruncation": true,
+                                            "treatBooleanAsNumber": false
+                                        }
+                                    }
+                                },
+                                "inputs": [
+                                    {
+                                        "referenceName": "save_current_schema_dataset",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "referenceName": "retain_last_schema_dataset",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "Save Current Schema",
+                                "type": "Copy",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Retain Previous Schema",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "DelimitedTextSource",
+                                        "storeSettings": {
+                                            "type": "AzureBlobStorageReadSettings",
+                                            "recursive": true
+                                        },
+                                        "formatSettings": {
+                                            "type": "DelimitedTextReadSettings"
+                                        }
+                                    },
+                                    "sink": {
+                                        "type": "DelimitedTextSink",
+                                        "storeSettings": {
+                                            "type": "AzureBlobStorageWriteSettings"
+                                        },
+                                        "formatSettings": {
+                                            "type": "DelimitedTextWriteSettings",
+                                            "quoteAllText": true,
+                                            "fileExtension": ".txt"
+                                        }
+                                    },
+                                    "enableStaging": false
+                                },
+                                "inputs": [
+                                    {
+                                        "referenceName": "source_dataset",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "referenceName": "save_current_schema_dataset",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "Get_Metadata_Of_Last_CSV",
+                                "type": "GetMetadata",
+                                "dependsOn": [],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "dataset": {
+                                        "referenceName": "save_current_schema_dataset",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    },
+                                    "fieldList": [
+                                        "structure",
+                                        "columnCount"
+                                    ],
+                                    "storeSettings": {
+                                        "type": "AzureBlobStorageReadSettings",
+                                        "recursive": true
+                                    },
+                                    "formatSettings": {
+                                        "type": "DelimitedTextReadSettings"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "Get_Metadata_Of_Current_CSV",
+                                "type": "GetMetadata",
+                                "dependsOn": [],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "dataset": {
+                                        "referenceName": "source_dataset",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    },
+                                    "fieldList": [
+                                        "structure",
+                                        "columnCount"
+                                    ],
+                                    "storeSettings": {
+                                        "type": "AzureBlobStorageReadSettings",
+                                        "recursive": true
+                                    },
+                                    "formatSettings": {
+                                        "type": "DelimitedTextReadSettings"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "Current Schema Has Less Columns",
+                                "type": "IfCondition",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Get_Metadata_Of_Last_CSV",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    },
+                                    {
+                                        "activity": "Get_Metadata_Of_Current_CSV",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "expression": {
+                                        "value": "@greater(activity('Get_Metadata_Of_Last_CSV').output.columnCount,activity('Get_Metadata_Of_Current_CSV').output.columnCount)",
+                                        "type": "Expression"
+                                    },
+                                    "ifFalseActivities": [
+                                        {
+                                            "name": "Wait And Continue 2",
+                                            "type": "Wait",
+                                            "dependsOn": [],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "waitTimeInSeconds": 1
+                                            }
+                                        }
+                                    ],
+                                    "ifTrueActivities": [
+                                        {
+                                            "name": "Alert Current Schema Has Less Columns",
+                                            "type": "Wait",
+                                            "dependsOn": [],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "waitTimeInSeconds": 1
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "Current Schema Has More Columns",
+                                "type": "IfCondition",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Get_Metadata_Of_Last_CSV",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    },
+                                    {
+                                        "activity": "Get_Metadata_Of_Current_CSV",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "expression": {
+                                        "value": "@greater(activity('Get_Metadata_Of_Current_CSV').output.columnCount,activity('Get_Metadata_Of_Last_CSV').output.columnCount)",
+                                        "type": "Expression"
+                                    },
+                                    "ifFalseActivities": [
+                                        {
+                                            "name": "Wait And Continue 3",
+                                            "type": "Wait",
+                                            "dependsOn": [],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "waitTimeInSeconds": 1
+                                            }
+                                        }
+                                    ],
+                                    "ifTrueActivities": [
+                                        {
+                                            "name": "Alert Current Schema Has More Columns",
+                                            "type": "Wait",
+                                            "dependsOn": [],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "waitTimeInSeconds": 1
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "Current Schema Has Same Columns",
+                                "type": "IfCondition",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Get_Metadata_Of_Last_CSV",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    },
+                                    {
+                                        "activity": "Get_Metadata_Of_Current_CSV",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "expression": {
+                                        "value": "@and(equals(activity('Get_Metadata_Of_Last_CSV').output.columnCount,activity('Get_Metadata_Of_Current_CSV').output.columnCount),not(equals(activity('Get_Metadata_Of_Last_CSV').output.structure,activity('Get_Metadata_Of_Current_CSV').output.structure)))",
+                                        "type": "Expression"
+                                    },
+                                    "ifFalseActivities": [
+                                        {
+                                            "name": "Wait And Continue 4",
+                                            "type": "Wait",
+                                            "dependsOn": [],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "waitTimeInSeconds": 1
+                                            }
+                                        }
+                                    ],
+                                    "ifTrueActivities": [
+                                        {
+                                            "name": "Alert Equal Number But Different Names Or Arrangement",
+                                            "type": "Wait",
+                                            "dependsOn": [],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "waitTimeInSeconds": 1
+                                            }
+                                        }
+                                    ]
+                                }
                             }
                         ],
                         "folder": {
@@ -4152,7 +4519,9 @@
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/dataflows/LoadIntoStagingTable_SQL_from_DataShare')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/customerStorageLinkedService')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/source_linkedservice')]",
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/dataflows/LoadIntoOperationalTable_SynapseWithSQL')]"
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/dataflows/LoadIntoOperationalTable_SynapseWithSQL')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/save_current_schema_dataset')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/retain_last_schema_dataset')]"
                     ]
                 },
                 {
@@ -4297,7 +4666,26 @@
                                     "secureOutput": false,
                                     "secureInput": false
                                 },
-                                "userProperties": [],
+                                "userProperties": [
+                                    {
+                                        "activity": "Current Schema Has More Columns",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    },
+                                    {
+                                        "activity": "Current Schema Has Same Columns",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    },
+                                    {
+                                        "activity": "Current Schema Has Less Columns",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
                                 "typeProperties": {
                                     "source": {
                                         "type": "SqlDWSource",
@@ -4428,6 +4816,345 @@
                                         "parameters": {}
                                     }
                                 }
+                            },
+                            {
+                                "name": "Retain Previous Schema",
+                                "type": "Copy",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Current Schema Has More Columns",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    },
+                                    {
+                                        "activity": "Current Schema Has Same Columns",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    },
+                                    {
+                                        "activity": "Current Schema Has Less Columns",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 0,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "DelimitedTextSource",
+                                        "storeSettings": {
+                                            "type": "AzureBlobStorageReadSettings",
+                                            "recursive": true
+                                        },
+                                        "formatSettings": {
+                                            "type": "DelimitedTextReadSettings"
+                                        }
+                                    },
+                                    "sink": {
+                                        "type": "DelimitedTextSink",
+                                        "storeSettings": {
+                                            "type": "AzureBlobStorageWriteSettings"
+                                        },
+                                        "formatSettings": {
+                                            "type": "DelimitedTextWriteSettings",
+                                            "quoteAllText": true,
+                                            "fileExtension": ".txt"
+                                        }
+                                    },
+                                    "enableStaging": false,
+                                    "translator": {
+                                        "type": "TabularTranslator",
+                                        "typeConversion": true,
+                                        "typeConversionSettings": {
+                                            "allowDataTruncation": true,
+                                            "treatBooleanAsNumber": false
+                                        }
+                                    }
+                                },
+                                "inputs": [
+                                    {
+                                        "referenceName": "save_current_schema_dataset",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "referenceName": "retain_last_schema_dataset",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "Save Current Schema",
+                                "type": "Copy",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Retain Previous Schema",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "DelimitedTextSource",
+                                        "storeSettings": {
+                                            "type": "AzureBlobStorageReadSettings",
+                                            "recursive": true
+                                        },
+                                        "formatSettings": {
+                                            "type": "DelimitedTextReadSettings"
+                                        }
+                                    },
+                                    "sink": {
+                                        "type": "DelimitedTextSink",
+                                        "storeSettings": {
+                                            "type": "AzureBlobStorageWriteSettings"
+                                        },
+                                        "formatSettings": {
+                                            "type": "DelimitedTextWriteSettings",
+                                            "quoteAllText": true,
+                                            "fileExtension": ".txt"
+                                        }
+                                    },
+                                    "enableStaging": false
+                                },
+                                "inputs": [
+                                    {
+                                        "referenceName": "source_dataset",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "referenceName": "save_current_schema_dataset",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "Get_Metadata_Of_Last_CSV",
+                                "type": "GetMetadata",
+                                "dependsOn": [],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "dataset": {
+                                        "referenceName": "save_current_schema_dataset",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    },
+                                    "fieldList": [
+                                        "structure",
+                                        "columnCount"
+                                    ],
+                                    "storeSettings": {
+                                        "type": "AzureBlobStorageReadSettings",
+                                        "recursive": true
+                                    },
+                                    "formatSettings": {
+                                        "type": "DelimitedTextReadSettings"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "Get_Metadata_Of_Current_CSV",
+                                "type": "GetMetadata",
+                                "dependsOn": [],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "dataset": {
+                                        "referenceName": "source_dataset",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    },
+                                    "fieldList": [
+                                        "structure",
+                                        "columnCount"
+                                    ],
+                                    "storeSettings": {
+                                        "type": "AzureBlobStorageReadSettings",
+                                        "recursive": true
+                                    },
+                                    "formatSettings": {
+                                        "type": "DelimitedTextReadSettings"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "Current Schema Has Less Columns",
+                                "type": "IfCondition",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Get_Metadata_Of_Last_CSV",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    },
+                                    {
+                                        "activity": "Get_Metadata_Of_Current_CSV",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "expression": {
+                                        "value": "@greater(activity('Get_Metadata_Of_Last_CSV').output.columnCount,activity('Get_Metadata_Of_Current_CSV').output.columnCount)",
+                                        "type": "Expression"
+                                    },
+                                    "ifFalseActivities": [
+                                        {
+                                            "name": "Wait And Continue 2",
+                                            "type": "Wait",
+                                            "dependsOn": [],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "waitTimeInSeconds": 1
+                                            }
+                                        }
+                                    ],
+                                    "ifTrueActivities": [
+                                        {
+                                            "name": "Alert Current Schema Has Less Columns",
+                                            "type": "Wait",
+                                            "dependsOn": [],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "waitTimeInSeconds": 1
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "Current Schema Has More Columns",
+                                "type": "IfCondition",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Get_Metadata_Of_Last_CSV",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    },
+                                    {
+                                        "activity": "Get_Metadata_Of_Current_CSV",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "expression": {
+                                        "value": "@greater(activity('Get_Metadata_Of_Current_CSV').output.columnCount,activity('Get_Metadata_Of_Last_CSV').output.columnCount)",
+                                        "type": "Expression"
+                                    },
+                                    "ifFalseActivities": [
+                                        {
+                                            "name": "Wait And Continue 3",
+                                            "type": "Wait",
+                                            "dependsOn": [],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "waitTimeInSeconds": 1
+                                            }
+                                        }
+                                    ],
+                                    "ifTrueActivities": [
+                                        {
+                                            "name": "Alert Current Schema Has More Columns",
+                                            "type": "Wait",
+                                            "dependsOn": [],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "waitTimeInSeconds": 1
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "Current Schema Has Same Columns",
+                                "type": "IfCondition",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Get_Metadata_Of_Last_CSV",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    },
+                                    {
+                                        "activity": "Get_Metadata_Of_Current_CSV",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "expression": {
+                                        "value": "@and(equals(activity('Get_Metadata_Of_Last_CSV').output.columnCount,activity('Get_Metadata_Of_Current_CSV').output.columnCount),not(equals(activity('Get_Metadata_Of_Last_CSV').output.structure,activity('Get_Metadata_Of_Current_CSV').output.structure)))",
+                                        "type": "Expression"
+                                    },
+                                    "ifFalseActivities": [
+                                        {
+                                            "name": "Wait And Continue 4",
+                                            "type": "Wait",
+                                            "dependsOn": [],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "waitTimeInSeconds": 1
+                                            }
+                                        }
+                                    ],
+                                    "ifTrueActivities": [
+                                        {
+                                            "name": "Alert Equal Number But Different Names Or Arrangement",
+                                            "type": "Wait",
+                                            "dependsOn": [],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "waitTimeInSeconds": 1
+                                            }
+                                        }
+                                    ]
+                                }
                             }
                         ],
                         "folder": {
@@ -4441,7 +5168,9 @@
                         "[parameters('dataFactoryName')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/source_dataset')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/AzureSynapseAnalyticsStagingTableSource')]",
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/SynapseOperationalTable_sink')]"
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/SynapseOperationalTable_sink')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/save_current_schema_dataset')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/retain_last_schema_dataset')]"
                     ]
                 },
                 {
@@ -4539,7 +5268,26 @@
                             {
                                 "name": "Verify Master Key",
                                 "type": "Lookup",
-                                "dependsOn": [],
+                                "dependsOn": [
+                                    {
+                                        "activity": "Current Schema Has More Columns",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    },
+                                    {
+                                        "activity": "Current Schema Has Same Columns",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    },
+                                    {
+                                        "activity": "Current Schema Has Less Columns",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
                                 "policy": {
                                     "timeout": "0.00:10:00",
                                     "retry": 3,
@@ -4747,6 +5495,345 @@
                                         "parameters": {}
                                     }
                                 }
+                            },
+                            {
+                                "name": "Retain Previous Schema",
+                                "type": "Copy",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Current Schema Has More Columns",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    },
+                                    {
+                                        "activity": "Current Schema Has Same Columns",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    },
+                                    {
+                                        "activity": "Current Schema Has Less Columns",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 0,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "DelimitedTextSource",
+                                        "storeSettings": {
+                                            "type": "AzureBlobStorageReadSettings",
+                                            "recursive": true
+                                        },
+                                        "formatSettings": {
+                                            "type": "DelimitedTextReadSettings"
+                                        }
+                                    },
+                                    "sink": {
+                                        "type": "DelimitedTextSink",
+                                        "storeSettings": {
+                                            "type": "AzureBlobStorageWriteSettings"
+                                        },
+                                        "formatSettings": {
+                                            "type": "DelimitedTextWriteSettings",
+                                            "quoteAllText": true,
+                                            "fileExtension": ".txt"
+                                        }
+                                    },
+                                    "enableStaging": false,
+                                    "translator": {
+                                        "type": "TabularTranslator",
+                                        "typeConversion": true,
+                                        "typeConversionSettings": {
+                                            "allowDataTruncation": true,
+                                            "treatBooleanAsNumber": false
+                                        }
+                                    }
+                                },
+                                "inputs": [
+                                    {
+                                        "referenceName": "save_current_schema_dataset",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "referenceName": "retain_last_schema_dataset",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "Save Current Schema",
+                                "type": "Copy",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Retain Previous Schema",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "DelimitedTextSource",
+                                        "storeSettings": {
+                                            "type": "AzureBlobStorageReadSettings",
+                                            "recursive": true
+                                        },
+                                        "formatSettings": {
+                                            "type": "DelimitedTextReadSettings"
+                                        }
+                                    },
+                                    "sink": {
+                                        "type": "DelimitedTextSink",
+                                        "storeSettings": {
+                                            "type": "AzureBlobStorageWriteSettings"
+                                        },
+                                        "formatSettings": {
+                                            "type": "DelimitedTextWriteSettings",
+                                            "quoteAllText": true,
+                                            "fileExtension": ".txt"
+                                        }
+                                    },
+                                    "enableStaging": false
+                                },
+                                "inputs": [
+                                    {
+                                        "referenceName": "source_dataset",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "referenceName": "save_current_schema_dataset",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "Get_Metadata_Of_Last_CSV",
+                                "type": "GetMetadata",
+                                "dependsOn": [],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "dataset": {
+                                        "referenceName": "save_current_schema_dataset",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    },
+                                    "fieldList": [
+                                        "structure",
+                                        "columnCount"
+                                    ],
+                                    "storeSettings": {
+                                        "type": "AzureBlobStorageReadSettings",
+                                        "recursive": true
+                                    },
+                                    "formatSettings": {
+                                        "type": "DelimitedTextReadSettings"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "Get_Metadata_Of_Current_CSV",
+                                "type": "GetMetadata",
+                                "dependsOn": [],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "dataset": {
+                                        "referenceName": "source_dataset",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    },
+                                    "fieldList": [
+                                        "structure",
+                                        "columnCount"
+                                    ],
+                                    "storeSettings": {
+                                        "type": "AzureBlobStorageReadSettings",
+                                        "recursive": true
+                                    },
+                                    "formatSettings": {
+                                        "type": "DelimitedTextReadSettings"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "Current Schema Has Less Columns",
+                                "type": "IfCondition",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Get_Metadata_Of_Last_CSV",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    },
+                                    {
+                                        "activity": "Get_Metadata_Of_Current_CSV",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "expression": {
+                                        "value": "@greater(activity('Get_Metadata_Of_Last_CSV').output.columnCount,activity('Get_Metadata_Of_Current_CSV').output.columnCount)",
+                                        "type": "Expression"
+                                    },
+                                    "ifFalseActivities": [
+                                        {
+                                            "name": "Wait And Continue 2",
+                                            "type": "Wait",
+                                            "dependsOn": [],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "waitTimeInSeconds": 1
+                                            }
+                                        }
+                                    ],
+                                    "ifTrueActivities": [
+                                        {
+                                            "name": "Alert Current Schema Has Less Columns",
+                                            "type": "Wait",
+                                            "dependsOn": [],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "waitTimeInSeconds": 1
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "Current Schema Has More Columns",
+                                "type": "IfCondition",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Get_Metadata_Of_Last_CSV",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    },
+                                    {
+                                        "activity": "Get_Metadata_Of_Current_CSV",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "expression": {
+                                        "value": "@greater(activity('Get_Metadata_Of_Current_CSV').output.columnCount,activity('Get_Metadata_Of_Last_CSV').output.columnCount)",
+                                        "type": "Expression"
+                                    },
+                                    "ifFalseActivities": [
+                                        {
+                                            "name": "Wait And Continue 3",
+                                            "type": "Wait",
+                                            "dependsOn": [],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "waitTimeInSeconds": 1
+                                            }
+                                        }
+                                    ],
+                                    "ifTrueActivities": [
+                                        {
+                                            "name": "Alert Current Schema Has More Columns",
+                                            "type": "Wait",
+                                            "dependsOn": [],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "waitTimeInSeconds": 1
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "Current Schema Has Same Columns",
+                                "type": "IfCondition",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Get_Metadata_Of_Last_CSV",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    },
+                                    {
+                                        "activity": "Get_Metadata_Of_Current_CSV",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "expression": {
+                                        "value": "@and(equals(activity('Get_Metadata_Of_Last_CSV').output.columnCount,activity('Get_Metadata_Of_Current_CSV').output.columnCount),not(equals(activity('Get_Metadata_Of_Last_CSV').output.structure,activity('Get_Metadata_Of_Current_CSV').output.structure)))",
+                                        "type": "Expression"
+                                    },
+                                    "ifFalseActivities": [
+                                        {
+                                            "name": "Wait And Continue 4",
+                                            "type": "Wait",
+                                            "dependsOn": [],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "waitTimeInSeconds": 1
+                                            }
+                                        }
+                                    ],
+                                    "ifTrueActivities": [
+                                        {
+                                            "name": "Alert Equal Number But Different Names Or Arrangement",
+                                            "type": "Wait",
+                                            "dependsOn": [],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "waitTimeInSeconds": 1
+                                            }
+                                        }
+                                    ]
+                                }
                             }
                         ],
                         "folder": {
@@ -4763,7 +5850,9 @@
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/dataflows/LoadIntoStagingTable_SynapseWithSQL')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/customerStorageLinkedService')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/source_linkedservice')]",
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/dataflows/LoadIntoOperationalTable_SynapseWithSQL')]"
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/dataflows/LoadIntoOperationalTable_SynapseWithSQL')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/save_current_schema_dataset')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/retain_last_schema_dataset')]"
                     ]
                 },
                 {

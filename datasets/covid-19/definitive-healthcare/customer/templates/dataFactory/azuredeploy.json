@@ -3065,7 +3065,8 @@
                                             "operator": "Include",
                                             "values": [
                                                 "SqlDataLoader",
-                                                "SynapseDataLoader"
+                                                "SynapseDataLoader",
+                                                "SynapseAndSqlDataLoader"
                                             ]
                                         },
                                         {
@@ -3134,7 +3135,8 @@
                                             "operator": "Include",
                                             "values": [
                                                 "SqlDataLoader",
-                                                "SynapseDataLoader"
+                                                "SynapseDataLoader",
+                                                "SynapseAndSqlDataLoader"
                                             ]
                                         },
                                         {
@@ -3203,7 +3205,8 @@
                                             "operator": "Include",
                                             "values": [
                                                 "SqlDataLoader",
-                                                "SynapseDataLoader"
+                                                "SynapseDataLoader",
+                                                "SynapseAndSqlDataLoader"
                                             ]
                                         },
                                         {

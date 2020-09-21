@@ -2707,27 +2707,6 @@
                     ]
                 },
                 {
-                    "type": "Microsoft.Insights/actionGroups",
-                    "apiVersion": "2018-03-01",
-                    "name": "SchemaChangeNotification",
-                    "location": "Global",
-                    "properties": {
-                        "groupShortName": "schemaNotify",
-                        "enabled": true,
-                        "emailReceivers": [
-                            {
-                                "name": "notifySchemaChangeEmail",
-                                "emailAddress": "[parameters('notificationEmail')]",
-                                "useCommonAlertSchema": false
-                            }
-                        ],
-                        "webhookReceivers": []
-                    },
-                    "dependsOn": [
-                        "[parameters('dataFactoryName')]"
-                    ]
-                },
-                {
                     "condition": "[equals(parameters('selectDataLoader'),'Synapse Database Warehouse')]",
                     "name": "synapseFailedPipelineAlertConfig",
                     "type": "Microsoft.Insights/metricAlerts",
@@ -3090,13 +3069,13 @@
                         "targetResourceType": "microsoft.datafactory/factories",
                         "actions": [
                             {
-                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','schemaChangeNotification')]"
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationAlertFromADF')]"
                             }
                         ]
                     },
                     "dependsOn": [
                         "[parameters('dataFactoryName')]",
-                        "schemaChangeNotification"
+                        "NotificationAlertFromADF"
                     ]
                 },
                 {
@@ -3163,13 +3142,13 @@
                         "targetResourceType": "microsoft.datafactory/factories",
                         "actions": [
                             {
-                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','schemaChangeNotification')]"
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationAlertFromADF')]"
                             }
                         ]
                     },
                     "dependsOn": [
                         "[parameters('dataFactoryName')]",
-                        "schemaChangeNotification"
+                        "NotificationAlertFromADF"
                     ]
                 },
                 {
@@ -3236,13 +3215,13 @@
                         "targetResourceType": "microsoft.datafactory/factories",
                         "actions": [
                             {
-                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','schemaChangeNotification')]"
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationAlertFromADF')]"
                             }
                         ]
                     },
                     "dependsOn": [
                         "[parameters('dataFactoryName')]",
-                        "schemaChangeNotification"
+                        "NotificationAlertFromADF"
                     ]
                 },
                 {

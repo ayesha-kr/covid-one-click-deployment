@@ -445,7 +445,7 @@
                     "apiVersion": "2018-06-01",
                     "properties": {
                         "folder": {
-                            "name": "CovidDefinitiveHC/Schema"
+                            "name": "CovidOntario/Schema"
                         },
                         "linkedServiceName": {
                             "referenceName": "customerStorageLinkedService",
@@ -481,7 +481,7 @@
                             "type": "LinkedServiceReference"
                         },
                         "folder": {
-                            "name": "CovidDefinitiveHC/Schema"
+                            "name": "CovidOntario/Schema"
                         },
                         "annotations": [],
                         "type": "DelimitedText",

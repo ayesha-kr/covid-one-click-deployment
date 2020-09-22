@@ -117,13 +117,13 @@
         "serverName": "[concat(parameters('serverName'), uniquestring(resourceGroup().id))]",
         "webHookUri": "https://null",
         "dataShareAccountName": "[concat(parameters('dataShareAccountName'), uniquestring(resourceGroup().id))]",
-        "storageTemplateUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/public/templates/storageAccount/azuredeploy.json",
-        "dataShareTemplateUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/public/templates/dataShare/azuredeploy.json",
-        "sqlServerTemplateUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/public/templates/sqlServer/azuredeploy.json",
-        "logicAppTemplateUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/public/templates/logicApp/azuredeploy.json",
-        "dataFactoryTemplateWithTeamsNotifUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/public/templates/dataFactory/azuredeploy.json",
-        "dataFactoryTemplateWithoutTeamsNotifUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/public/templates/dataFactory/azuredeploy.json",
-        "shareTemplateUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/public/templates/share/azuredeploy.json"
+        "storageTemplateUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/osama-dev/datasets/covid-19/definitive-healthcare/public/templates/storageAccount/azuredeploy.json",
+        "dataShareTemplateUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/osama-dev/datasets/covid-19/definitive-healthcare/public/templates/dataShare/azuredeploy.json",
+        "sqlServerTemplateUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/osama-dev/datasets/covid-19/definitive-healthcare/public/templates/sqlServer/azuredeploy.json",
+        "logicAppTemplateUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/osama-dev/datasets/covid-19/definitive-healthcare/public/templates/logicApp/azuredeploy.json",
+        "dataFactoryTemplateWithTeamsNotifUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/osama-dev/datasets/covid-19/definitive-healthcare/public/templates/dataFactory/azuredeploy.json",
+        "dataFactoryTemplateWithoutTeamsNotifUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/osama-dev/datasets/covid-19/definitive-healthcare/public/templates/dataFactory/azuredeploy.json",
+        "shareTemplateUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/osama-dev/datasets/covid-19/definitive-healthcare/public/templates/share/azuredeploy.json"
 
     },
     "resources": [

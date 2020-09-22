@@ -466,7 +466,7 @@
                     },
                     "dependsOn": [
                         "[parameters('factoryName')]",
-                        "[concat(variables('factoryId'), '/linkedServices/covid_tracking_newyorktimes_sql_linkedservice')]"
+                        "[concat(variables('factoryId'), '/linkedServices/covid_tracking_newyorktimes_blobstorage_linkedservice')]"
                     ]
                 },
                 {
@@ -498,7 +498,7 @@
                     },
                     "dependsOn": [
                         "[parameters('factoryName')]",
-                        "[concat(variables('factoryId'), '/linkedServices/covid_tracking_newyorktimes_sql_linkedservice')]"
+                        "[concat(variables('factoryId'), '/linkedServices/covid_tracking_newyorktimes_blobstorage_linkedservice')]"
                     ]
                 },
                 {
@@ -531,7 +531,7 @@
                     },
                     "dependsOn": [
                         "[parameters('factoryName')]",
-                        "[concat(variables('factoryId'), '/linkedServices/covid_tracking_newyorktimes_sql_linkedservice')]"
+                        "[concat(variables('factoryId'), '/linkedServices/covid_tracking_newyorktimes_blobstorage_linkedservice')]"
                     ]
                 },
                 {

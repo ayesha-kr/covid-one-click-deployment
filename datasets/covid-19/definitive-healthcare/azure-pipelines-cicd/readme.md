@@ -55,181 +55,14 @@ Now let's go ahead and publish the changes.
 
 1. Clone the repo that you created above and checkout the **adf_publish** branch.
 
-2. Create the following directories.
+2. Download the files required for Azure DevOps Pipeline from [Pipeline Files])(https://github.com/ayesha-kr/covid-one-click-deployment/blob/ec83da54c8c130f57a4f53c5b5bd173dcbf85860/datasets/covid-19/definitive-healthcare/azure-pipelines-cicd/azure-pipelines.zip)
 
-  - **/cicd**
-  - **/resources/arm/blank-adf**
+The above link takes you to a Github link that contains a zip archive of the required files. Download the zip archive.
 
-3. Add the following two files in the **/resources/arm/blank-adf** folder.
-
-**template.json**
-
-```
-{
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-        "name": {
-            "defaultValue": "myv2datafactory",
-            "type": "String"
-        },
-        "location": {
-            "defaultValue": "East US",
-            "type": "String"
-        },
-        "apiVersion": {
-            "defaultValue": "2018-06-01",
-            "type": "String"
-        }
-    },
-    "resources": [
-        {
-            "type": "Microsoft.DataFactory/factories",
-            "apiVersion": "[parameters('apiVersion')]",
-            "name": "[parameters('name')]",
-            "location": "[parameters('location')]",
-            "identity": {
-                "type": "SystemAssigned"
-            },
-            "properties": {}
-        }
-    ]
-}
-
-```
+3. Extract the contents of the zip archive downloaded in the previous step, in to the root of the repo you have connected with the Azure Data Factory.
 
 
-**Parameters.json**
-```
-{
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-        "name": {
-            "value": "df-azdo-datafactory-stg"
-        },
-        "location": {
-            "value": "westeurope"
-        },
-        "apiVersion": {
-            "value": "2018-06-01"
-        }
-    }
-}
-```
-
-4. Add the following file in the **/cicd** directory.
-
-**azure-pipelines.yml**
-
-```
-# Basic YAML pipeline for Azure Data Factory
-
-
-# Batching trigger set run only on a adf_publish branch
-# cicd folder is not watched
-trigger:
-  batch: true
-  branches:
-    include:
-      - adf_publish 
-    exclude:
-      - master
-  paths:
-    exclude:
-      - cicd/* 
-    include:
-      - "*"
-
-
-# Link the variable group to read the variables from:
-- group: stg-variables
-
-
-
-# The build agent is based on Windows OS. 
-# Linux agents have some differences in available commands and folder paths expressions, etc
-pool:
-   vmImage: "windows-latest"
-
-
-
-steps:
-
-# Step 1: Checkout code into a local folder src
-- checkout: self
-  path: src
-
-
-# Step 2a: Find arm JSON files for deployment of a blank ADF in src and copy them into the artifact staging folder
-- task: CopyFiles@2  
-  inputs:
-    SourceFolder: '$(Pipeline.Workspace)\src\resources\arm\blank-adf'
-    Contents: '**/*.json'
-    TargetFolder: '$(build.artifactstagingdirectory)\arm'
-    CleanTargetFolder: true
-    OverWrite: true
-  displayName: 'Extra ARM - Blank ADF Service'
-  enabled: true
-
-# Step 2b: Find other ADF files, which will deploy pipelines, datasets and so on  in a folder adf_publish and copy them into the artifact folder
-- task: CopyFiles@2  
-  inputs:
-    SourceFolder: '$(Pipeline.Workspace)\src'
-    Contents: '**/*ForFactory.json'
-    TargetFolder: '$(build.artifactstagingdirectory)\adf_publish'
-    CleanTargetFolder: true
-    OverWrite: true
-    flattenFolders: true
-  displayName: 'Extract ARM - ADF Pipelines'
-  enabled: true
-
-
-
-# Step 3: Debugging - print the output of the command tree of artifacts folder
-- powershell: |
-    tree "$(build.artifactstagingdirectory)" /F
-  displayName: "Debug: Show a directory tree"
-
-
-
-# Step 4: Deploy a blank Azure Data Factory instance using ARM templates
-- task: AzureResourceManagerTemplateDeployment@3
-  inputs:
-    deploymentScope: 'Resource Group'
-    azureResourceManagerConnection: ''
-    subscriptionId: ''
-    action: 'Create Or Update Resource Group'
-    resourceGroupName: '$(dataFactoryName)'
-    location: 'West Europe'
-    templateLocation: 'Linked artifact'
-    csmFile: '$(build.artifactstagingdirectory)\arm\template.json'
-    csmParametersFile: '$(build.artifactstagingdirectory)\arm\parameters.json'
-    overrideParameters: '-name "$(dataFactoryName)"'
-    deploymentMode: 'Incremental'
-  displayName: Deploy ADF Service
-  enabled: true
-
-
-# Step 5: Deploy Azure Data Factory Objects like pipelines, dataflows using ARM templates that ADF generate during each publish event
-- task: AzureResourceManagerTemplateDeployment@3
-  inputs:
-    deploymentScope: 'Resource Group'
-    azureResourceManagerConnection: ''
-    subscriptionId: ''
-    action: 'Create Or Update Resource Group'
-    resourceGroupName: '$(dataFactoryName)'
-    location: 'West Europe'
-    templateLocation: 'Linked artifact'
-    csmFile: '$(build.artifactstagingdirectory)\adf_publish\ARMTemplateForFactory.json'
-    csmParametersFile: '$(build.artifactstagingdirectory)\adf_publish\ARMTemplateParametersForFactory.json'
-    overrideParameters: '-factoryName "$(dataFactoryName)" -AzureSqlDatabase_connectionString "$(sql-conn-string)" -customerStorageLinkedService_connectionString "$(customer-sa-conn-string)" -publicStorageLinkedService_sasUri "$(public-sa-sas-uri)" '
-    deploymentMode: 'Incremental'
-  displayName: Deploy ADF Pipelines
-  enabled: true
-```
-
-## Step 3. Set up CI/CD in Azure DevOps for Data factory.
+## Step 3. Set up CI/CD in Azure DevOps for Azure  Data factory.
 
 1. Navigate to Azure portal, search and open 'Azure DevOps' -> 'My Azure DevOps Organizations'.
 ![Search Devops](../../definitive-healthcare/azure-pipelines-cicd/images/search-azure-devops.png)
@@ -254,12 +87,25 @@ steps:
 
 ```
 1. customer-sa-conn-string // Set the connection string for the customer storage account
+
+  E.g DefaultEndpointsProtocol=https;AccountName='';AccountKey=''
+
 2. dataFactoryName // Name of the service, in this case, it will be the name of the data factory
+
 3. public-sa-sas-uri // SAS URI of the public storage account
+
+E.g
+  https://abc.blob.core.windows.net/?sv=2019-10-10&ss=bfqt&srt=sco&sp=rwdlacupx&se=2025-07-20T19:39:31Z&st=2020-07-20T11:39:31Z&spr=https&sig=ETbJ2zHLvxjXw4%2BShan5SUeP6g81oFh7nKGBDSpagbc%3D
+
 4. rest-url // URL for the CSV dataset source. (Leave value as blank if not required)
 5. sql-conn-string // Connection string for SQL Database
+  E.g integrated security=False;encrypt=True;connection timeout=30;data source=''.database.windows.net;initial catalog='';user id='';Password=''
 ```
+
+
 ![Create vars](../../definitive-healthcare/azure-pipelines-cicd/images/create-vars.png)
+
+
 
 6. To create a new pipeline navigate to Pipelines -> Pipelines and click on **New Pipeline**.
 

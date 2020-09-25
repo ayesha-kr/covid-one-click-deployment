@@ -504,6 +504,56 @@
                     ]
                 },
                 {
+                    "name": "[concat(parameters('dataFactoryName'), '/save_sql_schema_to_detect_datatype_change')]",
+                    "type": "Microsoft.DataFactory/factories/datasets",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "linkedServiceName": {
+                            "referenceName": "AzureSqlDatabase",
+                            "type": "LinkedServiceReference"
+                        },
+                        "folder": {
+                            "name": "CovidDefinitiveHC/Schema"
+                        },
+                        "annotations": [],
+                        "type": "AzureSqlTable",
+                        "schema": [],
+                        "typeProperties": {
+                            "schema": "save_schema",
+                            "table": "detect_datatype_change"
+                        }
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/AzureSqlDatabase')]"
+                    ]
+                },
+                {
+                    "name": "[concat(parameters('dataFactoryName'), '/retain_sql_schema_to_compare_datatype_change')]",
+                    "type": "Microsoft.DataFactory/factories/datasets",
+                    "apiVersion": "2018-06-01",
+                    "properties": {
+                        "linkedServiceName": {
+                            "referenceName": "AzureSqlDatabase",
+                            "type": "LinkedServiceReference"
+                        },
+                        "folder": {
+                            "name": "CovidDefinitiveHC/Schema"
+                        },
+                        "annotations": [],
+                        "type": "AzureSqlTable",
+                        "schema": [],
+                        "typeProperties": {
+                            "schema": "retain_schema",
+                            "table": "compare_datatype_change"
+                        }
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/AzureSqlDatabase')]"
+                    ]
+                },
+                {
                     "condition": "[and(equals(parameters('selectDataLoader'),'Synapse Database Warehouse'),equals(parameters('deployAndUseDataShare'),'No'))]",
                     "name": "[concat(parameters('dataFactoryName'), '/LoadIntoStagingTable')]",
                     "type": "Microsoft.DataFactory/factories/dataflows",
@@ -920,12 +970,11 @@
                                 "type": "ExecuteDataFlow",
                                 "dependsOn": [
                                     {
-                                        "activity": "LoadIntoStagingTable",
+                                        "activity": "Compare Data Type",
                                         "dependencyConditions": [
-                                            "Succeeded"
+                                            "Completed"
                                         ]
-                                    },
-                                    "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/customerStorageLinkedService')]"
+                                    }
                                 ],
                                 "policy": {
                                     "timeout": "7.00:00:00",
@@ -1341,8 +1390,339 @@
                                         }
                                     ]
                                 }
+                            },
+                            {
+                                "name": "Get_Metadata_Of_Current_Staging_Table",
+                                "type": "GetMetadata",
+                                "dependsOn": [
+                                    {
+                                        "activity": "LoadIntoStagingTable",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "dataset": {
+                                        "referenceName": "SqlDbStagingSink",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    },
+                                    "fieldList": [
+                                        "structure",
+                                        "columnCount"
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "Get_Metadata_Of_Previous_Staging_Table",
+                                "type": "GetMetadata",
+                                "dependsOn": [
+                                    {
+                                        "activity": "LoadIntoStagingTable",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "dataset": {
+                                        "referenceName": "save_sql_schema_to_detect_datatype_change",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    },
+                                    "fieldList": [
+                                        "structure",
+                                        "columnCount"
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "Compare Data Type",
+                                "type": "Until",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Get_Metadata_Of_Current_Staging_Table",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    },
+                                    {
+                                        "activity": "Get_Metadata_Of_Previous_Staging_Table",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "expression": {
+                                        "value": "@equals(int(variables('index')),min(sub(activity('Get_Metadata_Of_Current_Staging_Table').output.columnCount,1),sub(activity('Get_Metadata_Of_Previous_Staging_Table').output.columnCount,1)))",
+                                        "type": "Expression"
+                                    },
+                                    "activities": [
+                                        {
+                                            "name": "Increment",
+                                            "type": "SetVariable",
+                                            "dependsOn": [],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "variableName": "increment",
+                                                "value": {
+                                                    "value": "@string(add(int(variables('index')),1))",
+                                                    "type": "Expression"
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "name": "Index",
+                                            "type": "SetVariable",
+                                            "dependsOn": [
+                                                {
+                                                    "activity": "Increment",
+                                                    "dependencyConditions": [
+                                                        "Succeeded"
+                                                    ]
+                                                }
+                                            ],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "variableName": "index",
+                                                "value": {
+                                                    "value": "@variables('increment')",
+                                                    "type": "Expression"
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "name": "Check Data Type Change",
+                                            "type": "IfCondition",
+                                            "dependsOn": [
+                                                {
+                                                    "activity": "Index",
+                                                    "dependencyConditions": [
+                                                        "Succeeded"
+                                                    ]
+                                                }
+                                            ],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "expression": {
+                                                    "value": "@and(equals(activity('Get_Metadata_Of_Current_Staging_Table').output.structure[int(variables('index'))].physicalName,activity('Get_Metadata_Of_Previous_Staging_Table').output.structure[int(variables('index'))].physicalName),not(equals(activity('Get_Metadata_Of_Current_Staging_Table').output.structure[int(variables('index'))].physicalType,activity('Get_Metadata_Of_Previous_Staging_Table').output.structure[int(variables('index'))].physicalType)))",
+                                                    "type": "Expression"
+                                                },
+                                                "ifFalseActivities": [
+                                                    {
+                                                        "name": "Wait And Continue 4",
+                                                        "type": "Wait",
+                                                        "dependsOn": [],
+                                                        "userProperties": [],
+                                                        "typeProperties": {
+                                                            "waitTimeInSeconds": 1
+                                                        }
+                                                    }
+                                                ],
+                                                "ifTrueActivities": [
+                                                    {
+                                                        "name": "Change In Data Type",
+                                                        "type": "SetVariable",
+                                                        "dependsOn": [],
+                                                        "userProperties": [],
+                                                        "typeProperties": {
+                                                            "variableName": "dataTypeChange",
+                                                            "value": "True"
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    ],
+                                    "timeout": "7.00:00:00"
+                                }
+                            },
+                            {
+                                "name": "Alert If Change In Data Type",
+                                "type": "IfCondition",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Compare Data Type",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "expression": {
+                                        "value": "@equals(variables('dataTypeChange'),'True')",
+                                        "type": "Expression"
+                                    },
+                                    "ifFalseActivities": [
+                                        {
+                                            "name": "Wait And Continue 5",
+                                            "type": "Wait",
+                                            "dependsOn": [],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "waitTimeInSeconds": 1
+                                            }
+                                        }
+                                    ],
+                                    "ifTrueActivities": [
+                                        {
+                                            "name": "Alert Change In Data Type",
+                                            "type": "Wait",
+                                            "dependsOn": [],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "waitTimeInSeconds": 1
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "Save Current Sql Schema",
+                                "type": "Copy",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Retain Last Sql Schema",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "AzureSqlSource",
+                                        "queryTimeout": "02:00:00",
+                                        "partitionOption": "None"
+                                    },
+                                    "sink": {
+                                        "type": "AzureSqlSink",
+                                        "preCopyScript": "IF OBJECT_ID('[save_schema].[detect_datatype_change]', 'U') IS NOT NULL\n\nBEGIN\n\nDROP TABLE [save_schema].[detect_datatype_change]; \n\nEND",
+                                        "tableOption": "autoCreate",
+                                        "disableMetricsCollection": false
+                                    },
+                                    "enableStaging": false,
+                                    "translator": {
+                                        "type": "TabularTranslator",
+                                        "typeConversion": true,
+                                        "typeConversionSettings": {
+                                            "allowDataTruncation": true,
+                                            "treatBooleanAsNumber": false
+                                        }
+                                    }
+                                },
+                                "inputs": [
+                                    {
+                                        "referenceName": "SqlDbStagingSink",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "referenceName": "save_sql_schema_to_detect_datatype_change",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "Retain Last Sql Schema",
+                                "type": "Copy",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Alert If Change In Data Type",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "AzureSqlSource",
+                                        "queryTimeout": "02:00:00",
+                                        "partitionOption": "None"
+                                    },
+                                    "sink": {
+                                        "type": "AzureSqlSink",
+                                        "preCopyScript": "IF OBJECT_ID('[retain_schema].[compare_datatype_change]', 'U') IS NOT NULL\n\nBEGIN\n\nDROP TABLE [retain_schema].[compare_datatype_change];\n\nEND",
+                                        "tableOption": "autoCreate",
+                                        "disableMetricsCollection": false
+                                    },
+                                    "enableStaging": false,
+                                    "translator": {
+                                        "type": "TabularTranslator",
+                                        "typeConversion": true,
+                                        "typeConversionSettings": {
+                                            "allowDataTruncation": true,
+                                            "treatBooleanAsNumber": false
+                                        }
+                                    }
+                                },
+                                "inputs": [
+                                    {
+                                        "referenceName": "save_sql_schema_to_detect_datatype_change",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "referenceName": "retain_sql_schema_to_compare_datatype_change",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ]
                             }
                         ],
+                        "variables": {
+                            "index": {
+                                "type": "String",
+                                "defaultValue": "-1"
+                            },
+                            "increment": {
+                                "type": "String"
+                            },
+                            "dataTypeChange": {
+                                "type": "String",
+                                "defaultValue": "No"
+                            }
+                        },
                         "annotations": []
                     },
                     "dependsOn": [
@@ -1354,7 +1734,9 @@
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/AzureSynapseAnalyticsStagingTableSource')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/SynapseOperationalTable_sink')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/save_current_schema_dataset')]",
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/retain_last_schema_dataset')]"
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/retain_last_schema_dataset')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/save_sql_schema_to_detect_datatype_change')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/retain_sql_schema_to_compare_datatype_change')]"
                     ]
                 },
                 {
@@ -1534,12 +1916,11 @@
                                 "type": "ExecuteDataFlow",
                                 "dependsOn": [
                                     {
-                                        "activity": "LoadIntoStagingTable_SynapseWithSQL",
+                                        "activity": "Compare Data Type",
                                         "dependencyConditions": [
-                                            "Succeeded"
+                                            "Completed"
                                         ]
-                                    },
-                                    "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/customerStorageLinkedService')]"
+                                    }
                                 ],
                                 "policy": {
                                     "timeout": "7.00:00:00",
@@ -1988,8 +2369,339 @@
                                         }
                                     ]
                                 }
+                            },
+                            {
+                                "name": "Get_Metadata_Of_Current_Staging_Table",
+                                "type": "GetMetadata",
+                                "dependsOn": [
+                                    {
+                                        "activity": "LoadIntoStagingTable_SynapseWithSQL",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "dataset": {
+                                        "referenceName": "SqlDbStagingSink",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    },
+                                    "fieldList": [
+                                        "structure",
+                                        "columnCount"
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "Get_Metadata_Of_Previous_Staging_Table",
+                                "type": "GetMetadata",
+                                "dependsOn": [
+                                    {
+                                        "activity": "LoadIntoStagingTable_SynapseWithSQL",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "dataset": {
+                                        "referenceName": "save_sql_schema_to_detect_datatype_change",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    },
+                                    "fieldList": [
+                                        "structure",
+                                        "columnCount"
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "Compare Data Type",
+                                "type": "Until",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Get_Metadata_Of_Current_Staging_Table",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    },
+                                    {
+                                        "activity": "Get_Metadata_Of_Previous_Staging_Table",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "expression": {
+                                        "value": "@equals(int(variables('index')),min(sub(activity('Get_Metadata_Of_Current_Staging_Table').output.columnCount,1),sub(activity('Get_Metadata_Of_Previous_Staging_Table').output.columnCount,1)))",
+                                        "type": "Expression"
+                                    },
+                                    "activities": [
+                                        {
+                                            "name": "Increment",
+                                            "type": "SetVariable",
+                                            "dependsOn": [],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "variableName": "increment",
+                                                "value": {
+                                                    "value": "@string(add(int(variables('index')),1))",
+                                                    "type": "Expression"
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "name": "Index",
+                                            "type": "SetVariable",
+                                            "dependsOn": [
+                                                {
+                                                    "activity": "Increment",
+                                                    "dependencyConditions": [
+                                                        "Succeeded"
+                                                    ]
+                                                }
+                                            ],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "variableName": "index",
+                                                "value": {
+                                                    "value": "@variables('increment')",
+                                                    "type": "Expression"
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "name": "Check Data Type Change",
+                                            "type": "IfCondition",
+                                            "dependsOn": [
+                                                {
+                                                    "activity": "Index",
+                                                    "dependencyConditions": [
+                                                        "Succeeded"
+                                                    ]
+                                                }
+                                            ],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "expression": {
+                                                    "value": "@and(equals(activity('Get_Metadata_Of_Current_Staging_Table').output.structure[int(variables('index'))].physicalName,activity('Get_Metadata_Of_Previous_Staging_Table').output.structure[int(variables('index'))].physicalName),not(equals(activity('Get_Metadata_Of_Current_Staging_Table').output.structure[int(variables('index'))].physicalType,activity('Get_Metadata_Of_Previous_Staging_Table').output.structure[int(variables('index'))].physicalType)))",
+                                                    "type": "Expression"
+                                                },
+                                                "ifFalseActivities": [
+                                                    {
+                                                        "name": "Wait And Continue 4",
+                                                        "type": "Wait",
+                                                        "dependsOn": [],
+                                                        "userProperties": [],
+                                                        "typeProperties": {
+                                                            "waitTimeInSeconds": 1
+                                                        }
+                                                    }
+                                                ],
+                                                "ifTrueActivities": [
+                                                    {
+                                                        "name": "Change In Data Type",
+                                                        "type": "SetVariable",
+                                                        "dependsOn": [],
+                                                        "userProperties": [],
+                                                        "typeProperties": {
+                                                            "variableName": "dataTypeChange",
+                                                            "value": "True"
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    ],
+                                    "timeout": "7.00:00:00"
+                                }
+                            },
+                            {
+                                "name": "Alert If Change In Data Type",
+                                "type": "IfCondition",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Compare Data Type",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "expression": {
+                                        "value": "@equals(variables('dataTypeChange'),'True')",
+                                        "type": "Expression"
+                                    },
+                                    "ifFalseActivities": [
+                                        {
+                                            "name": "Wait And Continue 5",
+                                            "type": "Wait",
+                                            "dependsOn": [],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "waitTimeInSeconds": 1
+                                            }
+                                        }
+                                    ],
+                                    "ifTrueActivities": [
+                                        {
+                                            "name": "Alert Change In Data Type",
+                                            "type": "Wait",
+                                            "dependsOn": [],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "waitTimeInSeconds": 1
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "Save Current Sql Schema",
+                                "type": "Copy",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Retain Last Sql Schema",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "AzureSqlSource",
+                                        "queryTimeout": "02:00:00",
+                                        "partitionOption": "None"
+                                    },
+                                    "sink": {
+                                        "type": "AzureSqlSink",
+                                        "preCopyScript": "IF OBJECT_ID('[save_schema].[detect_datatype_change]', 'U') IS NOT NULL\n\nBEGIN\n\nDROP TABLE [save_schema].[detect_datatype_change]; \n\nEND",
+                                        "tableOption": "autoCreate",
+                                        "disableMetricsCollection": false
+                                    },
+                                    "enableStaging": false,
+                                    "translator": {
+                                        "type": "TabularTranslator",
+                                        "typeConversion": true,
+                                        "typeConversionSettings": {
+                                            "allowDataTruncation": true,
+                                            "treatBooleanAsNumber": false
+                                        }
+                                    }
+                                },
+                                "inputs": [
+                                    {
+                                        "referenceName": "SqlDbStagingSink",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "referenceName": "save_sql_schema_to_detect_datatype_change",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "Retain Last Sql Schema",
+                                "type": "Copy",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Alert If Change In Data Type",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "AzureSqlSource",
+                                        "queryTimeout": "02:00:00",
+                                        "partitionOption": "None"
+                                    },
+                                    "sink": {
+                                        "type": "AzureSqlSink",
+                                        "preCopyScript": "IF OBJECT_ID('[retain_schema].[compare_datatype_change]', 'U') IS NOT NULL\n\nBEGIN\n\nDROP TABLE [retain_schema].[compare_datatype_change];\n\nEND",
+                                        "tableOption": "autoCreate",
+                                        "disableMetricsCollection": false
+                                    },
+                                    "enableStaging": false,
+                                    "translator": {
+                                        "type": "TabularTranslator",
+                                        "typeConversion": true,
+                                        "typeConversionSettings": {
+                                            "allowDataTruncation": true,
+                                            "treatBooleanAsNumber": false
+                                        }
+                                    }
+                                },
+                                "inputs": [
+                                    {
+                                        "referenceName": "save_sql_schema_to_detect_datatype_change",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "referenceName": "retain_sql_schema_to_compare_datatype_change",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ]
                             }
                         ],
+                        "variables": {
+                            "index": {
+                                "type": "String",
+                                "defaultValue": "-1"
+                            },
+                            "increment": {
+                                "type": "String"
+                            },
+                            "dataTypeChange": {
+                                "type": "String",
+                                "defaultValue": "No"
+                            }
+                        },
                         "annotations": []
                     },
                     "dependsOn": [
@@ -2003,7 +2715,9 @@
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/customerStorageLinkedService')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/dataflows/LoadIntoOperationalTable_SynapseWithSQL')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/save_current_schema_dataset')]",
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/retain_last_schema_dataset')]"
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/retain_last_schema_dataset')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/save_sql_schema_to_detect_datatype_change')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/retain_sql_schema_to_compare_datatype_change')]"
                     ]
                 },
                 {
@@ -2148,12 +2862,11 @@
                                 "type": "ExecuteDataFlow",
                                 "dependsOn": [
                                     {
-                                        "activity": "LoadIntoStagingTable_SQL",
+                                        "activity": "Compare Data Type",
                                         "dependencyConditions": [
-                                            "Succeeded"
+                                            "Completed"
                                         ]
-                                    },
-                                    "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/customerStorageLinkedService')]"
+                                    }
                                 ],
                                 "policy": {
                                     "timeout": "7.00:00:00",
@@ -2567,8 +3280,339 @@
                                         }
                                     ]
                                 }
+                            },
+                            {
+                                "name": "Get_Metadata_Of_Current_Staging_Table",
+                                "type": "GetMetadata",
+                                "dependsOn": [
+                                    {
+                                        "activity": "LoadIntoStagingTable_SQL",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "dataset": {
+                                        "referenceName": "SqlDbStagingSink",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    },
+                                    "fieldList": [
+                                        "structure",
+                                        "columnCount"
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "Get_Metadata_Of_Previous_Staging_Table",
+                                "type": "GetMetadata",
+                                "dependsOn": [
+                                    {
+                                        "activity": "LoadIntoStagingTable_SQL",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "dataset": {
+                                        "referenceName": "save_sql_schema_to_detect_datatype_change",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    },
+                                    "fieldList": [
+                                        "structure",
+                                        "columnCount"
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "Compare Data Type",
+                                "type": "Until",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Get_Metadata_Of_Current_Staging_Table",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    },
+                                    {
+                                        "activity": "Get_Metadata_Of_Previous_Staging_Table",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "expression": {
+                                        "value": "@equals(int(variables('index')),min(sub(activity('Get_Metadata_Of_Current_Staging_Table').output.columnCount,1),sub(activity('Get_Metadata_Of_Previous_Staging_Table').output.columnCount,1)))",
+                                        "type": "Expression"
+                                    },
+                                    "activities": [
+                                        {
+                                            "name": "Increment",
+                                            "type": "SetVariable",
+                                            "dependsOn": [],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "variableName": "increment",
+                                                "value": {
+                                                    "value": "@string(add(int(variables('index')),1))",
+                                                    "type": "Expression"
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "name": "Index",
+                                            "type": "SetVariable",
+                                            "dependsOn": [
+                                                {
+                                                    "activity": "Increment",
+                                                    "dependencyConditions": [
+                                                        "Succeeded"
+                                                    ]
+                                                }
+                                            ],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "variableName": "index",
+                                                "value": {
+                                                    "value": "@variables('increment')",
+                                                    "type": "Expression"
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "name": "Check Data Type Change",
+                                            "type": "IfCondition",
+                                            "dependsOn": [
+                                                {
+                                                    "activity": "Index",
+                                                    "dependencyConditions": [
+                                                        "Succeeded"
+                                                    ]
+                                                }
+                                            ],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "expression": {
+                                                    "value": "@and(equals(activity('Get_Metadata_Of_Current_Staging_Table').output.structure[int(variables('index'))].physicalName,activity('Get_Metadata_Of_Previous_Staging_Table').output.structure[int(variables('index'))].physicalName),not(equals(activity('Get_Metadata_Of_Current_Staging_Table').output.structure[int(variables('index'))].physicalType,activity('Get_Metadata_Of_Previous_Staging_Table').output.structure[int(variables('index'))].physicalType)))",
+                                                    "type": "Expression"
+                                                },
+                                                "ifFalseActivities": [
+                                                    {
+                                                        "name": "Wait And Continue 4",
+                                                        "type": "Wait",
+                                                        "dependsOn": [],
+                                                        "userProperties": [],
+                                                        "typeProperties": {
+                                                            "waitTimeInSeconds": 1
+                                                        }
+                                                    }
+                                                ],
+                                                "ifTrueActivities": [
+                                                    {
+                                                        "name": "Change In Data Type",
+                                                        "type": "SetVariable",
+                                                        "dependsOn": [],
+                                                        "userProperties": [],
+                                                        "typeProperties": {
+                                                            "variableName": "dataTypeChange",
+                                                            "value": "True"
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    ],
+                                    "timeout": "7.00:00:00"
+                                }
+                            },
+                            {
+                                "name": "Alert If Change In Data Type",
+                                "type": "IfCondition",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Compare Data Type",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "expression": {
+                                        "value": "@equals(variables('dataTypeChange'),'True')",
+                                        "type": "Expression"
+                                    },
+                                    "ifFalseActivities": [
+                                        {
+                                            "name": "Wait And Continue 5",
+                                            "type": "Wait",
+                                            "dependsOn": [],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "waitTimeInSeconds": 1
+                                            }
+                                        }
+                                    ],
+                                    "ifTrueActivities": [
+                                        {
+                                            "name": "Alert Change In Data Type",
+                                            "type": "Wait",
+                                            "dependsOn": [],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "waitTimeInSeconds": 1
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "Save Current Sql Schema",
+                                "type": "Copy",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Retain Last Sql Schema",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "AzureSqlSource",
+                                        "queryTimeout": "02:00:00",
+                                        "partitionOption": "None"
+                                    },
+                                    "sink": {
+                                        "type": "AzureSqlSink",
+                                        "preCopyScript": "IF OBJECT_ID('[save_schema].[detect_datatype_change]', 'U') IS NOT NULL\n\nBEGIN\n\nDROP TABLE [save_schema].[detect_datatype_change]; \n\nEND",
+                                        "tableOption": "autoCreate",
+                                        "disableMetricsCollection": false
+                                    },
+                                    "enableStaging": false,
+                                    "translator": {
+                                        "type": "TabularTranslator",
+                                        "typeConversion": true,
+                                        "typeConversionSettings": {
+                                            "allowDataTruncation": true,
+                                            "treatBooleanAsNumber": false
+                                        }
+                                    }
+                                },
+                                "inputs": [
+                                    {
+                                        "referenceName": "SqlDbStagingSink",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "referenceName": "save_sql_schema_to_detect_datatype_change",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "Retain Last Sql Schema",
+                                "type": "Copy",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Alert If Change In Data Type",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "AzureSqlSource",
+                                        "queryTimeout": "02:00:00",
+                                        "partitionOption": "None"
+                                    },
+                                    "sink": {
+                                        "type": "AzureSqlSink",
+                                        "preCopyScript": "IF OBJECT_ID('[retain_schema].[compare_datatype_change]', 'U') IS NOT NULL\n\nBEGIN\n\nDROP TABLE [retain_schema].[compare_datatype_change];\n\nEND",
+                                        "tableOption": "autoCreate",
+                                        "disableMetricsCollection": false
+                                    },
+                                    "enableStaging": false,
+                                    "translator": {
+                                        "type": "TabularTranslator",
+                                        "typeConversion": true,
+                                        "typeConversionSettings": {
+                                            "allowDataTruncation": true,
+                                            "treatBooleanAsNumber": false
+                                        }
+                                    }
+                                },
+                                "inputs": [
+                                    {
+                                        "referenceName": "save_sql_schema_to_detect_datatype_change",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "referenceName": "retain_sql_schema_to_compare_datatype_change",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ]
                             }
                         ],
+                        "variables": {
+                            "index": {
+                                "type": "String",
+                                "defaultValue": "-1"
+                            },
+                            "increment": {
+                                "type": "String"
+                            },
+                            "dataTypeChange": {
+                                "type": "String",
+                                "defaultValue": "No"
+                            }
+                        },
                         "annotations": []
                     },
                     "dependsOn": [
@@ -2579,7 +3623,9 @@
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/customerStorageLinkedService')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/dataflows/LoadIntoOperationalTable_SQL')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/save_current_schema_dataset')]",
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/retain_last_schema_dataset')]"
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/retain_last_schema_dataset')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/save_sql_schema_to_detect_datatype_change')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/retain_sql_schema_to_compare_datatype_change')]"
                     ]
                 },
                 {
@@ -2887,6 +3933,79 @@
                                             "operator": "Include",
                                             "values": [
                                                 "Alert Equal Number But Different Names Or Arrangement"
+                                            ]
+                                        },
+                                        {
+                                            "name": "PipelineName",
+                                            "operator": "Include",
+                                            "values": [
+                                                "SqlDataLoader",
+                                                "SynapseDataLoader",
+                                                "SynapseAndSqlDataLoader",
+                                                "SqlDataLoaderWithDataShare",
+                                                "SynapseDataLoaderWithDataShare",
+                                                "SynapseAndSqlDataLoaderWithDataShare"
+                                            ]
+                                        },
+                                        {
+                                            "name": "FailureType",
+                                            "operator": "Include",
+                                            "values": [
+                                                "none"
+                                            ]
+                                        }
+                                    ],
+                                    "operator": "GreaterThanOrEqual",
+                                    "timeAggregation": "Average",
+                                    "criterionType": "StaticThresholdCriterion"
+                                }
+                            ],
+                            "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria"
+                        },
+                        "targetResourceType": "microsoft.datafactory/factories",
+                        "actions": [
+                            {
+                                "actionGroupId": "[resourceId('Microsoft.Insights/actionGroups','NotificationAlertFromADF')]"
+                            }
+                        ]
+                    },
+                    "dependsOn": [
+                        "[parameters('dataFactoryName')]",
+                        "NotificationAlertFromADF"
+                    ]
+                },
+                {
+                    "type": "Microsoft.Insights/metricalerts",
+                    "apiVersion": "2018-03-01",
+                    "name": "DataTypeChangeAlert",
+                    "location": "global",
+                    "properties": {
+                        "description": "Change in data type for one or more column(s) has been detected in the staging table",
+                        "severity": 0,
+                        "enabled": true,
+                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]" ],
+                        "evaluationFrequency": "PT1M",
+                        "windowSize": "PT1M",
+                        "criteria": {
+                            "allOf": [
+                                {
+                                    "threshold": 1,
+                                    "name": "35d4fcba-be7c-43ab-b89e-c107b19258ce",
+                                    "metricNamespace": "Microsoft.DataFactory/factories",
+                                    "metricName": "ActivitySucceededRuns",
+                                    "dimensions": [
+                                        {
+                                            "name": "ActivityType",
+                                            "operator": "Include",
+                                            "values": [
+                                                "Wait"
+                                            ]
+                                        },
+                                        {
+                                            "name": "Name",
+                                            "operator": "Include",
+                                            "values": [
+                                                "Alert Change In Data Type"
                                             ]
                                         },
                                         {
@@ -4082,9 +5201,9 @@
                                 "type": "ExecuteDataFlow",
                                 "dependsOn": [
                                     {
-                                        "activity": "LoadIntoStagingTable_SQL",
+                                        "activity": "Compare Data Type",
                                         "dependencyConditions": [
-                                            "Succeeded"
+                                            "Completed"
                                         ]
                                     }
                                 ],
@@ -4486,8 +5605,339 @@
                                         }
                                     ]
                                 }
+                            },
+                            {
+                                "name": "Get_Metadata_Of_Current_Staging_Table",
+                                "type": "GetMetadata",
+                                "dependsOn": [
+                                    {
+                                        "activity": "LoadIntoStagingTable_SQL",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "dataset": {
+                                        "referenceName": "SqlDbStagingSink",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    },
+                                    "fieldList": [
+                                        "structure",
+                                        "columnCount"
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "Get_Metadata_Of_Previous_Staging_Table",
+                                "type": "GetMetadata",
+                                "dependsOn": [
+                                    {
+                                        "activity": "LoadIntoStagingTable_SQL",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "dataset": {
+                                        "referenceName": "save_sql_schema_to_detect_datatype_change",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    },
+                                    "fieldList": [
+                                        "structure",
+                                        "columnCount"
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "Compare Data Type",
+                                "type": "Until",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Get_Metadata_Of_Current_Staging_Table",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    },
+                                    {
+                                        "activity": "Get_Metadata_Of_Previous_Staging_Table",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "expression": {
+                                        "value": "@equals(int(variables('index')),min(sub(activity('Get_Metadata_Of_Current_Staging_Table').output.columnCount,1),sub(activity('Get_Metadata_Of_Previous_Staging_Table').output.columnCount,1)))",
+                                        "type": "Expression"
+                                    },
+                                    "activities": [
+                                        {
+                                            "name": "Increment",
+                                            "type": "SetVariable",
+                                            "dependsOn": [],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "variableName": "increment",
+                                                "value": {
+                                                    "value": "@string(add(int(variables('index')),1))",
+                                                    "type": "Expression"
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "name": "Index",
+                                            "type": "SetVariable",
+                                            "dependsOn": [
+                                                {
+                                                    "activity": "Increment",
+                                                    "dependencyConditions": [
+                                                        "Succeeded"
+                                                    ]
+                                                }
+                                            ],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "variableName": "index",
+                                                "value": {
+                                                    "value": "@variables('increment')",
+                                                    "type": "Expression"
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "name": "Check Data Type Change",
+                                            "type": "IfCondition",
+                                            "dependsOn": [
+                                                {
+                                                    "activity": "Index",
+                                                    "dependencyConditions": [
+                                                        "Succeeded"
+                                                    ]
+                                                }
+                                            ],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "expression": {
+                                                    "value": "@and(equals(activity('Get_Metadata_Of_Current_Staging_Table').output.structure[int(variables('index'))].physicalName,activity('Get_Metadata_Of_Previous_Staging_Table').output.structure[int(variables('index'))].physicalName),not(equals(activity('Get_Metadata_Of_Current_Staging_Table').output.structure[int(variables('index'))].physicalType,activity('Get_Metadata_Of_Previous_Staging_Table').output.structure[int(variables('index'))].physicalType)))",
+                                                    "type": "Expression"
+                                                },
+                                                "ifFalseActivities": [
+                                                    {
+                                                        "name": "Wait And Continue 4",
+                                                        "type": "Wait",
+                                                        "dependsOn": [],
+                                                        "userProperties": [],
+                                                        "typeProperties": {
+                                                            "waitTimeInSeconds": 1
+                                                        }
+                                                    }
+                                                ],
+                                                "ifTrueActivities": [
+                                                    {
+                                                        "name": "Change In Data Type",
+                                                        "type": "SetVariable",
+                                                        "dependsOn": [],
+                                                        "userProperties": [],
+                                                        "typeProperties": {
+                                                            "variableName": "dataTypeChange",
+                                                            "value": "True"
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    ],
+                                    "timeout": "7.00:00:00"
+                                }
+                            },
+                            {
+                                "name": "Alert If Change In Data Type",
+                                "type": "IfCondition",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Compare Data Type",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "expression": {
+                                        "value": "@equals(variables('dataTypeChange'),'True')",
+                                        "type": "Expression"
+                                    },
+                                    "ifFalseActivities": [
+                                        {
+                                            "name": "Wait And Continue 5",
+                                            "type": "Wait",
+                                            "dependsOn": [],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "waitTimeInSeconds": 1
+                                            }
+                                        }
+                                    ],
+                                    "ifTrueActivities": [
+                                        {
+                                            "name": "Alert Change In Data Type",
+                                            "type": "Wait",
+                                            "dependsOn": [],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "waitTimeInSeconds": 1
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "Save Current Sql Schema",
+                                "type": "Copy",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Retain Last Sql Schema",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "AzureSqlSource",
+                                        "queryTimeout": "02:00:00",
+                                        "partitionOption": "None"
+                                    },
+                                    "sink": {
+                                        "type": "AzureSqlSink",
+                                        "preCopyScript": "IF OBJECT_ID('[save_schema].[detect_datatype_change]', 'U') IS NOT NULL\n\nBEGIN\n\nDROP TABLE [save_schema].[detect_datatype_change]; \n\nEND",
+                                        "tableOption": "autoCreate",
+                                        "disableMetricsCollection": false
+                                    },
+                                    "enableStaging": false,
+                                    "translator": {
+                                        "type": "TabularTranslator",
+                                        "typeConversion": true,
+                                        "typeConversionSettings": {
+                                            "allowDataTruncation": true,
+                                            "treatBooleanAsNumber": false
+                                        }
+                                    }
+                                },
+                                "inputs": [
+                                    {
+                                        "referenceName": "SqlDbStagingSink",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "referenceName": "save_sql_schema_to_detect_datatype_change",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "Retain Last Sql Schema",
+                                "type": "Copy",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Alert If Change In Data Type",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "AzureSqlSource",
+                                        "queryTimeout": "02:00:00",
+                                        "partitionOption": "None"
+                                    },
+                                    "sink": {
+                                        "type": "AzureSqlSink",
+                                        "preCopyScript": "IF OBJECT_ID('[retain_schema].[compare_datatype_change]', 'U') IS NOT NULL\n\nBEGIN\n\nDROP TABLE [retain_schema].[compare_datatype_change];\n\nEND",
+                                        "tableOption": "autoCreate",
+                                        "disableMetricsCollection": false
+                                    },
+                                    "enableStaging": false,
+                                    "translator": {
+                                        "type": "TabularTranslator",
+                                        "typeConversion": true,
+                                        "typeConversionSettings": {
+                                            "allowDataTruncation": true,
+                                            "treatBooleanAsNumber": false
+                                        }
+                                    }
+                                },
+                                "inputs": [
+                                    {
+                                        "referenceName": "save_sql_schema_to_detect_datatype_change",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "referenceName": "retain_sql_schema_to_compare_datatype_change",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ]
                             }
                         ],
+                        "variables": {
+                            "index": {
+                                "type": "String",
+                                "defaultValue": "-1"
+                            },
+                            "increment": {
+                                "type": "String"
+                            },
+                            "dataTypeChange": {
+                                "type": "String",
+                                "defaultValue": "No"
+                            }
+                        },
                         "folder": {
                             "name": "CovidNewYorkTimes"
                         },
@@ -4503,7 +5953,9 @@
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/source_linkedservice')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/dataflows/LoadIntoOperationalTable_SynapseWithSQL')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/save_current_schema_dataset')]",
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/retain_last_schema_dataset')]"
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/retain_last_schema_dataset')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/save_sql_schema_to_detect_datatype_change')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/retain_sql_schema_to_compare_datatype_change')]"
                     ]
                 },
                 {
@@ -4729,9 +6181,9 @@
                                 "type": "ExecuteDataFlow",
                                 "dependsOn": [
                                     {
-                                        "activity": "LoadIntoStagingTable",
+                                        "activity": "Compare Data Type",
                                         "dependencyConditions": [
-                                            "Succeeded"
+                                            "Completed"
                                         ]
                                     }
                                 ],
@@ -5137,8 +6589,339 @@
                                         }
                                     ]
                                 }
+                            },
+                            {
+                                "name": "Get_Metadata_Of_Current_Staging_Table",
+                                "type": "GetMetadata",
+                                "dependsOn": [
+                                    {
+                                        "activity": "LoadIntoStagingTable",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "dataset": {
+                                        "referenceName": "SqlDbStagingSink",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    },
+                                    "fieldList": [
+                                        "structure",
+                                        "columnCount"
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "Get_Metadata_Of_Previous_Staging_Table",
+                                "type": "GetMetadata",
+                                "dependsOn": [
+                                    {
+                                        "activity": "LoadIntoStagingTable",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "dataset": {
+                                        "referenceName": "save_sql_schema_to_detect_datatype_change",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    },
+                                    "fieldList": [
+                                        "structure",
+                                        "columnCount"
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "Compare Data Type",
+                                "type": "Until",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Get_Metadata_Of_Current_Staging_Table",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    },
+                                    {
+                                        "activity": "Get_Metadata_Of_Previous_Staging_Table",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "expression": {
+                                        "value": "@equals(int(variables('index')),min(sub(activity('Get_Metadata_Of_Current_Staging_Table').output.columnCount,1),sub(activity('Get_Metadata_Of_Previous_Staging_Table').output.columnCount,1)))",
+                                        "type": "Expression"
+                                    },
+                                    "activities": [
+                                        {
+                                            "name": "Increment",
+                                            "type": "SetVariable",
+                                            "dependsOn": [],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "variableName": "increment",
+                                                "value": {
+                                                    "value": "@string(add(int(variables('index')),1))",
+                                                    "type": "Expression"
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "name": "Index",
+                                            "type": "SetVariable",
+                                            "dependsOn": [
+                                                {
+                                                    "activity": "Increment",
+                                                    "dependencyConditions": [
+                                                        "Succeeded"
+                                                    ]
+                                                }
+                                            ],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "variableName": "index",
+                                                "value": {
+                                                    "value": "@variables('increment')",
+                                                    "type": "Expression"
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "name": "Check Data Type Change",
+                                            "type": "IfCondition",
+                                            "dependsOn": [
+                                                {
+                                                    "activity": "Index",
+                                                    "dependencyConditions": [
+                                                        "Succeeded"
+                                                    ]
+                                                }
+                                            ],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "expression": {
+                                                    "value": "@and(equals(activity('Get_Metadata_Of_Current_Staging_Table').output.structure[int(variables('index'))].physicalName,activity('Get_Metadata_Of_Previous_Staging_Table').output.structure[int(variables('index'))].physicalName),not(equals(activity('Get_Metadata_Of_Current_Staging_Table').output.structure[int(variables('index'))].physicalType,activity('Get_Metadata_Of_Previous_Staging_Table').output.structure[int(variables('index'))].physicalType)))",
+                                                    "type": "Expression"
+                                                },
+                                                "ifFalseActivities": [
+                                                    {
+                                                        "name": "Wait And Continue 4",
+                                                        "type": "Wait",
+                                                        "dependsOn": [],
+                                                        "userProperties": [],
+                                                        "typeProperties": {
+                                                            "waitTimeInSeconds": 1
+                                                        }
+                                                    }
+                                                ],
+                                                "ifTrueActivities": [
+                                                    {
+                                                        "name": "Change In Data Type",
+                                                        "type": "SetVariable",
+                                                        "dependsOn": [],
+                                                        "userProperties": [],
+                                                        "typeProperties": {
+                                                            "variableName": "dataTypeChange",
+                                                            "value": "True"
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    ],
+                                    "timeout": "7.00:00:00"
+                                }
+                            },
+                            {
+                                "name": "Alert If Change In Data Type",
+                                "type": "IfCondition",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Compare Data Type",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "expression": {
+                                        "value": "@equals(variables('dataTypeChange'),'True')",
+                                        "type": "Expression"
+                                    },
+                                    "ifFalseActivities": [
+                                        {
+                                            "name": "Wait And Continue 5",
+                                            "type": "Wait",
+                                            "dependsOn": [],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "waitTimeInSeconds": 1
+                                            }
+                                        }
+                                    ],
+                                    "ifTrueActivities": [
+                                        {
+                                            "name": "Alert Change In Data Type",
+                                            "type": "Wait",
+                                            "dependsOn": [],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "waitTimeInSeconds": 1
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "Save Current Sql Schema",
+                                "type": "Copy",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Retain Last Sql Schema",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "AzureSqlSource",
+                                        "queryTimeout": "02:00:00",
+                                        "partitionOption": "None"
+                                    },
+                                    "sink": {
+                                        "type": "AzureSqlSink",
+                                        "preCopyScript": "IF OBJECT_ID('[save_schema].[detect_datatype_change]', 'U') IS NOT NULL\n\nBEGIN\n\nDROP TABLE [save_schema].[detect_datatype_change]; \n\nEND",
+                                        "tableOption": "autoCreate",
+                                        "disableMetricsCollection": false
+                                    },
+                                    "enableStaging": false,
+                                    "translator": {
+                                        "type": "TabularTranslator",
+                                        "typeConversion": true,
+                                        "typeConversionSettings": {
+                                            "allowDataTruncation": true,
+                                            "treatBooleanAsNumber": false
+                                        }
+                                    }
+                                },
+                                "inputs": [
+                                    {
+                                        "referenceName": "SqlDbStagingSink",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "referenceName": "save_sql_schema_to_detect_datatype_change",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "Retain Last Sql Schema",
+                                "type": "Copy",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Alert If Change In Data Type",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "AzureSqlSource",
+                                        "queryTimeout": "02:00:00",
+                                        "partitionOption": "None"
+                                    },
+                                    "sink": {
+                                        "type": "AzureSqlSink",
+                                        "preCopyScript": "IF OBJECT_ID('[retain_schema].[compare_datatype_change]', 'U') IS NOT NULL\n\nBEGIN\n\nDROP TABLE [retain_schema].[compare_datatype_change];\n\nEND",
+                                        "tableOption": "autoCreate",
+                                        "disableMetricsCollection": false
+                                    },
+                                    "enableStaging": false,
+                                    "translator": {
+                                        "type": "TabularTranslator",
+                                        "typeConversion": true,
+                                        "typeConversionSettings": {
+                                            "allowDataTruncation": true,
+                                            "treatBooleanAsNumber": false
+                                        }
+                                    }
+                                },
+                                "inputs": [
+                                    {
+                                        "referenceName": "save_sql_schema_to_detect_datatype_change",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "referenceName": "retain_sql_schema_to_compare_datatype_change",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ]
                             }
                         ],
+                        "variables": {
+                            "index": {
+                                "type": "String",
+                                "defaultValue": "-1"
+                            },
+                            "increment": {
+                                "type": "String"
+                            },
+                            "dataTypeChange": {
+                                "type": "String",
+                                "defaultValue": "No"
+                            }
+                        },
                         "folder": {
                             "name": "CovidNewYorkTimes"
                         },
@@ -5152,7 +6935,9 @@
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/AzureSynapseAnalyticsStagingTableSource')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/SynapseOperationalTable_sink')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/save_current_schema_dataset')]",
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/retain_last_schema_dataset')]"
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/retain_last_schema_dataset')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/save_sql_schema_to_detect_datatype_change')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/retain_sql_schema_to_compare_datatype_change')]"
                     ]
                 },
                 {
@@ -5373,9 +7158,9 @@
                                 "type": "ExecuteDataFlow",
                                 "dependsOn": [
                                     {
-                                        "activity": "LoadIntoStagingTable_SynapseWithSQL",
+                                        "activity": "Compare Data Type",
                                         "dependencyConditions": [
-                                            "Succeeded"
+                                            "Completed"
                                         ]
                                     }
                                 ],
@@ -5816,8 +7601,339 @@
                                         }
                                     ]
                                 }
+                            },
+                            {
+                                "name": "Get_Metadata_Of_Current_Staging_Table",
+                                "type": "GetMetadata",
+                                "dependsOn": [
+                                    {
+                                        "activity": "LoadIntoStagingTable_SynapseWithSQL",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "dataset": {
+                                        "referenceName": "SqlDbStagingSink",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    },
+                                    "fieldList": [
+                                        "structure",
+                                        "columnCount"
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "Get_Metadata_Of_Previous_Staging_Table",
+                                "type": "GetMetadata",
+                                "dependsOn": [
+                                    {
+                                        "activity": "LoadIntoStagingTable_SynapseWithSQL",
+                                        "dependencyConditions": [
+                                            "Succeeded"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "dataset": {
+                                        "referenceName": "save_sql_schema_to_detect_datatype_change",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    },
+                                    "fieldList": [
+                                        "structure",
+                                        "columnCount"
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "Compare Data Type",
+                                "type": "Until",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Get_Metadata_Of_Current_Staging_Table",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    },
+                                    {
+                                        "activity": "Get_Metadata_Of_Previous_Staging_Table",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "expression": {
+                                        "value": "@equals(int(variables('index')),min(sub(activity('Get_Metadata_Of_Current_Staging_Table').output.columnCount,1),sub(activity('Get_Metadata_Of_Previous_Staging_Table').output.columnCount,1)))",
+                                        "type": "Expression"
+                                    },
+                                    "activities": [
+                                        {
+                                            "name": "Increment",
+                                            "type": "SetVariable",
+                                            "dependsOn": [],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "variableName": "increment",
+                                                "value": {
+                                                    "value": "@string(add(int(variables('index')),1))",
+                                                    "type": "Expression"
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "name": "Index",
+                                            "type": "SetVariable",
+                                            "dependsOn": [
+                                                {
+                                                    "activity": "Increment",
+                                                    "dependencyConditions": [
+                                                        "Succeeded"
+                                                    ]
+                                                }
+                                            ],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "variableName": "index",
+                                                "value": {
+                                                    "value": "@variables('increment')",
+                                                    "type": "Expression"
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "name": "Check Data Type Change",
+                                            "type": "IfCondition",
+                                            "dependsOn": [
+                                                {
+                                                    "activity": "Index",
+                                                    "dependencyConditions": [
+                                                        "Succeeded"
+                                                    ]
+                                                }
+                                            ],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "expression": {
+                                                    "value": "@and(equals(activity('Get_Metadata_Of_Current_Staging_Table').output.structure[int(variables('index'))].physicalName,activity('Get_Metadata_Of_Previous_Staging_Table').output.structure[int(variables('index'))].physicalName),not(equals(activity('Get_Metadata_Of_Current_Staging_Table').output.structure[int(variables('index'))].physicalType,activity('Get_Metadata_Of_Previous_Staging_Table').output.structure[int(variables('index'))].physicalType)))",
+                                                    "type": "Expression"
+                                                },
+                                                "ifFalseActivities": [
+                                                    {
+                                                        "name": "Wait And Continue 4",
+                                                        "type": "Wait",
+                                                        "dependsOn": [],
+                                                        "userProperties": [],
+                                                        "typeProperties": {
+                                                            "waitTimeInSeconds": 1
+                                                        }
+                                                    }
+                                                ],
+                                                "ifTrueActivities": [
+                                                    {
+                                                        "name": "Change In Data Type",
+                                                        "type": "SetVariable",
+                                                        "dependsOn": [],
+                                                        "userProperties": [],
+                                                        "typeProperties": {
+                                                            "variableName": "dataTypeChange",
+                                                            "value": "True"
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    ],
+                                    "timeout": "7.00:00:00"
+                                }
+                            },
+                            {
+                                "name": "Alert If Change In Data Type",
+                                "type": "IfCondition",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Compare Data Type",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "expression": {
+                                        "value": "@equals(variables('dataTypeChange'),'True')",
+                                        "type": "Expression"
+                                    },
+                                    "ifFalseActivities": [
+                                        {
+                                            "name": "Wait And Continue 5",
+                                            "type": "Wait",
+                                            "dependsOn": [],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "waitTimeInSeconds": 1
+                                            }
+                                        }
+                                    ],
+                                    "ifTrueActivities": [
+                                        {
+                                            "name": "Alert Change In Data Type",
+                                            "type": "Wait",
+                                            "dependsOn": [],
+                                            "userProperties": [],
+                                            "typeProperties": {
+                                                "waitTimeInSeconds": 1
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "Save Current Sql Schema",
+                                "type": "Copy",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Retain Last Sql Schema",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "AzureSqlSource",
+                                        "queryTimeout": "02:00:00",
+                                        "partitionOption": "None"
+                                    },
+                                    "sink": {
+                                        "type": "AzureSqlSink",
+                                        "preCopyScript": "IF OBJECT_ID('[save_schema].[detect_datatype_change]', 'U') IS NOT NULL\n\nBEGIN\n\nDROP TABLE [save_schema].[detect_datatype_change]; \n\nEND",
+                                        "tableOption": "autoCreate",
+                                        "disableMetricsCollection": false
+                                    },
+                                    "enableStaging": false,
+                                    "translator": {
+                                        "type": "TabularTranslator",
+                                        "typeConversion": true,
+                                        "typeConversionSettings": {
+                                            "allowDataTruncation": true,
+                                            "treatBooleanAsNumber": false
+                                        }
+                                    }
+                                },
+                                "inputs": [
+                                    {
+                                        "referenceName": "SqlDbStagingSink",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "referenceName": "save_sql_schema_to_detect_datatype_change",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "Retain Last Sql Schema",
+                                "type": "Copy",
+                                "dependsOn": [
+                                    {
+                                        "activity": "Alert If Change In Data Type",
+                                        "dependencyConditions": [
+                                            "Completed"
+                                        ]
+                                    }
+                                ],
+                                "policy": {
+                                    "timeout": "7.00:00:00",
+                                    "retry": 3,
+                                    "retryIntervalInSeconds": 30,
+                                    "secureOutput": false,
+                                    "secureInput": false
+                                },
+                                "userProperties": [],
+                                "typeProperties": {
+                                    "source": {
+                                        "type": "AzureSqlSource",
+                                        "queryTimeout": "02:00:00",
+                                        "partitionOption": "None"
+                                    },
+                                    "sink": {
+                                        "type": "AzureSqlSink",
+                                        "preCopyScript": "IF OBJECT_ID('[retain_schema].[compare_datatype_change]', 'U') IS NOT NULL\n\nBEGIN\n\nDROP TABLE [retain_schema].[compare_datatype_change];\n\nEND",
+                                        "tableOption": "autoCreate",
+                                        "disableMetricsCollection": false
+                                    },
+                                    "enableStaging": false,
+                                    "translator": {
+                                        "type": "TabularTranslator",
+                                        "typeConversion": true,
+                                        "typeConversionSettings": {
+                                            "allowDataTruncation": true,
+                                            "treatBooleanAsNumber": false
+                                        }
+                                    }
+                                },
+                                "inputs": [
+                                    {
+                                        "referenceName": "save_sql_schema_to_detect_datatype_change",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ],
+                                "outputs": [
+                                    {
+                                        "referenceName": "retain_sql_schema_to_compare_datatype_change",
+                                        "type": "DatasetReference",
+                                        "parameters": {}
+                                    }
+                                ]
                             }
                         ],
+                        "variables": {
+                            "index": {
+                                "type": "String",
+                                "defaultValue": "-1"
+                            },
+                            "increment": {
+                                "type": "String"
+                            },
+                            "dataTypeChange": {
+                                "type": "String",
+                                "defaultValue": "No"
+                            }
+                        },
                         "folder": {
                             "name": "CovidNewYorkTimes"
                         },
@@ -5834,7 +7950,9 @@
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/linkedServices/source_linkedservice')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/dataflows/LoadIntoOperationalTable_SynapseWithSQL')]",
                         "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/save_current_schema_dataset')]",
-                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/retain_last_schema_dataset')]"
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/retain_last_schema_dataset')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/save_sql_schema_to_detect_datatype_change')]",
+                        "[concat(concat('Microsoft.DataFactory/factories/', parameters('dataFactoryName')), '/datasets/retain_sql_schema_to_compare_datatype_change')]"
                     ]
                 },
                 {

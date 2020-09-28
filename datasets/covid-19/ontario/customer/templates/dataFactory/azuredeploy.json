@@ -1551,7 +1551,7 @@
                                 ],
                                 "outputs": [
                                     {
-                                        "referenceName": "retain_sql_schema_to_compare_datatype_change",
+                                        "referenceName": "retain_synapse_sql_schema_to_compare_datatype_change",
                                         "type": "DatasetReference",
                                         "parameters": {}
                                     }
@@ -6750,7 +6750,7 @@
                                 ],
                                 "outputs": [
                                     {
-                                        "referenceName": "retain_sql_schema_to_compare_datatype_change",
+                                        "referenceName": "retain_synapse_sql_schema_to_compare_datatype_change",
                                         "type": "DatasetReference",
                                         "parameters": {}
                                     }

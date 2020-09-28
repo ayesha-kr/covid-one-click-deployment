@@ -48,20 +48,26 @@ Here, we have successfully connected an Azure Data factory to a Git Repo. this h
 # Setting up Azure DevOps Pipeline for publishing releases to multiple environments.
  
 ![CICD Flow](./images/cicd-flow.png)
+
 To be able to replicate the resources in this data factory we need the ARM templates that are generated when we publish the changes in the Azure Data Factory. When you click on publish, it takes the changes from the collaboration branch i.e master in this case, creates ARM templates, and pushes them in the **adf_publish** branch.
 
 Now let's go ahead and publish the changes.
 
 ## Step 2: Add the Azure pipelines' files in the *adf_publish* branch
 
-1. Clone the repo that you created above and checkout the **adf_publish** branch.
+1. Clone the repo that you created above on your computer and checkout the **adf_publish** branch.
 
-2. Download the files required for Azure DevOps Pipeline from [Pipeline Files](./pipeline-files.zip)
+2. Download the files required for Azure DevOps Pipeline by clicking [here](./pipeline-files.zip).
 
-The above link takes you to a Github link that contains a zip archive of the required files. Download the zip archive.
+The above link will take you to a Github page that contains a zip archive of the required files. Download the zip archive.
 
-3. Extract the contents of the zip archive downloaded in the previous step, in to the root of the repo you have connected with the Azure Data Factory.
+![](./images/zip-download.png)
 
+3. Extract the contents of the zip archive downloaded in the previous step, in to the root of the repo you have connected with the Azure Data Factory. Please make sure that when you commit the files the line endings must be set to **CRLF**.
+
+After having exctracted the files in the repo. The repository should look like this (Branch= adf_publish):- 
+
+![](./images/extracted-contents.png)
 
 ## Step 3. Set up CI/CD in Azure DevOps for Azure  Data factory.
 
@@ -84,10 +90,11 @@ The above link takes you to a Github link that contains a zip archive of the req
 ![open library](../../definitive-healthcare/azure-pipelines-cicd/images/open-library.png)
 
 
-5. Create a new variable group named 'stg-variables' and create the foolowing variables in that group as per the deployment configuration:-
+5. Create a new variable group named 'stg-variables' and create the following variables in that group as per the deployment configuration:-
 
 
-*Note:- For making sure what variables you will need to have in this variable group you can follow the guide given in the following link: [Environment Variables Guide](./vars-readme.md)*
+
+*Note:- For making sure what variables you will need to have in this variable group you can follow the guide provided in the following link: [Environment Variables Guide](./vars-readme.md)*
 
 
 
@@ -227,7 +234,7 @@ The above link takes you to a Github link that contains a zip archive of the req
 
     This will load the Azure pipeline YAML.
 
-8. Update the  *azureResourceManagerConnection, subscriptionId* keys for all the tasks shown in the pipeline YAML. Todo this select **Settings** shown in the top left corner of every task, this will open a visual YAML editor. Update the aforementioned keys by selecting the relevant subscription. Make sure you do this for all the tasks.
+8. Update the  **azureResourceManagerConnection** and **subscriptionId** keys for all the tasks shown in the pipeline YAML. To do this select **Settings** shown in the top left corner of every task, this will open a visual YAML editor. Update the aforementioned keys by selecting the relevant subscription. Make sure you do this for all the tasks.
 
 ![update subscription step 4](../../definitive-healthcare/azure-pipelines-cicd/images/update-subscription.png)
 ![update subscription step 5](../../definitive-healthcare/azure-pipelines-cicd/images/update-subscription-2.png)
@@ -237,51 +244,4 @@ The above link takes you to a Github link that contains a zip archive of the req
 
 ## Adding another environment to the above pipeline
 
-
-- For adding an extra stage, simply repeat the **steps 4 and 5** given in the **azure-pipeline.yml** file and update the following fields:
-
--  Here, make sure that you create a new variable for each environment that you want to create/add in this pipeline. 
-    e.g ProdProductName
-    This should be created in the variables group and also the following snippet should be updated to use the newly created variable.
-
-*Note: You may update the value of **resourceGroupName** if the expression provided in this template does not match the name of the resource group that you want to create the resources in.*
-
-```
-# Step 6: Deploy a blank Azure Data Factory instance using ARM templates
-- task: AzureResourceManagerTemplateDeployment@3
-  inputs:
-    deploymentScope: 'Resource Group'
-    azureResourceManagerConnection: ''
-    subscriptionId: ''
-    action: 'Create Or Update Resource Group'
-    resourceGroupName: '$(dataFactoryName)'
-    location: 'West Europe'
-    templateLocation: 'Linked artifact'
-    csmFile: '$(build.artifactstagingdirectory)\arm\template.json'
-    csmParametersFile: '$(build.artifactstagingdirectory)\arm\parameters.json'
-    overrideParameters: '-name "$(dataFactoryName)"'
-    deploymentMode: 'Incremental'
-  displayName: Deploy ADF Service
-  enabled: true
-
-# Step 7: Deploy Azure Data Factory Objects like pipelines, dataflows using ARM templates that ADF generate during each publish event
-- task: AzureResourceManagerTemplateDeployment@3
-  inputs:
-    deploymentScope: 'Resource Group'
-    azureResourceManagerConnection: ''
-    subscriptionId: ''
-    action: 'Create Or Update Resource Group'
-    resourceGroupName: '$(ProdProductName)-$(Environment)'
-    location: 'West Europe'
-    templateLocation: 'Linked artifact'
-    csmFile: '$(build.artifactstagingdirectory)\adf_publish\ARMTemplateForFactory.json'
-    csmParametersFile: '$(build.artifactstagingdirectory)\adf_publish\ARMTemplateParametersForFactory.json'
-    overrideParameters: '-factoryName "$(ProdProductName)-$(Environment)" -AzureSqlDatabase_connectionString "$(sql-conn-string)" -customerStorageLinkedService_connectionString "$(customer-sa-conn-string)" -publicStorageLinkedService_sasUri "$(public-sa-sas-uri)" -RestServiceurl_properties_typeProperties_url "$(rest-url)"'
-    deploymentMode: 'Incremental'
-  displayName: Deploy ADF Pipelines
-  enabled: true
-```
-
-
-Add the above snippet in the previously created Azure pipeline, to add another environment to which the resources are deployed.
 

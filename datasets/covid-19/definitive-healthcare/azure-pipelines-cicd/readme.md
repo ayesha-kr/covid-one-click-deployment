@@ -1,10 +1,10 @@
 # Introduction
-This document entails the steps that can be followed to set up Continuous Intregation and Continuous Delivery for Azure Data Factory. The document comprises of two main parts, the 1st part entails connecting an existing Azure Data Factory with a Git repository. The 2nd part entails setting up an an Azure DevOps Pipeline that publishes the changes from one ADF to another thereby maintaining multiple environments e.g dev, stage, prod etc.
+This document entails the steps that can be followed to set up Continuous Intregation and Continuous Delivery for Azure Data Factory. The document comprises of two main parts, the 1st part entails connecting an existing Azure Data Factory with a Git repository. The 2nd part entails setting up  an Azure DevOps Pipeline that publishes the changes from one ADF to another thereby maintaining multiple environments e.g dev, stage, prod etc.
 
 # Connect Azure Data Factory to a Git Repo
 
 ## Prerequisites
-  1. Create a Git Repository.
+  1. Create a Git Repository:-
 
  - [Create Azure DevOps Git repo](https://docs.microsoft.com/en-us/azure/devops/repos/git/create-new-repo?view=azure-devops)
   
@@ -13,6 +13,7 @@ This document entails the steps that can be followed to set up Continuous Intreg
   2. Initialize the Git Repository.
   3. Make sure that the Git repo has a master branch before you proceed with the next steps.
 
+**Note:** *Please make sure that the you do not connect to a Git Repository that was previously connected to another Azure Data Factory, this may cause conflicts in the data factory's resources.
 
 1. Open the Azure Data Factory that you want to connect with a Git repository.
 
@@ -46,7 +47,7 @@ Here, we have successfully connected an Azure Data factory to a Git Repo. this h
 
 # Setting up Azure DevOps Pipeline for publishing releases to multiple environments.
  
-
+![CICD Flow](./images/cicd-flow.png)
 To be able to replicate the resources in this data factory we need the ARM templates that are generated when we publish the changes in the Azure Data Factory. When you click on publish, it takes the changes from the collaboration branch i.e master in this case, creates ARM templates, and pushes them in the **adf_publish** branch.
 
 Now let's go ahead and publish the changes.
@@ -55,7 +56,7 @@ Now let's go ahead and publish the changes.
 
 1. Clone the repo that you created above and checkout the **adf_publish** branch.
 
-2. Download the files required for Azure DevOps Pipeline from [Pipeline Files])(https://github.com/ayesha-kr/covid-one-click-deployment/blob/ec83da54c8c130f57a4f53c5b5bd173dcbf85860/datasets/covid-19/definitive-healthcare/azure-pipelines-cicd/azure-pipelines.zip)
+2. Download the files required for Azure DevOps Pipeline from [Pipeline Files](https://github.com/ayesha-kr/covid-one-click-deployment/blob/ec83da54c8c130f57a4f53c5b5bd173dcbf85860/datasets/covid-19/definitive-healthcare/azure-pipelines-cicd/azure-pipelines.zip)
 
 The above link takes you to a Github link that contains a zip archive of the required files. Download the zip archive.
 
@@ -85,6 +86,10 @@ The above link takes you to a Github link that contains a zip archive of the req
 
 5. Create a new variable group named 'stg-variables' and create the following variables in that group:-
 
+
+*Note:- For making sure what variables you will need to have in this variable group you can follow the guide given in the following link: [Environment Variables Guide](./vars-readme.md)*
+
+Case: Cusotmer Environment with SQL DB
 ```
 1. customer-sa-conn-string // Set the connection string for the customer storage account
 
@@ -97,9 +102,28 @@ The above link takes you to a Github link that contains a zip archive of the req
 E.g
   https://abc.blob.core.windows.net/?sv=2019-10-10&ss=bfqt&srt=sco&sp=rwdlacupx&se=2025-07-20T19:39:31Z&st=2020-07-20T11:39:31Z&spr=https&sig=ETbJ2zHLvxjXw4%2BShan5SUeP6g81oFh7nKGBDSpagbc%3D
 
-4. rest-url // URL for the CSV dataset source. (Leave value as blank if not required)
 5. sql-conn-string // Connection string for SQL Database
   E.g integrated security=False;encrypt=True;connection timeout=30;data source=''.database.windows.net;initial catalog='';user id='';Password=''
+```
+
+Case: Customer Environment with Synapse Pool (SQL DataWarehouse)
+
+```
+1. customer-sa-conn-string // Set the connection string for the customer storage account
+
+  E.g DefaultEndpointsProtocol=https;AccountName='';AccountKey=''
+
+2. dataFactoryName // Name of the service, in this case, it will be the name of the data factory
+
+3. public-sa-sas-uri // SAS URI of the public storage account
+
+E.g
+  https://abc.blob.core.windows.net/?sv=2019-10-10&ss=bfqt&srt=sco&sp=rwdlacupx&se=2025-07-20T19:39:31Z&st=2020-07-20T11:39:31Z&spr=https&sig=ETbJ2zHLvxjXw4%2BShan5SUeP6g81oFh7nKGBDSpagbc%3D
+
+4. sql-conn-string // Connection string for SQL Database
+
+
+integrated security=False;encrypt=True;connection timeout=30;data source=',parameters('sqlServerName'),'.database.windows.net;initial catalog=',parameters('dataWarehouseName'),';user id=',parameters('sqlAdministratorLogin'), ';Password=', parameters('sqlAdministratorLoginPassword')
 ```
 
 
@@ -107,11 +131,11 @@ E.g
 
 
 
-6. To create a new pipeline navigate to Pipelines -> Pipelines and click on **New Pipeline**.
+6. To create a new pipeline navigate to **Pipelines -> Pipelines** and click on **New Pipeline**.
 
-[Open pipeline](../../definitive-healthcare/azure-pipelines-cicd/images/open-pipelines.png)
+![Open pipeline](../../definitive-healthcare/azure-pipelines-cicd/images/open-pipelines.png)
 
-[New pipeline](../../definitive-healthcare/azure-pipelines-cicd/images/new-pipeline.png)
+![New pipeline](../../definitive-healthcare/azure-pipelines-cicd/images/new-pipeline.png)
 
 7. Setup Pipeline
 
@@ -124,7 +148,11 @@ E.g
     - Configure: Select **Existing Azure Pipelines YAML file** 
       ![select existing yaml](../../definitive-healthcare/azure-pipelines-cicd/images/select-existingyaml-options.png)
 
-    - Select **adf_publish** branch, and provide **/cicd/azure-pipelines.yml** as the path.
+    - Select **adf_publish** branch, and select the file that matches your deployment configuration.
+      i.e 
+      **azure-pipeline-customer-SQL.yml** in case the environment was deployed with SQL DB as data loader.
+      **azure-pipeline-customer-Synapse.yml** in case the environment was deployed with Synapse as data loader.
+      **azure-pipeline-customer-SynapseAndSQl.yml** in case the environment was deployed with both Synapse and SQL DB as data loader.
 
     This will load the Azure pipeline YAML.
 

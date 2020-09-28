@@ -583,7 +583,7 @@
                 },
                 {
                     "condition": "[not(equals(parameters('selectDataLoader'),'SQL Database'))]",
-                    "name": "[concat(parameters('dataFactoryName'), '/retain_sql_schema_to_compare_datatype_change')]",
+                    "name": "[concat(parameters('dataFactoryName'), '/retain_synapse_sql_schema_to_compare_datatype_change')]",
                     "type": "Microsoft.DataFactory/factories/datasets",
                     "apiVersion": "2018-06-01",
                     "properties": {

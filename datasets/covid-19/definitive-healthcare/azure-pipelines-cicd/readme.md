@@ -52,11 +52,11 @@ To be able to replicate the resources in this data factory we need the ARM templ
 
 Now let's go ahead and publish the changes.
 
-## Step 2: Add the Azure pipelines files in the *adf_publish* branch
+## Step 2: Add the Azure pipelines' files in the *adf_publish* branch
 
 1. Clone the repo that you created above and checkout the **adf_publish** branch.
 
-2. Download the files required for Azure DevOps Pipeline from [Pipeline Files](https://github.com/ayesha-kr/covid-one-click-deployment/blob/ec83da54c8c130f57a4f53c5b5bd173dcbf85860/datasets/covid-19/definitive-healthcare/azure-pipelines-cicd/azure-pipelines.zip)
+2. Download the files required for Azure DevOps Pipeline from [Pipeline Files](./pipeline-files.zip)
 
 The above link takes you to a Github link that contains a zip archive of the required files. Download the zip archive.
 
@@ -89,24 +89,30 @@ The above link takes you to a Github link that contains a zip archive of the req
 
 *Note:- For making sure what variables you will need to have in this variable group you can follow the guide given in the following link: [Environment Variables Guide](./vars-readme.md)*
 
-Case: Cusotmer Environment with SQL DB
+### Case: Customer Environment with SQL DB
 ```
-1. customer-sa-conn-string // Set the connection string for the customer storage account
+1. customer-sa-conn-string 
 
-  E.g DefaultEndpointsProtocol=https;AccountName='';AccountKey=''
+  // Set the connection string for the customer storage account
 
-2. dataFactoryName // Name of the service, in this case, it will be the name of the data factory
+  E.g. DefaultEndpointsProtocol=https;AccountName='';AccountKey=''
+
+2. dataFactoryName 
+
+  // Name of the service, in this case, it will be the name of the data factory
 
 3. public-sa-sas-uri // SAS URI of the public storage account
 
-E.g
-  https://abc.blob.core.windows.net/?sv=2019-10-10&ss=bfqt&srt=sco&sp=rwdlacupx&se=2025-07-20T19:39:31Z&st=2020-07-20T11:39:31Z&spr=https&sig=ETbJ2zHLvxjXw4%2BShan5SUeP6g81oFh7nKGBDSpagbc%3D
+  E.g.
+    https://abc.blob.core.windows.net/?sv=2019-10-10&ss=bfqt&srt=sco&sp=rwdlacupx&se=2025-07-20T19:39:31Z&st=2020-07-20T11:39:31Z&spr=https&sig=ETbJ2zHLvxjXw4%2BShan5SUeP6g81oFh7nKGBDSpagbc%3D
 
 5. sql-conn-string // Connection string for SQL Database
-  E.g integrated security=False;encrypt=True;connection timeout=30;data source=''.database.windows.net;initial catalog='';user id='';Password=''
+  
+  E.g 
+    integrated security=False;encrypt=True;connection timeout=30;data source=''.database.windows.net;initial catalog='';user id='';Password=''
 ```
 
-Case: Customer Environment with Synapse Pool (SQL DataWarehouse)
+### Case: Customer Environment with Synapse Pool (SQL DataWarehouse)
 
 ```
 1. customer-sa-conn-string // Set the connection string for the customer storage account
@@ -120,12 +126,35 @@ Case: Customer Environment with Synapse Pool (SQL DataWarehouse)
 E.g
   https://abc.blob.core.windows.net/?sv=2019-10-10&ss=bfqt&srt=sco&sp=rwdlacupx&se=2025-07-20T19:39:31Z&st=2020-07-20T11:39:31Z&spr=https&sig=ETbJ2zHLvxjXw4%2BShan5SUeP6g81oFh7nKGBDSpagbc%3D
 
-4. sql-conn-string // Connection string for SQL Database
+4. synapse-conn-string // Connection string for SQL Database
 
-
-integrated security=False;encrypt=True;connection timeout=30;data source=',parameters('sqlServerName'),'.database.windows.net;initial catalog=',parameters('dataWarehouseName'),';user id=',parameters('sqlAdministratorLogin'), ';Password=', parameters('sqlAdministratorLoginPassword')
+E.g
+integrated security=False;encrypt=True;connection timeout=30;data source=''.database.windows.net;initial catalog='';user id='';Password=''
 ```
 
+### Case: Customer Environment with Synapse DataWarehouse and SQL DB
+
+```
+1. customer-sa-conn-string // Set the connection string for the customer storage account
+
+  E.g DefaultEndpointsProtocol=https;AccountName='';AccountKey=''
+
+2. dataFactoryName // Name of the service, in this case, it will be the name of the data factory
+
+3. public-sa-sas-uri // SAS URI of the public storage account
+
+E.g
+  https://abc.blob.core.windows.net/?sv=2019-10-10&ss=bfqt&srt=sco&sp=rwdlacupx&se=2025-07-20T19:39:31Z&st=2020-07-20T11:39:31Z&spr=https&sig=ETbJ2zHLvxjXw4%2BShan5SUeP6g81oFh7nKGBDSpagbc%3D
+
+4. synapse-conn-string // Connection string for SQL Database
+
+E.g
+integrated security=False;encrypt=True;connection timeout=30;data source=''.database.windows.net;initial catalog='';user id='';Password=''
+
+5. sql-conn-string // Connection string for SQL Database
+  
+  E.g integrated security=False;encrypt=True;connection timeout=30;data source=''.database.windows.net;initial catalog='';user id='';Password=''
+```
 
 ![Create vars](../../definitive-healthcare/azure-pipelines-cicd/images/create-vars.png)
 

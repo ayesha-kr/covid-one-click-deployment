@@ -4436,7 +4436,10 @@
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'synapseCancelledPipelineAlertConfig')]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'synapseCancelledActivityAlertConfig')]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'synapseCancelledTriggerAlertConfig')]",
-                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'synapseFailedTriggerRunAlertConfig')]"
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'synapseFailedTriggerRunAlertConfig')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'SourceCurrentSchemaWithLessColumnsAlert')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'SourceCurrentSchemaWithMoreColumnsAlert')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'SourceCurrentSchemaWithSameNumberOfColumnsButDifferentNamesOrArrangementAlert')]"
 
                             ]
                         }
@@ -4788,7 +4791,10 @@
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlAndsynapseCancelledPipelineAlertConfig')]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlAndsynapseCancelledActivityAlertConfig')]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlAndsynapseCancelledTriggerAlertConfig')]",
-                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlAndsynapseFailedTriggerRunAlertConfig')]"
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlAndsynapseFailedTriggerRunAlertConfig')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'SourceCurrentSchemaWithLessColumnsAlert')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'SourceCurrentSchemaWithMoreColumnsAlert')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'SourceCurrentSchemaWithSameNumberOfColumnsButDifferentNamesOrArrangementAlert')]"
                             ]
                         }
                     },
@@ -5138,7 +5144,10 @@
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlCancelledPipelineAlertConfig')]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlCancelledActivityAlertConfig')]",
                                 "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlCancelledTriggerAlertConfig')]",
-                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlFailedTriggerRunAlertConfig')]"
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'sqlFailedTriggerRunAlertConfig')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'SourceCurrentSchemaWithLessColumnsAlert')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'SourceCurrentSchemaWithMoreColumnsAlert')]",
+                                "[concat(resourceGroup().id,'/providers/Microsoft.Insights/metricAlerts/', 'SourceCurrentSchemaWithSameNumberOfColumnsButDifferentNamesOrArrangementAlert')]"
                             ]
                         }
                     },

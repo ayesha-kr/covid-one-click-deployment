@@ -241,7 +241,7 @@ After having exctracted the files in the repo. The repository should look like t
 
     This will load the Azure pipeline YAML.
 
-8. Update the  **azureResourceManagerConnection** and **subscriptionId** keys for all the tasks shown in the pipeline YAML. To do this select **Settings** shown in the top left corner of every task, this will open a visual YAML editor. Update the aforementioned keys by selecting the relevant subscription. Make sure you do this for all the tasks.
+8. Update the  **azureResourceManagerConnection**, **subscriptionId** and **resourceGroupName** keys for all the tasks shown in the pipeline YAML. To do this select **Settings** shown in the top left corner of every task, this will open a visual YAML editor. Update the aforementioned keys by selecting the relevant subscription. Make sure you do this for all the tasks.
 
 ![update subscription step 4](../../definitive-healthcare/azure-pipelines-cicd/images/update-subscription.png)
 ![update subscription step 5](../../definitive-healthcare/azure-pipelines-cicd/images/update-subscription-2.png)
@@ -249,6 +249,28 @@ After having exctracted the files in the repo. The repository should look like t
 
 9. Save and run the pipeline.
 
+![Run pipeline](./images/run-pipeline.png)
+
+In case you receive the following error, authorize it and run the pipeline again.
+
+![Run pipeline](./images/authorize-resources.png)
+
+
+
 # Adding another environment (UAT/PROD) to the CI/CD
 
-For configuring the CI/CD to publish changes from 
+For configuring the CI/CD to publish changes to another environment you will need to replicate the steps that are given in the previous section with the following changes.
+
+1. Change the name of the variables group. 
+  
+  *Please note that the variables within the variable group will remain the same. You only have to update the name of the variable group both while creating the variable group and in the pipeline YAML file as well.*
+
+![](./images/prod-vars.png)
+
+2. Update the pipeline YAMl to use the newly created variable group.
+
+![](./images/update-var-name.png)
+
+This is all you need to update while creating a new pipeline that updates another environment.
+
+Note: This pipeline will be using the SQL DB or Synapse SQL Pool that you specify in the variables. Please make sure that it doesn't use the same DB or Synapse as the one created earlier to avoid data conflicts.

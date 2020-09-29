@@ -249,7 +249,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[variables('logicAppTemplate')]"
+                    "uri": "[variables('logicAppTemplateUri')]"
                 },
                 "parameters": {
                     "location": {

@@ -121,7 +121,8 @@ After having exctracted the files in the repo. The repository should look like t
 
 2. dataFactoryName 
 
-    // Name of the service, in this case, it will be the name of the data factory
+    // Name of the service, in this case, it will be the name of the data factory to which you the resources to be deployed to.
+    Please note that
 
 3. public-sa-sas-uri 
 

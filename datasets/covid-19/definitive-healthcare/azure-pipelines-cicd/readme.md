@@ -45,7 +45,7 @@ Here, we have successfully connected an Azure Data factory to a Git Repo. this h
 
 When we set up the Git Repository and publish the changes from the Data Factory, it only creates the **adf_publish** branch in the repo but doesn't generate the ARM templates as no change is detected. Hence, we must make a change in any of the activities or pipelines in the Data Factory and then publish it. E.g we can change the **Description** for any of the activity and publish that.
 
-8. Make a change and publish the changes from the ADF. When we click on Publish from the ADF UI, it automatically creates the **adf_publish** branch, creates teh ARM templates for all the resources found in the collaboration branch and pushes them into the **adf_publish branch**.
+7. Make a change and publish the changes from the ADF. When we click on Publish from the ADF UI, it automatically creates the **adf_publish** branch, creates teh ARM templates for all the resources found in the collaboration branch and pushes them into the **adf_publish branch**.
 
 
 # Setting up Azure DevOps Pipeline for publishing releases to multiple environments.

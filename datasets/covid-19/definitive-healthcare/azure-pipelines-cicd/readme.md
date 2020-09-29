@@ -100,7 +100,7 @@ After having exctracted the files in the repo. The repository should look like t
 
 
 
-*Note:- For making sure what variables you will need to have in this variable group you can follow the guide provided in the following link: [Environment Variables Guide](./vars-readme.md)*
+*Note:- For making sure what variables you will need to have in this variable group you can follow the section **How to view the connection strings for the variables** in the guide provided in the following link: [Environment Variables Guide](./vars-readme.md)* 
 
 
 

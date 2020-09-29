@@ -1,3 +1,8 @@
+# Table of Contents
+
+1. How to check which environment variables you need to add in the variables group.
+2. How to view the connection strings for the variables
+
 ## How to check which environment variables you need to add in the variables group.
 
 Navigate to the following directory in the Git Repo that you have connected with Data factory. (**adf_publish** branch)

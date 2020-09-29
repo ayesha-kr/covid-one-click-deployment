@@ -43,7 +43,9 @@ This will show a UI blade with a dropdown listing the supported repository types
 
 Here, we have successfully connected an Azure Data factory to a Git Repo. this has saved all of the resource's JSON files in the collaboration branch that we specified. Whenever the ADF is published, it takes all the changes from the collaboration branch, creates the ARM templates for the resources found in the collaboration branch and pushes them into the **adf_publish** branch.
 
-7. Let's publish the changes from the ADF. When we click on Publish from the ADF UI, it automatically creates the **adf_publish** branch, creates teh ARM templates for all the resources found in the collaboration branch and pushes them into the **adf_publish branch**.
+When we set up the Git Repository and publish the changes from the Data Factory, it only creates the **adf_publish** branch in the repo but doesn't generate the ARM templates as no change is detected. Hence, we must make a change in any of the activities or pipelines in the Data Factory and then publish it. E.g we can change the **Description** for any of the activity and publish that.
+
+8. Make a change and publish the changes from the ADF. When we click on Publish from the ADF UI, it automatically creates the **adf_publish** branch, creates teh ARM templates for all the resources found in the collaboration branch and pushes them into the **adf_publish branch**.
 
 
 # Setting up Azure DevOps Pipeline for publishing releases to multiple environments.
@@ -246,5 +248,6 @@ After having exctracted the files in the repo. The repository should look like t
 
 9. Save and run the pipeline.
 
+# Adding another environment (UAT/PROD) to the CI/CD
 
-
+For configuring the CI/CD to publish changes from 

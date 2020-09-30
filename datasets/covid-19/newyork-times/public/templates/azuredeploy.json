@@ -60,7 +60,7 @@
             "metadata": {
                 "description": "Your password must be at least 8 characters in length. Your password must contain characters from three of the following categories – English uppercase letters, English lowercase letters, numbers (0-9), and non-alphanumeric characters (!, $, #, %, etc.) Your password cannot contain all or part of the login name. Part of a login name is defined as three or more consecutive alphanumeric characters."
             },
-            "defaultValue": "DemoCustomer2020!@#$"
+            "defaultValue": "abcd@1234"
         },
         "currentTime": {
             "type": "string",

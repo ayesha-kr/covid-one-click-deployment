@@ -752,7 +752,7 @@
                                     "name": "ModifyHeadingStyle"
                                 }
                             ],
-                            "script": "parameters{\n\tfilename as string ('covid_tracking'),\n\trunid as string ('runtime_guid')\n}\nsource(output(\n\t\tdate as string,\n\t\tcounty as string,\n\t\tstate as string,\n\t\tfips as string,\n\t\tcases as string,\n\t\tdeaths as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\trowUrlColumn: 'lineage',\n\tinferDriftedColumnTypes: true) ~> sourceCSV\nModifyHeadingStyle select(mapColumn(\n\t\tLoad_date,\n\t\tLoad_time,\n\t\tRecord_Date = Date,\n\t\tCounty,\n\t\tState,\n\t\tFips,\n\t\tCases,\n\t\tDeaths,\n\t\tIso_country,\n\t\tDeath_rate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> DropLineageColumn\nsourceCSV derive(Load_time = currentTimestamp(),\n\t\tLoad_date = currentDate(),\n\t\tIso_country = 'USA',\n\t\tDeath_rate = concat(toString(round(multiply(divide(toFloat(deaths),toFloat(cases)),100),4)),'%')) ~> AddNewColumns\nAddNewColumns select(mapColumn(\n\t\teach(patternMatch(`.*`),\n\t\t\tinitCap($$) = $$)\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ModifyHeadingStyle\nDropLineageColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:[(concat($filename, '.csv'))],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SinkLatestCSV\nDropLineageColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:[(concat($filename, '.jsonl'))],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sinkLatestJsonl\nDropLineageColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:[(concat($filename,'_', $runid,'.csv'))],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SinkCSV\nDropLineageColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:[(concat($filename,'_', $runid,'.jsonl'))],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sinkJsonl\nDropLineageColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'parquet',\n\tpartitionFileNames:[(concat($filename, '.parquet'))],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sinkLatestParquet\nDropLineageColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'parquet',\n\tpartitionFileNames:[(concat($filename,'_', $runid,'.parquet'))],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sinkParquet\nDropLineageColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sinkSQL"
+                            "script": "parameters{\n\tfilename as string ('covid_tracking'),\n\trunid as string ('runtime_guid')\n}\nsource(output(\n\t\tdate as string,\n\t\tcounty as string,\n\t\tstate as string,\n\t\tfips as string,\n\t\tcases as string,\n\t\tdeaths as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\trowUrlColumn: 'lineage',\n\tinferDriftedColumnTypes: true) ~> sourceCSV\nModifyHeadingStyle select(mapColumn(\n\t\tLoad_date,\n\t\tLoad_time,\n\t\tRecord_Date = Date,\n\t\tCounty,\n\t\tState,\n\t\tFips,\n\t\tCases,\n\t\tDeaths,\n\t\tIso_country,\n\t\tDeath_rate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> DropLineageColumn\nsourceCSV derive(Load_time = currentTimestamp(),\n\t\tLoad_date = currentDate(),\n\t\tIso_country = 'USA',\n\t\tDeath_rate = concat(toString(round(multiply(divide(toFloat(deaths),toFloat(cases)),100),4)),'%')) ~> AddNewColumns\nAddNewColumns select(mapColumn(\n\t\teach(patternMatch(`.*`),\n\t\t\tinitCap($$) = $$)\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> ModifyHeadingStyle\nDropLineageColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:[(concat($filename, '.csv'))],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SinkLatestCSV\nDropLineageColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:[(concat($filename, '.jsonl'))],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sinkLatestJsonl\nDropLineageColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:[(concat($filename,'_', $runid,'.csv'))],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SinkCSV\nDropLineageColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:[(concat($filename,'_', $runid,'.jsonl'))],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sinkJsonl\nDropLineageColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'parquet',\n\tpartitionFileNames:[(concat($filename, '.parquet'))],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sinkLatestParquet\nDropLineageColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'parquet',\n\tpartitionFileNames:[(concat($filename,'_', $runid,'.parquet'))],\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sinkParquet\nDropLineageColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sinkSQL"
                         }
                     },
                     "dependsOn": [
@@ -2499,7 +2499,7 @@
                                 ],
                                 "policy": {
                                     "timeout": "7.00:00:00",
-                                    "retry": 0,
+                                    "retry": 3,
                                     "retryIntervalInSeconds": 30,
                                     "secureOutput": false,
                                     "secureInput": false
@@ -2530,7 +2530,7 @@
                                 ],
                                 "policy": {
                                     "timeout": "7.00:00:00",
-                                    "retry": 0,
+                                    "retry": 3,
                                     "retryIntervalInSeconds": 30,
                                     "secureOutput": false,
                                     "secureInput": false
@@ -2705,7 +2705,7 @@
                                 ],
                                 "policy": {
                                     "timeout": "7.00:00:00",
-                                    "retry": 0,
+                                    "retry": 3,
                                     "retryIntervalInSeconds": 30,
                                     "secureOutput": false,
                                     "secureInput": false
@@ -2761,7 +2761,7 @@
                                 ],
                                 "policy": {
                                     "timeout": "7.00:00:00",
-                                    "retry": 0,
+                                    "retry": 3,
                                     "retryIntervalInSeconds": 30,
                                     "secureOutput": false,
                                     "secureInput": false

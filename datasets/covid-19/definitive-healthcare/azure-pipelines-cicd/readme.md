@@ -60,7 +60,7 @@ To be able to replicate the resources in this data factory we need the ARM templ
 
 1. Clone the repo on your computer, that you created above and checkout the **adf_publish** branch.
 
-- git clone <Repo-URL> 
+- git clone `<Repo-URL>`
 - git checkout adf_publish
 
 2. Download the files required for Azure DevOps Pipeline by clicking [here](./pipeline-files.zip).

@@ -3168,7 +3168,7 @@
                         "description": "Change in data type for one or more column(s) has been detected in the sql table",
                         "severity": 0,
                         "enabled": true,
-                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('dataFactoryName'))]" ],
+                        "scopes": [ "[concat(resourceGroup().id,'/providers/Microsoft.DataFactory/factories/', parameters('factoryName'))]" ],
                         "evaluationFrequency": "PT1M",
                         "windowSize": "PT1M",
                         "criteria": {
@@ -3223,7 +3223,7 @@
                         ]
                     },
                     "dependsOn": [
-                        "[parameters('dataFactoryName')]",
+                        "[parameters('factoryName')]",
                         "NotificationAlertFromADF"
                     ]
                 },

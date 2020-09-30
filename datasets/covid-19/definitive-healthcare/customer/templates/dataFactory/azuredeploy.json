@@ -3338,7 +3338,7 @@
                                 "type": "GetMetadata",
                                 "dependsOn": [
                                     {
-                                        "activity": "LoadIntoStagingTable",
+                                        "activity": "LoadIntoStagingTable_SQL",
                                         "dependencyConditions": [
                                             "Succeeded"
                                         ]
@@ -3369,7 +3369,7 @@
                                 "type": "GetMetadata",
                                 "dependsOn": [
                                     {
-                                        "activity": "LoadIntoStagingTable",
+                                        "activity": "LoadIntoStagingTable_SQL",
                                         "dependencyConditions": [
                                             "Succeeded"
                                         ]

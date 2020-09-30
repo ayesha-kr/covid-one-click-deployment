@@ -45,14 +45,14 @@ Here, we have successfully connected an Azure Data factory to a Git Repo. this h
 
 When we set up the Git Repository and publish the changes from the Data Factory, it only creates the **adf_publish** branch in the repo but doesn't generate the ARM templates as no change is detected. Hence, we must make a change in any of the activities or pipelines in the Data Factory and then publish it. E.g we can change the **Description** for any of the activity and publish that.
 
-7. Make a change and publish the changes from the ADF. When we click on Publish from the ADF UI, it automatically creates the **adf_publish** branch, creates teh ARM templates for all the resources found in the collaboration branch and pushes them into the **adf_publish branch**.
+7. Make a change and publish the changes from the ADF. When we click on Publish from the ADF UI, it automatically creates the **adf_publish** branch, creates the ARM templates for all the resources found in the collaboration branch and pushes them into the **adf_publish branch**.
 
 
 # Setting up Azure DevOps Pipeline for publishing releases to multiple environments.
  
 ![CICD Flow](./images/cicd-flow.png)
 
-To be able to replicate the resources in this data factory we need the ARM templates that are generated when we publish the changes in the Azure Data Factory. When you click on publish, it takes the changes from the collaboration branch i.e master in this case, creates ARM templates, and pushes them in the **adf_publish** branch.
+To be able to replicate the resources in this data factory we need the ARM templates that are generated when we publish the changes in the Azure Data Factory. When you click on publish, it takes the changes from the collaboration branch i.e. master in this case, creates ARM templates, and pushes them in the **adf_publish** branch.
 
 
 
@@ -60,7 +60,7 @@ To be able to replicate the resources in this data factory we need the ARM templ
 
 1. Clone the repo on your computer, that you created above and checkout the **adf_publish** branch.
 
-- git clone <URL-OF-YOUR-REPO> 
+- git clone <Repo-URL> 
 - git checkout adf_publish
 
 2. Download the files required for Azure DevOps Pipeline by clicking [here](./pipeline-files.zip).

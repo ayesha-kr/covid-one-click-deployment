@@ -215,6 +215,8 @@ The above pipeline does an incremental deployment meanning that it will create n
 
 ![update subscription step 5](./images/update-subscription-manual-2.png)
 
+4. Save and run the pipeline.
+
 
 ### Case: New Azure Pipeline using manually created service connection.
 

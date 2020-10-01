@@ -60,7 +60,7 @@ To be able to replicate the resources in this data factory we need the ARM templ
 
 1. Clone the repo on your computer, that you created above and checkout the **adf_publish** branch.
 
-- git clone <Repo-URL> 
+- git clone `<Repo-URL>` 
 - git checkout adf_publish
 
 2. Download the files required for Azure DevOps Pipeline by clicking [here](./pipeline-files.zip).
@@ -74,6 +74,16 @@ The above link will take you to a Github page that contains a zip archive of the
 After having exctracted the files in the repo. The repository should look like this (Branch= adf_publish):- 
 
 ![](./images/extracted-contents.png)
+
+4. Commit the files. 
+
+```
+git checkout adf_publish
+git add .
+git status
+git commit -m "Added Pipeline files"
+git push origin adf_publish
+```
 
 ## Step 3. Set up CI/CD in Azure DevOps for Azure  Data factory.
 
@@ -246,6 +256,9 @@ After having exctracted the files in the repo. The repository should look like t
 ![update subscription step 4](../../definitive-healthcare/azure-pipelines-cicd/images/update-subscription.png)
 ![update subscription step 5](../../definitive-healthcare/azure-pipelines-cicd/images/update-subscription-2.png)
 
+*Note: In case the above part does not work as expected you may follow the instructions given in the following link to manully create a service connection and update the pipeline YAML according to that.*
+
+Manually Create a Service Connection
 
 9. Save and run the pipeline.
 
@@ -254,6 +267,9 @@ After having exctracted the files in the repo. The repository should look like t
 In case you receive the following error, authorize it and run the pipeline again.
 
 ![Run pipeline](./images/authorize-resources.png)
+
+
+
 
 
 

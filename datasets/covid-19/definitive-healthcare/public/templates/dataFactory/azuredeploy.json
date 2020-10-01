@@ -535,6 +535,7 @@
                     ]
                 },
                 {
+                    "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'Yes')]",
                     "name": "[concat(parameters('factoryName'), '/save_sql_schema_to_detect_datatype_change')]",
                     "type": "Microsoft.DataFactory/factories/datasets",
                     "apiVersion": "2018-06-01",
@@ -560,6 +561,7 @@
                     ]
                 },
                 {
+                    "condition": "[equals(parameters('doYouWantToWriteCuratedDataToSQLDatabase'),'Yes')]",
                     "name": "[concat(parameters('factoryName'), '/retain_sql_schema_to_compare_datatype_change')]",
                     "type": "Microsoft.DataFactory/factories/datasets",
                     "apiVersion": "2018-06-01",

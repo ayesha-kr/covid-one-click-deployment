@@ -94,7 +94,7 @@ If you have selected Microsoft Teams notification, then your Logic app needs to 
 ![designer_image](./images/logicappdesigner1.jpg)
 
 
-5. If the connection is successful, click on **switch** button thats in the designer panel. It will open 6 different cases, click on a case and you will see a box labeled **"Post a message (V3)"**, click on that. Next to select **"Team"** and **"Channel"**, click on the **cross** button at the right side of these two fields to open up drop-down menu for available Team and Channel in Teams account. If you cant see your **Team** and **Channel**, goto step 1, there might be problem with authentication. Do this for all 6 cases.
+5. If the connection is successful, click on **switch** button thats in the designer panel. It will open 6 different cases, click on a case and you will see a box labeled **"Post a message (V3)"**, click on that. Next to select **"Team"** and **"Channel"**, click on the **cross** button at the right side of these two fields to open up drop-down menu for available Team and Channel in Teams account. If you cant see your **Team** and **Channel**, goto step 1, there might be problem with authentication. Do this for all 6 cases. After Case 6 there is another switch statement, click on that and do the same in the corresponding cases.
 
 ![designer_image](./images/logicappdesigner2.jpg)
 

@@ -1,13 +1,19 @@
+# Table of contents
+1. Introduction.
+2. Connect Azure Data Factory to a Git Repo.
+3. Setting up Azure DevOps Pipeline for publishing releases to multiple environments.
+4. Adding another environment (UAT/PROD) to the CI/CD.
+
 # Introduction
 This document entails the steps that can be followed to set up Continuous Integration and Continuous Delivery for Azure Data Factory. The document comprises of two main parts, the first part entails connecting an existing Azure Data Factory with a Git repository. The second part entails setting up an Azure DevOps Pipeline that publishes the changes from one ADF to another thereby maintaining multiple environments e.g dev, stage, prod, etc.
 
+Azure Data Factory integrates with both GitHub and Azure DevOps Git to enable source control, release
+management and CI/CD. With source control, developers can collaborate, track and save their changes
+to a branch of choice. These changes will be merged into the main branch and deployed to the higher-level environments (QA, UAT, Prod), where it will also be tested and validated. 
+
 For learning in detail about the CI/CD for Azure Data Factory you may read the following whitepaper published by the Microsoft team:-
 
-[Data Factory
-Continuous
-Integration/Continuous
-Deployment using
-Azure DevOps](https://azure.microsoft.com/mediahandler/files/resourcefiles/whitepaper-adf-on-azuredevops/Azure%20data%20Factory-Whitepaper-DevOps.pdf)
+[Data Factory Continuous Integration/Continuous Deployment using Azure DevOps](https://azure.microsoft.com/mediahandler/files/resourcefiles/whitepaper-adf-on-azuredevops/Azure%20data%20Factory-Whitepaper-DevOps.pdf)
 
 *Note: You should be the Owner of the subscription in which you are going to setup the folowing resources.*
 
@@ -59,7 +65,7 @@ When we set up the Git Repository and publish the changes from the Data Factory,
 7. Make a change and publish the changes from the ADF. When we click on Publish from the ADF UI, it automatically creates the **adf_publish** branch, creates the ARM templates for all the resources found in the collaboration branch and pushes them into the **adf_publish branch**.
 
 
-# Setting up Azure DevOps Pipeline for publishing releases to multiple environments.
+# Setting up Azure DevOps Pipeline for publishing releases to multiple environments
  
 ![CICD Flow](./images/cicd-flow.png)
 

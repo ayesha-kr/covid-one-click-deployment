@@ -72,10 +72,11 @@ When we set up the Git Repository and publish the changes from the Data Factory,
 
 # Setting up Azure DevOps Pipeline for publishing releases to multiple environments
  
+This is the second part of the document and it entails setting up an Azure DevOps Pipeline that creates a new environment (UAT/Stage/Prod) and publishes the changes to this higher level environment. The following instructions will help you setup only one new environment and its corresponding pipeline. Please note that this pipeline will create a new Azure Data Factroy in the resource group that you specify in the pipeline and if an Azure Data Factory with that name is already present it will update that according to the changes received from the Dev Data Factory.
+
+If you want to add more environments,  you can follow the guide given at the end of this document.
 
 To be able to replicate the resources in this data factory we need the ARM templates that are generated when we publish the changes in the Azure Data Factory. When you click on publish, it takes the changes from the collaboration branch i.e. master in this case, creates ARM templates, and pushes them in the **adf_publish** branch.
-
-
 
 ## Step 2: Add the Azure pipelines' files in the *adf_publish* branch
 

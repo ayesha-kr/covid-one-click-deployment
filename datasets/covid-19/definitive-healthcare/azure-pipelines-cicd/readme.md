@@ -1,5 +1,5 @@
 # Introduction
-This document entails the steps that can be followed to set up Continuous Integration and Continuous Delivery for Azure Data Factory. The document comprises of two main parts, the first part entails connecting an existing Azure Data Factory with a Git repository. The second part entails setting up  an Azure DevOps Pipeline that publishes the changes from one ADF to another thereby maintaining multiple environments e.g dev, stage, prod etc.
+This document entails the steps that can be followed to set up Continuous Integration and Continuous Delivery for Azure Data Factory. The document comprises of two main parts, the first part entails connecting an existing Azure Data Factory with a Git repository. The second part entails setting up an Azure DevOps Pipeline that publishes the changes from one ADF to another thereby maintaining multiple environments e.g dev, stage, prod, etc.
 
 # Connect Azure Data Factory to a Git Repo
 
@@ -35,15 +35,15 @@ This will show a UI blade with a dropdown listing the supported repository types
 5. 
     - Now we have to select a repo to connect this data factory to. Select the repo from the **Git Repository Name** dropdown. (You may create a new one if using Azure DevOps Git)
     
-    - Select **master** as the collaboration branch. This branch will be used for publishing to Azure Data factory. By default it is master. You may change this if you want to deploy/publish resources from another branch.
+    - Select **master** as the collaboration branch. This branch will be used for publishing to the Azure Data factory. By default it is master. You may change this if you want to deploy/publish resources from another branch.
     
     - **Root Folder** is the directory where all of the Data factory resource's JSON files will be copied to. Leave it as '**/**'.
 ![Select Repo type](./images/repo-settings.png)
 6. Click on **Apply** to save the changes.
 
-Here, we have successfully connected an Azure Data factory to a Git Repo. this has saved all of the resource's JSON files in the collaboration branch that we specified. Whenever the ADF is published, it takes all the changes from the collaboration branch, creates the ARM templates for the resources found in the collaboration branch and pushes them into the **adf_publish** branch.
+Here, we have successfully connected an Azure Data factory to a Git Repo. this has saved all of the resource's JSON files in the collaboration branch that we specified. Whenever the ADF is published, it takes all the changes from the collaboration branch, creates the ARM templates for the resources found in the collaboration branch, and pushes them into the **adf_publish** branch.
 
-When we set up the Git Repository and publish the changes from the Data Factory, it only creates the **adf_publish** branch in the repo but doesn't generate the ARM templates as no change is detected. Hence, we must make a change in any of the activities or pipelines in the Data Factory and then publish it. E.g we can change the **Description** for any of the activity and publish that.
+When we set up the Git Repository and publish the changes from the Data Factory, it only creates the **adf_publish** branch in the repo but doesn't generate the ARM templates as no change is detected. Hence, we must make a change in any of the activities or pipelines in the Data Factory and then publish it. E.g we can change the **Description** for any of the activities and publish that.
 
 7. Make a change and publish the changes from the ADF. When we click on Publish from the ADF UI, it automatically creates the **adf_publish** branch, creates the ARM templates for all the resources found in the collaboration branch and pushes them into the **adf_publish branch**.
 
@@ -69,9 +69,9 @@ The above link will take you to a Github page that contains a zip archive of the
 
 ![](./images/zip-download.png)
 
-3. Extract the contents of the zip archive downloaded in the previous step, in to the root of the repo you have connected with the Azure Data Factory. Please make sure that when you commit the files, the line endings must be set to **CRLF**.
+3. Extract the contents of the zip archive downloaded in the previous step, into the root of the repo you have connected with the Azure Data Factory. Please make sure that when you commit the files, the line endings must be set to **CRLF**.
 
-After having exctracted the files in the repo. The repository should look like this (Branch= adf_publish):- 
+After having extracted the files in the repo. The repository should look like this (Branch= adf_publish):- 
 
 ![](./images/extracted-contents.png)
 
@@ -256,7 +256,7 @@ git push origin adf_publish
 ![update subscription step 4](../../definitive-healthcare/azure-pipelines-cicd/images/update-subscription.png)
 ![update subscription step 5](../../definitive-healthcare/azure-pipelines-cicd/images/update-subscription-2.png)
 
-*Note: In case the above part does not work as expected you may follow the instructions given in the following link to manully create a service connection and update the pipeline YAML according to that.*
+*Note: In case the above part does not work as expected you may follow the instructions given in the following link to manually create a service connection and update the pipeline YAML according to that.*
 
 [Create an Azure Resource Manager Service Connection](./vars-readme.md)
 
@@ -265,7 +265,7 @@ git push origin adf_publish
 
 ![Run pipeline](./images/run-pipeline.png)
 
-In case you receive the following error, authorize it and run the pipeline again.
+In case you receive the following error, authorize it, and run the pipeline again.
 
 ![Run pipeline](./images/authorize-resources.png)
 
@@ -286,7 +286,7 @@ For configuring the CI/CD to publish changes to another environment you will nee
 
 ![](./images/prod-vars.png)
 
-2. Update the pipeline YAMl to use the newly created variable group.
+2. Update the pipeline YAML to use the newly created variable group.
 
 ![](./images/update-var-name.png)
 

@@ -1,9 +1,31 @@
+# Table of contents
+1. Introduction.
+2. Connect Azure Data Factory to a Git Repo.
+3. Setting up Azure DevOps Pipeline for publishing releases to multiple environments.
+4. Adding another environment (UAT/PROD) to the CI/CD.
+
 # Introduction
-This document entails the steps that can be followed to set up Continuous Integration and Continuous Delivery for Azure Data Factory. The document comprises of two main parts, the first part entails connecting an existing Azure Data Factory with a Git repository. The second part entails setting up  an Azure DevOps Pipeline that publishes the changes from one ADF to another thereby maintaining multiple environments e.g dev, stage, prod etc.
+This document entails the steps that can be followed to set up Continuous Integration and Continuous Delivery for Azure Data Factory. The document comprises of two main parts, the first part entails connecting an existing Azure Data Factory with a Git repository. The second part entails setting up an Azure DevOps Pipeline that publishes the changes from one ADF to another thereby maintaining multiple environments e.g dev, stage, prod, etc.
+
+Azure Data Factory integrates with both GitHub and Azure DevOps Git to enable source control, release
+management and CI/CD. With source control, developers can collaborate, track and save their changes
+to a branch of choice. These changes will be merged into the main branch and deployed to the higher-level environments (QA, UAT, Prod), where it will also be tested and validated. 
+
+For learning in detail about the CI/CD for Azure Data Factory you may read the following whitepaper published by the Microsoft team:-
+
+[Data Factory Continuous Integration/Continuous Deployment using Azure DevOps](https://azure.microsoft.com/mediahandler/files/resourcefiles/whitepaper-adf-on-azuredevops/Azure%20data%20Factory-Whitepaper-DevOps.pdf)
+
+*Note: You should be the **Owner** of the subscription in which you are going to setup the following resources.*
+
+![CICD Flow](./images/cicd-flow.png)
+
 
 # Connect Azure Data Factory to a Git Repo
 
+This is the first part of the document and it entails connecting an Azure Data Factory with a Git repository.After completing this section you will have one Azure Data Factory configured with a Git repository. If you also need multiple environments you can move to the second part i.e.**Setting up Azure DevOps Pipeline for publishing releases to multiple environments**, otherwise you can skip it.
+
 ## Prerequisites
+
   1. Create a Git Repository:-
 
  - [Create Azure DevOps Git repo](https://docs.microsoft.com/en-us/azure/devops/repos/git/create-new-repo?view=azure-devops)
@@ -35,26 +57,28 @@ This will show a UI blade with a dropdown listing the supported repository types
 5. 
     - Now we have to select a repo to connect this data factory to. Select the repo from the **Git Repository Name** dropdown. (You may create a new one if using Azure DevOps Git)
     
-    - Select **master** as the collaboration branch. This branch will be used for publishing to Azure Data factory. By default it is master. You may change this if you want to deploy/publish resources from another branch.
+    - Select **master** as the collaboration branch. This branch will be used for publishing to the Azure Data factory. By default it is master. You may change this if you want to deploy/publish resources from another branch.
     
     - **Root Folder** is the directory where all of the Data factory resource's JSON files will be copied to. Leave it as '**/**'.
+
 ![Select Repo type](./images/repo-settings.png)
+
 6. Click on **Apply** to save the changes.
 
-Here, we have successfully connected an Azure Data factory to a Git Repo. this has saved all of the resource's JSON files in the collaboration branch that we specified. Whenever the ADF is published, it takes all the changes from the collaboration branch, creates the ARM templates for the resources found in the collaboration branch and pushes them into the **adf_publish** branch.
+Here, we have successfully connected an Azure Data factory to a Git Repo. this has saved all of the resource's JSON files in the collaboration branch that we specified. Whenever the ADF is published, it takes all the changes from the collaboration branch, creates the ARM templates for the resources found in the collaboration branch, and pushes them into the **adf_publish** branch.
 
-When we set up the Git Repository and publish the changes from the Data Factory, it only creates the **adf_publish** branch in the repo but doesn't generate the ARM templates as no change is detected. Hence, we must make a change in any of the activities or pipelines in the Data Factory and then publish it. E.g we can change the **Description** for any of the activity and publish that.
+When we set up the Git Repository and publish the changes from the Data Factory, it only creates the **adf_publish** branch in the repo but doesn't generate the ARM templates as no change is detected. Hence, we must make a change in any of the activities or pipelines in the Data Factory and then publish it. E.g we can change the **Description** for any of the activities and publish that.
 
 7. Make a change and publish the changes from the ADF. When we click on Publish from the ADF UI, it automatically creates the **adf_publish** branch, creates the ARM templates for all the resources found in the collaboration branch and pushes them into the **adf_publish branch**.
 
 
-# Setting up Azure DevOps Pipeline for publishing releases to multiple environments.
+# Setting up Azure DevOps Pipeline for publishing releases to multiple environments
  
-![CICD Flow](./images/cicd-flow.png)
+This is the second part of the document and it entails setting up an Azure DevOps Pipeline that creates a new environment (UAT/Stage/Prod) and publishes the changes to this higher level environment. The following instructions will help you setup only one new environment and its corresponding pipeline. Please note that this pipeline will create a new Azure Data Factroy in the resource group that you specify in the pipeline and if an Azure Data Factory with that name is already present it will update that according to the changes received from the Dev Data Factory.
+
+If you want to add more environments, you can follow the guide given at the end of this document.
 
 To be able to replicate the resources in this data factory we need the ARM templates that are generated when we publish the changes in the Azure Data Factory. When you click on publish, it takes the changes from the collaboration branch i.e. master in this case, creates ARM templates, and pushes them in the **adf_publish** branch.
-
-
 
 ## Step 2: Add the Azure pipelines' files in the *adf_publish* branch
 
@@ -69,11 +93,21 @@ The above link will take you to a Github page that contains a zip archive of the
 
 ![](./images/zip-download.png)
 
-3. Extract the contents of the zip archive downloaded in the previous step, in to the root of the repo you have connected with the Azure Data Factory. Please make sure that when you commit the files, the line endings must be set to **CRLF**.
+3. Extract the contents of the zip archive downloaded in the previous step, into the root of the repo you have connected with the Azure Data Factory. Please make sure that when you commit the files, the line endings must be set to **CRLF**.
 
-After having exctracted the files in the repo. The repository should look like this (Branch= adf_publish):- 
+After having extracted the files in the repo. The repository should look like this (Branch= adf_publish):- 
 
 ![](./images/extracted-contents.png)
+
+4. Commit the files. 
+
+```
+git checkout adf_publish
+git add .
+git status
+git commit -m "Added Pipeline files"
+git push origin adf_publish
+```
 
 ## Step 3. Set up CI/CD in Azure DevOps for Azure  Data factory.
 
@@ -246,14 +280,23 @@ After having exctracted the files in the repo. The repository should look like t
 ![update subscription step 4](../../definitive-healthcare/azure-pipelines-cicd/images/update-subscription.png)
 ![update subscription step 5](../../definitive-healthcare/azure-pipelines-cicd/images/update-subscription-2.png)
 
+*Note: In case the above part does not work as expected you may follow the instructions given in the following link to manually create a service connection and update the pipeline YAML according to that.*
+
+[Create an Azure Resource Manager Service Connection](./vars-readme.md)
+
 
 9. Save and run the pipeline.
 
 ![Run pipeline](./images/run-pipeline.png)
 
-In case you receive the following error, authorize it and run the pipeline again.
+In case you receive the following error, authorize it, and run the pipeline again.
 
 ![Run pipeline](./images/authorize-resources.png)
+
+
+*Note: If you still keep on getting the above error, its likely that the service connection was not configured correctly. You may follow the instructions under the **Create an Azure Resource Manager Service Connection** section in the following link for setting up a service connection manually and updating the pipeline according to that.*
+
+[Create an Azure Resource Manager Service Connection](./vars-readme.md)
 
 
 
@@ -267,7 +310,7 @@ For configuring the CI/CD to publish changes to another environment you will nee
 
 ![](./images/prod-vars.png)
 
-2. Update the pipeline YAMl to use the newly created variable group.
+2. Update the pipeline YAML to use the newly created variable group.
 
 ![](./images/update-var-name.png)
 

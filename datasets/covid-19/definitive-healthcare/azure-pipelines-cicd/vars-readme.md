@@ -3,6 +3,7 @@
 1. How to check which environment variables you need to add in the variables group.
 2. How to view the connection strings for the variables.
 3. Create an Azure Resource Manager Service Connection.
+  i. Troubleshoot Azure pipeline permission issues
 
 ## How to check which environment variables you need to add in the variables group.
 
@@ -268,4 +269,20 @@ The above pipeline does an incremental deployment meanning that it will create n
 
 9. Save and run the pipeline.
 
+If you face any permmissions related issues you may follow the instructions in the next section to fix them.
 
+## Troubleshoot Azure pipeline permission issues
+
+In case the pipeline status is stuck at **Queued**, click on the pipeline, you will see a message asking you to give permissions for the pipeline to execute. Please permit the pipeline to use the service connection.
+
+![](./images/view-pipeline-permit-1.png)
+
+![](./images/view-pipeline-permit-2.png)
+
+You may also see a message in the pipeline status page same as the above. The resolution is also the same you just have to permit it as shown in the following images.
+
+![](./images/pipeline-permit-1.png)
+
+![](./images/pipeline-permit-2.png)
+
+![](./images/pipeline-permit-3.png)

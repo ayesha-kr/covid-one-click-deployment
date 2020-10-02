@@ -258,7 +258,8 @@ git push origin adf_publish
 
 *Note: In case the above part does not work as expected you may follow the instructions given in the following link to manully create a service connection and update the pipeline YAML according to that.*
 
-Manually Create a Service Connection
+[Create an Azure Resource Manager Service Connection](./vars-readme.md)
+
 
 9. Save and run the pipeline.
 
@@ -269,7 +270,9 @@ In case you receive the following error, authorize it and run the pipeline again
 ![Run pipeline](./images/authorize-resources.png)
 
 
+*Note: If you still keep on getting the above error, its likely that the service connection was not configured correctly. You may follow the instructions under the **Create an Azure Resource Manager Service Connection** section in the following link for setting up a service connection manually and updating the pipeline according to that.*
 
+[Create an Azure Resource Manager Service Connection](./vars-readme.md)
 
 
 

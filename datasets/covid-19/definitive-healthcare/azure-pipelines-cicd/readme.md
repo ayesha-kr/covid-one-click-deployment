@@ -1,9 +1,20 @@
 # Introduction
 This document entails the steps that can be followed to set up Continuous Integration and Continuous Delivery for Azure Data Factory. The document comprises of two main parts, the first part entails connecting an existing Azure Data Factory with a Git repository. The second part entails setting up an Azure DevOps Pipeline that publishes the changes from one ADF to another thereby maintaining multiple environments e.g dev, stage, prod, etc.
 
+For learning in detail about the CI/CD for Azure Data Factory you may read the following whitepaper published by the Microsoft team:-
+
+[Data Factory
+Continuous
+Integration/Continuous
+Deployment using
+Azure DevOps](https://azure.microsoft.com/mediahandler/files/resourcefiles/whitepaper-adf-on-azuredevops/Azure%20data%20Factory-Whitepaper-DevOps.pdf)
+
+*Note: You should be the Owner of the subscription in which you are going to setup the folowing resources.*
+
 # Connect Azure Data Factory to a Git Repo
 
 ## Prerequisites
+
   1. Create a Git Repository:-
 
  - [Create Azure DevOps Git repo](https://docs.microsoft.com/en-us/azure/devops/repos/git/create-new-repo?view=azure-devops)

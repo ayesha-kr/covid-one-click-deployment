@@ -60,7 +60,9 @@ This will show a UI blade with a dropdown listing the supported repository types
     - Select **master** as the collaboration branch. This branch will be used for publishing to the Azure Data factory. By default it is master. You may change this if you want to deploy/publish resources from another branch.
     
     - **Root Folder** is the directory where all of the Data factory resource's JSON files will be copied to. Leave it as '**/**'.
+
 ![Select Repo type](./images/repo-settings.png)
+
 6. Click on **Apply** to save the changes.
 
 Here, we have successfully connected an Azure Data factory to a Git Repo. this has saved all of the resource's JSON files in the collaboration branch that we specified. Whenever the ADF is published, it takes all the changes from the collaboration branch, creates the ARM templates for the resources found in the collaboration branch, and pushes them into the **adf_publish** branch.

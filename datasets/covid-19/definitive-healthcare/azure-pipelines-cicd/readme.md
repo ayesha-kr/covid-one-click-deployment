@@ -15,9 +15,14 @@ For learning in detail about the CI/CD for Azure Data Factory you may read the f
 
 [Data Factory Continuous Integration/Continuous Deployment using Azure DevOps](https://azure.microsoft.com/mediahandler/files/resourcefiles/whitepaper-adf-on-azuredevops/Azure%20data%20Factory-Whitepaper-DevOps.pdf)
 
-*Note: You should be the Owner of the subscription in which you are going to setup the folowing resources.*
+*Note: You should be the **Owner** of the subscription in which you are going to setup the following resources.*
+
+![CICD Flow](./images/cicd-flow.png)
+
 
 # Connect Azure Data Factory to a Git Repo
+
+This is the first part of the document and it entails connecting an Azure Data Factory with a Git repository.After completing this section you will have one Azure Data Factory configured with a Git repository. If you also need multiple environments you can move to the second part i.e.**Setting up Azure DevOps Pipeline for publishing releases to multiple environments**, otherwise you can skip it.
 
 ## Prerequisites
 
@@ -67,7 +72,6 @@ When we set up the Git Repository and publish the changes from the Data Factory,
 
 # Setting up Azure DevOps Pipeline for publishing releases to multiple environments
  
-![CICD Flow](./images/cicd-flow.png)
 
 To be able to replicate the resources in this data factory we need the ARM templates that are generated when we publish the changes in the Azure Data Factory. When you click on publish, it takes the changes from the collaboration branch i.e. master in this case, creates ARM templates, and pushes them in the **adf_publish** branch.
 

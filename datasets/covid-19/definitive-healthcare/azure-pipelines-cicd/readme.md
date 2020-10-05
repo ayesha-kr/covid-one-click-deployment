@@ -1,4 +1,5 @@
 # Table of contents
+
 1. Introduction.
 2. Connect Azure Data Factory to a Git Repo.
 3. Setting up Azure DevOps Pipeline for publishing releases to multiple environments.
@@ -22,7 +23,7 @@ For learning in detail about the CI/CD for Azure Data Factory you may read the f
 
 # Connect Azure Data Factory to a Git Repo
 
-This is the first part of the document and it entails connecting an Azure Data Factory with a Git repository.After completing this section you will have one Azure Data Factory configured with a Git repository. If you also need multiple environments you can move to the second part i.e.**Setting up Azure DevOps Pipeline for publishing releases to multiple environments**, otherwise you can skip it.
+This is the first part of the document and it entails connecting an Azure Data Factory with a Git repository. After completing this section you will have one Azure Data Factory configured with a Git repository. If you also need multiple environments you can follow the second part i.e. **Setting up Azure DevOps Pipeline for publishing releases to multiple environments**, otherwise you may skip it.
 
 ## Prerequisites
 
@@ -134,7 +135,7 @@ git push origin adf_publish
 
 
 
-*Note:- For making sure what variables you will need to have in this variable group you can follow the section **How to view the connection strings for the variables** in the guide provided in the following link: [Environment Variables Guide](./vars-readme.md)* 
+*Note:- For making sure what variables you will need to have in this variable group you may follow the section **How to view the connection strings for the variables** in the guide provided in the following link: [Environment Variables Guide](./vars-readme.md)* 
 
 
 

@@ -3,7 +3,7 @@
 1. How to check which environment variables you need to add in the variables group.
 2. How to view the connection strings for the variables.
 3. Create an Azure Resource Manager Service Connection.
-  i. Troubleshoot Azure pipeline permission issues
+	- Troubleshoot Azure pipeline permission issues.
 
 ## How to check which environment variables you need to add in the variables group.
 
@@ -196,7 +196,7 @@ Navigate to Azure DevOps Organizations -> *Your Project* -> Azure Pipelines.
 
 1. Navigate to Azure Pipelines.
 
-2. Open the pipeline that you wish to update, from the menu button on the top-right select **Edit**. This will open the visual pipeline YAMl editor.
+2. Open the pipeline that you wish to update, from the menu button on the top-right select **Edit**. This will open the visual pipeline YAML editor.
 
 3. Update the following keys for all the tasks that have these keys in the pipeline YAML. To do this select **Settings** shown in the top-left corner of every task, this will open a visual YAML editor. Update the keys by selecting the relevant subscription. Make sure you do this for all the tasks that reference these keys.
 

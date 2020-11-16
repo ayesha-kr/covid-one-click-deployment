@@ -93,6 +93,18 @@
         "webHookUri": {
             "type": "string"
 
+        },
+        "synapseWorkspaceName": {
+            "type": "string"
+        },
+        "sqlPoolAdministratorLogin": {
+            "type": "string"
+        },
+        "sqlPoolAdministratorLoginPassword": {
+            "type": "secureString"
+        },
+        "SqlPoolName": {
+            "type": "string"
         }
 
     },
@@ -153,7 +165,7 @@
                         "annotations": [],
                         "type": "AzureSqlDW",
                         "typeProperties": {
-                            "connectionString": "[concat('integrated security=False;encrypt=True;connection timeout=30;data source=',parameters('sqlServerName'),'.database.windows.net;initial catalog=',parameters('dataWarehouseName'),';user id=',parameters('sqlAdministratorLogin'),';Password=',parameters('sqlAdministratorLoginPassword'))]"
+                            "connectionString": "[concat('Server=tcp:', parameters('synapseWorkspaceName'), '.sql.azuresynapse.net,1433;Initial Catalog=', parameters('SqlPoolName'), ';Persist Security Info=False;User ID=', parameters('sqlPoolAdministratorLogin'), ';Password=', parameters('sqlPoolAdministratorLoginPassword'), ';MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;')]"
                         }
                     },
                     "dependsOn": [
@@ -169,7 +181,7 @@
                         "annotations": [],
                         "type": "AzureSqlDW",
                         "typeProperties": {
-                            "connectionString": "[concat('integrated security=False;encrypt=True;connection timeout=30;data source=',parameters('sqlServerName'),'.database.windows.net;initial catalog=',parameters('dataWarehouseName'),';user id=',parameters('sqlAdministratorLogin'), ';Password=', parameters('sqlAdministratorLoginPassword'))]"
+                            "connectionString": "[concat('Server=tcp:', parameters('synapseWorkspaceName'), '.sql.azuresynapse.net,1433;Initial Catalog=', parameters('SqlPoolName'), ';Persist Security Info=False;User ID=', parameters('sqlPoolAdministratorLogin'), ';Password=', parameters('sqlPoolAdministratorLoginPassword'), ';MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;')]"
                         }
                     },
                     "dependsOn": [

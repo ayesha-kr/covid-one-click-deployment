@@ -53,12 +53,6 @@
                 "description": "Value should not match special patterns. It should contain a length of maximum of 128."
             }
         },
-        "dataWarehouseName": {
-            "type": "string",
-            "metadata": {
-                "description": "Value should not match special patterns. It should contain a length of maximum of 128."
-            }
-        },
         "selectDataLoader": {
             "type": "string",
             "allowedValues": [

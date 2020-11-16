@@ -151,6 +151,43 @@
             "metadata": {
                 "description": "Data share account name should have length of 1 - 77, and cannot contain <>%&:\\?/#*$^();,.|-+={}[]!~@"
             }
+        },
+        "synapseWorkspaceName": {
+            "type": "string",
+            "defaultValue": "demoSynapseWorkspace",
+            "metadata": {
+                "description": "Workspace name must be between 1 and 32 characters long. Workspace name must contain only lowercase letters or numbers. Workspace name must start with a letter or a number. Workspace name must end with a letter or a number. Workspace name must not end with '-ondemand' word. There was an error trying to validate workspace name. Please try again"
+            }
+        },
+        "synapseWorkspaceStorageAccountName": {
+            "type": "string",
+            "defaultValue": "synapsewssa",
+            "metadata": {
+                "description": "The name you provide will be appended with a unique sting to make it globally available. The field can contain only lowercase letters and numbers. Name must be between 1 and 11 characters."
+            }
+        },
+        "synapseWorkspaceStorageFilesystemName": {
+            "type": "string",
+            "defaultValue": "demosynapsewsfilesys",
+            "metadata": {
+                "description": "The filesystem name can contain only lowercase letters, numbers or hyphens."
+            }
+        },
+        "sqlPoolAdministratorLogin": {
+            "type": "string",
+            "defaultValue": "masteruser"
+        },
+        "sqlPoolAdministratorLoginPassword": {
+            "type": "secureString",
+            "defaultValue": "DemoCustomer2020!@#$"
+        },
+        "SqlPoolName": {
+            "type": "string",
+            "defaultValue": "demosqlpool"
+        },
+        "synapseWorkspacestorageRoleUniqueId": {
+            "type": "string",
+            "defaultValue": "storageBlobDataContributorRoleForWorkSpace"
         }
     },
     "variables": {
@@ -161,12 +198,15 @@
         "webHookUri": "",
         "dataShareAccountName": "[concat(parameters('dataShareAccountName'), uniquestring(resourceGroup().id))]",
         "stagingContainer": "receivedcopy",
+        "synapseWorkspaceName": "[concat(parameters('synapseWorkspaceName'), uniqueString(resourceGroup().id))]",
+        "synapseWorkspaceStorageAccountName": "[concat(parameters('synapseWorkspaceStorageAccountName'), uniqueString(resourceGroup().id))]",
         "storageTemplateUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/customer/templates/storageAccount/azuredeploy.json",
         "sqlServerTemplateUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/customer/templates/sqlServer/azuredeploy.json",
         "logicAppTemplateUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/customer/templates/logicApp/azuredeploy.json",
         "azureDataFactoryTemplateWithTeamsNotifUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/customer/templates/dataFactory/azuredeploy.json",
         "azureDataFactoryTemplateWithoutTeamsNotifUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/customer/templates/dataFactory/azuredeploy.json",
-        "dataShareTemplateUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/customer/templates/dataShare/azuredeploy.json"
+        "dataShareTemplateUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/customer/templates/dataShare/azuredeploy.json",
+        "synapseWorkspaceTemplateUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/definitive-healthcare/customer/templates/synapseWorkpace/azuredeploy.json"
     },
     "resources": [
         {
@@ -241,6 +281,49 @@
             }
         },
         {
+            "name": "synapseWorkspaceTemplate",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-05-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments','storageTemplate')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('synapseWorkspaceTemplateUri')]"
+                },
+                "parameters": {
+                    "synapseWorkspaceName": {
+                        "value": "[variables('synapseWorkspaceName')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "sqlPoolAdministratorLogin": {
+                        "value": "[parameters('sqlPoolAdministratorLogin')]"
+                    },
+                    "sqlPoolAdministratorLoginPassword": {
+                        "value": "[parameters('sqlPoolAdministratorLoginPassword')]"
+                    },
+                    "sqlPoolName": {
+                        "value": "[parameters('sqlPoolName')]"
+                    },
+                    "synapseWorkspaceStorageAccountName": {
+                        "value": "[variables('synapseWorkspaceStorageAccountName')]"
+                    },
+                    "synapseWorkspaceStorageFilesystemName": {
+                        "value": "[parameters('synapseWorkspaceStorageFilesystemName')]"
+                    },
+                    "synapseWorkspacestorageRoleUniqueId": {
+                        "value": "[parameters('synapseWorkspacestorageRoleUniqueId')]"
+                    },
+                    "selectDataLoader": {
+                        "value": "[parameters('selectDataLoader')]"
+                    }
+                }
+            }
+        },
+        {
             "condition": "[equals(parameters('enableMicrosoftTeamsNotification'),'Yes')]",
             "name": "logicAppTemplate",
             "type": "Microsoft.Resources/deployments",
@@ -267,7 +350,8 @@
             "apiVersion": "2018-05-01",
             "dependsOn": [
                 "[resourceId('Microsoft.Resources/deployments','sqlServerTemplate')]",
-                "[resourceId('Microsoft.Resources/deployments','logicAppTemplate')]"
+                "[resourceId('Microsoft.Resources/deployments','logicAppTemplate')]",
+                "[resourceId('Microsoft.Resources/deployments','synapseWorkspaceTemplate')]"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -326,7 +410,8 @@
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2018-05-01",
             "dependsOn": [
-                "[resourceId('Microsoft.Resources/deployments','sqlServerTemplate')]"
+                "[resourceId('Microsoft.Resources/deployments','sqlServerTemplate')]",
+                "[resourceId('Microsoft.Resources/deployments','synapseWorkspaceTemplate')]"
             ],
             "properties": {
                 "mode": "Incremental",

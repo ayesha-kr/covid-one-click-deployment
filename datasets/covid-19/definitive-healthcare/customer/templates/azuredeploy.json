@@ -376,9 +376,6 @@
                     "sqlDBName": {
                         "value": "[parameters('sqlDBName')]"
                     },
-                    "dataWarehouseName": {
-                        "value": "[parameters('dataWarehouseName')]"
-                    },
                     "selectDataLoader": {
                         "value": "[parameters('selectDataLoader')]"
                     },
@@ -435,9 +432,6 @@
                     },
                     "sqlDBName": {
                         "value": "[parameters('sqlDBName')]"
-                    },
-                    "dataWarehouseName": {
-                        "value": "[parameters('dataWarehouseName')]"
                     },
                     "selectDataLoader": {
                         "value": "[parameters('selectDataLoader')]"

@@ -147,9 +147,9 @@
         },
         "synapseWorkspaceName": {
             "type": "string",
-            "defaultValue": "demoSynapseWorkspace",
+            "defaultValue": "demosynapseworkspace",
             "metadata": {
-                "description": "Workspace name must be between 1 and 32 characters long. Workspace name must contain only lowercase letters or numbers. Workspace name must start with a letter or a number. Workspace name must end with a letter or a number. Workspace name must not end with '-ondemand' word. There was an error trying to validate workspace name. Please try again"
+                "description": "Workspace name must be between 1 and 32 characters long. Workspace name must contain only lowercase letters or numbers. Workspace name must start with a letter or a number. Workspace name must end with a letter or a number. Workspace name must not end with '-ondemand' word."
             }
         },
         "synapseWorkspaceStorageAccountName": {
@@ -257,9 +257,6 @@
                     },
                     "sqlDBName": {
                         "value": "[parameters('sqlDBName')]"
-                    },
-                    "dataWarehouseName": {
-                        "value": "[parameters('dataWarehouseName')]"
                     },
                     "transparentDataEncryption": {
                         "value": "[parameters('transparentDataEncryption')]"

@@ -57,8 +57,8 @@
                     "accountUrl": "[variables('defaultDataLakeStorageAccountUrl')]",
                     "filesystem": "[parameters('synapseWorkspaceStorageFilesystemName')]"
                 },
-                "sqlPoolAdministratorLogin": "[parameters('sqlPoolAdministratorLogin')]",
-                "sqlPoolAdministratorLoginPassword": "[parameters('sqlPoolAdministratorLoginPassword')]"
+                "sqlAdministratorLogin": "[parameters('sqlPoolAdministratorLogin')]",
+                "sqlAdministratorLoginPassword": "[parameters('sqlPoolAdministratorLoginPassword')]"
             },
             "resources": [
                 {

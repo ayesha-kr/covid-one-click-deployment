@@ -27,8 +27,16 @@
             "type": "string"
         },
         "selectDataLoader": {
-            "type": "string"
-          }
+            "type": "string",
+            "allowedValues": [
+                "SQL Database",
+                "Synapse Database Warehouse",
+                "Both"
+            ],
+            "metadata": {
+                "description": "Specify if you want to write the data into SQL database."
+            }
+        }
     },
     "variables": {
         "storageBlobDataContributorRoleID": "ba92f5b4-2d11-453d-a403-e96b0029c9fe",

@@ -199,7 +199,7 @@
         "azureDataFactoryTemplateWithTeamsNotifUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/synapse-workspace/datasets/covid-19/definitive-healthcare/customer/templates/dataFactory/azuredeploy.json",
         "azureDataFactoryTemplateWithoutTeamsNotifUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/synapse-workspace/datasets/covid-19/definitive-healthcare/customer/templates/dataFactory/azuredeploy.json",
         "dataShareTemplateUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/synapse-workspace/datasets/covid-19/definitive-healthcare/customer/templates/dataShare/azuredeploy.json",
-        "synapseWorkspaceTemplateUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/synapse-workspace/datasets/covid-19/definitive-healthcare/customer/templates/synapseWorkpace/azuredeploy.json"
+        "synapseWorkspaceTemplateUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/synapse-workspace/datasets/covid-19/definitive-healthcare/customer/templates/synapseWorkspace/azuredeploy.json"
     },
     "resources": [
         {

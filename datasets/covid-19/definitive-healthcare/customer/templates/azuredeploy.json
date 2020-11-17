@@ -387,6 +387,18 @@
                     },
                     "webHookUri": {
                         "value": "[if(equals(parameters('enableMicrosoftTeamsNotification'),'Yes'), reference('logicAppTemplate','2018-05-01').outputs.WebHookURI.value, 'http://example.com')]"
+                    },
+                    "synapseWorkspaceName": {
+                        "value": "[variables('synapseWorkspaceName')]"
+                    },
+                    "sqlPoolAdministratorLogin": {
+                        "value": "[parameters('sqlPoolAdministratorLogin')]"
+                    },
+                    "sqlPoolAdministratorLoginPassword": {
+                        "value": "[parameters('sqlPoolAdministratorLoginPassword')]"
+                    },
+                    "sqlPoolName": {
+                        "value": "[parameters('sqlPoolName')]"
                     }
                 }
             }
@@ -442,9 +454,20 @@
                     "deployAndUseDataShare": {
                         "value": "[parameters('deployAndUseDataShare')]"
                     },
-                  
                     "webHookUri": {
                         "value": "http://example.com"
+                    },
+                    "synapseWorkspaceName": {
+                        "value": "[variables('synapseWorkspaceName')]"
+                    },
+                    "sqlPoolAdministratorLogin": {
+                        "value": "[parameters('sqlPoolAdministratorLogin')]"
+                    },
+                    "sqlPoolAdministratorLoginPassword": {
+                        "value": "[parameters('sqlPoolAdministratorLoginPassword')]"
+                    },
+                    "sqlPoolName": {
+                        "value": "[parameters('sqlPoolName')]"
                     }
                 }
             }

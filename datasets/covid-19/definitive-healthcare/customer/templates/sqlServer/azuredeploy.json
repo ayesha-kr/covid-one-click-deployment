@@ -120,7 +120,7 @@
                     ]
                 },
                 {
-                    "condition": "[parameters('allowAzureServicesToAccessSqlServer')]",
+                    "condition": "[and(parameters('allowAzureServicesToAccessSqlServer'),not(equals(parameters('selectDataLoader'),'Synapse Database Warehouse')))]",
                     "type": "firewallRules",
                     "apiVersion": "2018-06-01-preview",
                     "name": "AllowAllWindowsAzureIps",

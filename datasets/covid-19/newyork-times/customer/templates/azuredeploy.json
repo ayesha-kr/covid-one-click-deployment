@@ -161,12 +161,12 @@
         "webHookUri": "",
         "dataShareAccountName": "[concat(parameters('dataShareAccountName'), uniquestring(resourceGroup().id))]",
         "stagingContainer": "receivedcopy",
-        "storageTemplateUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/newyork-times/customer/templates/storageAccount/azuredeploy.json",
-        "sqlServerTemplateUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/newyork-times/customer/templates/sqlServer/azuredeploy.json",
-        "logicAppTemplateUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/newyork-times/customer/templates/logicApp/azuredeploy.json",
-        "azureDataFactoryTemplateWithTeamsNotifUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/newyork-times/customer/templates/dataFactory/azuredeploy.json",
-        "azureDataFactoryTemplateWithoutTeamsNotifUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/newyork-times/customer/templates/dataFactory/azuredeploy.json",
-        "dataShareTemplateUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/master/datasets/covid-19/newyork-times/customer/templates/dataShare/azuredeploy.json"
+        "storageTemplateUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/osama-dev/datasets/covid-19/newyork-times/customer/templates/storageAccount/azuredeploy.json",
+        "sqlServerTemplateUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/osama-dev/datasets/covid-19/newyork-times/customer/templates/sqlServer/azuredeploy.json",
+        "logicAppTemplateUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/osama-dev/datasets/covid-19/newyork-times/customer/templates/logicApp/azuredeploy.json",
+        "azureDataFactoryTemplateWithTeamsNotifUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/osama-dev/datasets/covid-19/newyork-times/customer/templates/dataFactory/azuredeploy.json",
+        "azureDataFactoryTemplateWithoutTeamsNotifUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/osama-dev/datasets/covid-19/newyork-times/customer/templates/dataFactory/azuredeploy.json",
+        "dataShareTemplateUri": "https://raw.githubusercontent.com/ayesha-kr/covid-one-click-deployment/osama-dev/datasets/covid-19/newyork-times/customer/templates/dataShare/azuredeploy.json"
     },
     "resources": [
         {

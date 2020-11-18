@@ -33,7 +33,7 @@
 
 Click the following button to deploy all the resources.
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fayesha-kr%2Fcovid-one-click-deployment%2Fmaster%2Fdatasets%2Fcovid-19%2Fontario%2Fcustomer%2Ftemplates%2Fazuredeploy.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fayesha-kr%2Fcovid-one-click-deployment%2Fosama-dev%2Fdatasets%2Fcovid-19%2Fontario%2Fcustomer%2Ftemplates%2Fazuredeploy.json)
 
 
 #### Manually Trigger Pipeline
